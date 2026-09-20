@@ -74,24 +74,6 @@
   });
 
   /* ---------------------------------------------------------------------
-   * Language buttons (visual toggle only, no real i18n)
-   * ------------------------------------------------------------------- */
-  var currentLang = 'EN';
-  function paintLang() {
-    document.querySelectorAll('[data-lang-btn]').forEach(function (b) {
-      var on = b.getAttribute('data-lang-btn') === currentLang;
-      b.classList.toggle('is-active', on);
-      b.setAttribute('aria-pressed', on ? 'true' : 'false');
-    });
-  }
-  document.addEventListener('click', function (e) {
-    var b = e.target.closest ? e.target.closest('[data-lang-btn]') : null;
-    if (!b) return;
-    currentLang = b.getAttribute('data-lang-btn');
-    paintLang();
-  });
-
-  /* ---------------------------------------------------------------------
    * Scroll reveal (fade + rise into view)
    * ------------------------------------------------------------------- */
   (function setupReveal() {
@@ -580,6 +562,7 @@
     window.addEventListener('resize', layoutArtistRow);
     layoutArtistRow();
 
+    window.sarleRefreshArtist = function () { setCaption(index); };
     setIndex(0, true);
     paint();
     frame();
@@ -601,9 +584,10 @@
       var v = (input.value || '').trim();
       var ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
       if (!ok) {
-        errorText.textContent = v
+        var msg = v
           ? 'That email address does not look complete. Please check it and try again.'
           : 'Please enter your email address.';
+        errorText.textContent = window.sarleT ? window.sarleT(msg) : msg;
         errorEl.hidden = false;
         successEl.hidden = true;
         return;
@@ -612,6 +596,183 @@
       successEl.hidden = false;
       input.value = '';
     });
+  })();
+
+
+  /* ---------------------------------------------------------------------
+   * i18n — EN / EST / RUS. Translations are keyed by the English source
+   * string; every text node keeps its original English on the node itself,
+   * so switching back and forth is lossless.
+   * ------------------------------------------------------------------- */
+  (function setupI18n() {
+    const EST = {
+      'Gallery': 'Galerii', 'Exhibition': 'Näitus', 'Artists': 'Kunstnikud', 'Contact': 'Kontakt',
+      'Gallery & Art Studio': 'Galerii ja kunstistuudio',
+      'Subscribe to the newsletter': 'Telli uudiskiri',
+      'Drag & press to explore': 'Lohista ja klõpsa',
+      'Skip to content': 'Liigu sisu juurde',
+      "WE'LL BE GLAD TO SEE YOU!": 'OLED OODATUD!',
+      'WHERE ART': 'KUS KUNST', 'MEETS SOUL': 'KOHTUB HINGEGA',
+      'A contemporary art and cultural space in the very heart of Old Tallinn.': 'Kaasaegse kunsti ja kultuuri ruum vanalinna südames.',
+      'Current exhibition': 'Praegune näitus',
+      'CONTINUATION': 'ALGUSE', 'OF THE BEGINNING': 'JÄTKUMINE',
+      'Every continuation carries a beginning within it. Every beginning already contains the path ahead.': 'Iga jätk kannab endas algust. Iga algus sisaldab juba teed, mis on ees.',
+      'Learn more': 'Loe lähemalt',
+      'About us': 'Meist',
+      'Located at Aia tn 17, amid the historic architecture of the Old Town, the gallery creates a space where art and people meet.': 'Aia tn 17 asuv galerii loob vanalinna ajaloolise arhitektuuri keskel ruumi, kus kunst ja inimesed kohtuvad.',
+      'Exhibitions, concerts, auctions, lectures, meetings with artists, educational and charitable projects take place here. It is a place where art does not exist separately from life — it becomes a part of it.': 'Siin toimuvad näitused, kontserdid, oksjonid, loengud, kohtumised kunstnikega ning hariduslikud ja heategevuslikud projektid. See on koht, kus kunst ei eksisteeri elust eraldi — see saab elu osaks.',
+      'View map': 'Vaata kaarti',
+      'On view, right now': 'Praegu avatud',
+      'CURRENT EXHIBITION': 'PRAEGUNE NÄITUS',
+      'Evgeny Kos solo exhibition continues an artistic journey begun earlier. Nature, dreamlike imagery and the mechanical world meet in surreal works. The railway becomes a symbol of movement, inner searching and change. Each canvas creates a space for sincere dialogue with the viewer. The exhibition invites us to pause, look closer and feel life’s movement.': 'Jevgeni Kosi isikunäitus jätkab varem alanud kunstiteekonda. Loodus, unenäolised kujundid ja mehaaniline maailm kohtuvad sürrealistlikes töödes. Raudteest saab liikumise, sisemise otsingu ja muutuse sümbol. Iga lõuend loob ruumi siiraks dialoogiks vaatajaga. Näitus kutsub peatuma, lähemalt vaatama ja tundma elu liikumist.',
+      'DATES': 'KUUPÄEVAD', 'ARTIST': 'KUNSTNIK', 'VENUE': 'TOIMUMISKOHT', 'ADDRESS': 'AADRESS',
+      'THE': '', 'ARTISTS': 'KUNSTNIKUD',
+      'Meet the artists whose practices shape the gallery’s evolving dialogue.': 'Tutvu kunstnikega, kelle looming kujundab galerii arenevat dialoogi.',
+      'Philosophy': 'Filosoofia',
+      'We believe that art brings people closer together.': 'Usume, et kunst toob inimesed üksteisele lähemale.',
+      'LET’S CREATE TOGETHER!': 'LOOME KOOS!',
+      'News about exhibitions, gatherings, concerts, auctions, and special projects of Sarle Art Gallery & Studio.': 'Uudised näituste, kohtumiste, kontsertide, oksjonite ja Sarle Art Gallery & Studio eriprojektide kohta.',
+      'Your email': 'Sinu e-post', 'Subscribe': 'Telli',
+      'You consent to the use of your personal data.': 'Nõustud oma isikuandmete kasutamisega.',
+      'Thank you. Your subscription is confirmed — we will write when the next exhibition opens.': 'Aitäh. Tellimus on kinnitatud — kirjutame, kui avaneb järgmine näitus.',
+      'That email address does not look complete. Please check it and try again.': 'See e-posti aadress ei tundu täielik. Palun kontrolli ja proovi uuesti.',
+      'Please enter your email address.': 'Palun sisesta oma e-posti aadress.',
+      'PLAN YOUR VISIT': 'PLANEERI KÜLASTUS', 'YOU WILL BE WELCOMED': 'OLED OODATUD',
+      'Address': 'Aadress', 'Phone': 'Telefon', 'Email': 'E-post',
+      'Located in Old Town, Tallinn, Estonia, Aia tn 17.': 'Vanalinnas, Tallinnas, Aia tn 17.',
+      'Get directions': 'Juhised kohale',
+      'A cultural space in the very heart of Old Tallinn, bringing together art, music, exhibitions, and creative events.': 'Kultuuriruum Tallinna vanalinna südames, mis toob kokku kunsti, muusika, näitused ja loomingulised sündmused.',
+      'Visit': 'Külasta', 'Navigate': 'Navigeeri', 'Current Exhibition': 'Praegune näitus', 'Language': 'Keel',
+      'Privacy policy': 'Privaatsuspoliitika', 'Back to top ↑': 'Üles ↑',
+      'Sculptor — bronze and stone': 'Skulptor — pronks ja kivi',
+      'Painter': 'Maalikunstnik',
+      'Industrial painter — on view now': 'Industriaalmaalija — praegu väljas',
+      'Painter and graphic artist': 'Maali- ja graafikakunstnik',
+      'Architect, artist and scenographer': 'Arhitekt, kunstnik ja stsenograaf',
+      'Painter, lecturer and art writer': 'Maalikunstnik, õppejõud ja kunstikirjanik',
+      'Artist, illustrator and animation director': 'Kunstnik, illustraator ja animafilmide režissöör',
+      'A renowned Estonian sculptor who works primarily with bronze and stone. His creations are inspired by mythology, nature, and the human figure, blending monumentality with expressiveness and warmth. Tauno Kangro’s works are displayed in public spaces across Estonia and beyond, and are also held in private collections in various countries around the world.': 'Tunnustatud Eesti skulptor, kes töötab peamiselt pronksi ja kiviga. Tema loomingut inspireerivad mütoloogia, loodus ja inimkuju, ühendades monumentaalsuse väljendusrikkuse ja soojusega. Tauno Kangro tööd on üleval avalikes ruumides üle Eesti ja mujal ning kuuluvad erakogudesse eri riikides.',
+      'An Azerbaijani artist who has been living and working in Estonia since 2008. His paintings are filled with light, warmth, and deep inner tranquility, while vibrant color becomes a language of emotions and memories. Rovshan Nur’s works have been exhibited in Estonia and abroad and are held in private collections in various countries around the world.': 'Aserbaidžaani kunstnik, kes on elanud ja töötanud Eestis alates 2008. aastast. Tema maalid on täis valgust, soojust ja sügavat sisemist rahu, erksast värvist saab emotsioonide ja mälestuste keel. Rovshan Nuri töid on eksponeeritud Eestis ja välismaal ning need kuuluvad erakogudesse eri riikides.',
+      'An industrial painter who transforms the cold language of machines into the language of human emotion. In his works, metal and mechanisms seem to come alive, becoming reflections of a person’s feelings and inner states. Through the austere aesthetics of the industrial world, Evgeny explores inner drama and the subtle movements of the human soul.': 'Industriaalmaalija, kes muudab masinate külma keele inimlike tunnete keeleks. Tema töödes näivad metall ja mehhanismid ellu ärkavat, peegeldades inimese tundeid ja sisemisi seisundeid. Industriaalmaailma karmi esteetika kaudu uurib Jevgeni sisemist draamat ja hinge peeneid liikumisi.',
+      'Born in 1957. An artist who works freely on the border between painting and graphic art, using oil, watercolor, pastel, and ink. His solo exhibitions have been held in Finland, Sweden, Norway, and at the Embassy of China in Estonia. The artist’s works are part of museum and private collections, including the collection of the Estonian National Museum.': 'Sündinud 1957. Kunstnik, kes liigub vabalt maali ja graafika piiril, kasutades õli, akvarelli, pastelli ja tušši. Tema isikunäitusi on toimunud Soomes, Rootsis, Norras ja Hiina saatkonnas Eestis. Kunstniku tööd kuuluvad muuseumi- ja erakogudesse, sealhulgas Eesti Rahva Muuseumi kogusse.',
+      'An architect, artist, designer, and scenographer. Founder of the Narva Art School. She works in painting, film, theatre, interior design, and book illustration. Her solo exhibitions have been held in the United States, Poland, Austria, Slovenia, Finland, and Estonia, and her works have received international recognition. Laureate of the LaPersona Award 2025 and Narva Cultural Figure of the Year 2025.': 'Arhitekt, kunstnik, disainer ja stsenograaf. Narva kunstikooli asutaja. Ta tegutseb maalikunstis, filmis, teatris, sisekujunduses ja raamatuillustratsioonis. Tema isikunäitusi on toimunud Ameerika Ühendriikides, Poolas, Austrias, Sloveenias, Soomes ja Eestis ning tema tööd on pälvinud rahvusvahelist tunnustust. LaPersona auhinna 2025 laureaat ja Narva aasta kultuuritegija 2025.',
+      'Born in 1967 in Tallinn. A painter, author of several texts on art theory and contemporary artists, and a lecturer; she lives and works in Narva. For Maie, painting is a way of looking and seeing — a means of conveying the uniqueness of the natural world through a personal selection of artistic tools, and a large, colorful canvas is a selfless form of happiness.': 'Sündinud 1967 Tallinnas. Maalikunstnik, mitme kunstiteooriat ja kaasaegseid kunstnikke käsitleva teksti autor ning õppejõud; elab ja töötab Narvas. Maie jaoks on maalimine vaatamise ja nägemise viis — vahend loodusmaailma ainulaadsuse edasiandmiseks isiklikult valitud kunstivahenditega, ning suur värviline lõuend on omakasupüüdmatu õnn.',
+      'Born in Yerevan, Armenia, she lives and works in Estonia. An artist, illustrator, and animation film director, she holds a Master’s degree in Animation from the Estonian Academy of Arts (EKA). Her films have participated in prestigious international festivals, including Berlinale, Annecy, Zagreb, and Hiroshima, and have received numerous awards.': 'Sündinud Jerevanis Armeenias, elab ja töötab Eestis. Kunstnik, illustraator ja animafilmide režissöör, omandanud animatsiooni magistrikraadi Eesti Kunstiakadeemias (EKA). Tema filmid on osalenud mainekatel rahvusvahelistel festivalidel, sealhulgas Berlinale, Annecy, Zagreb ja Hiroshima, ning pälvinud arvukalt auhindu.'
+    };
+    const RUS = {
+      'Gallery': 'Галерея', 'Exhibition': 'Выставка', 'Artists': 'Художники', 'Contact': 'Контакты',
+      'Gallery & Art Studio': 'Галерея и арт-студия',
+      'Subscribe to the newsletter': 'Подписаться на рассылку',
+      'Drag & press to explore': 'Прокрутите картины',
+      'Skip to content': 'Перейти к содержимому',
+      "WE'LL BE GLAD TO SEE YOU!": 'МЫ БУДЕМ РАДЫ ВАМ!',
+      'WHERE ART': 'ГДЕ ИСКУССТВО', 'MEETS SOUL': 'ВСТРЕЧАЕТ ДУШУ',
+      'A contemporary art and cultural space in the very heart of Old Tallinn.': 'Пространство современного искусства и культуры в самом сердце Старого Таллинна.',
+      'Current exhibition': 'Текущая выставка',
+      'CONTINUATION': 'ПРОДОЛЖЕНИЕ', 'OF THE BEGINNING': 'НАЧАЛА',
+      'Every continuation carries a beginning within it. Every beginning already contains the path ahead.': 'Каждое продолжение несёт в себе начало. Каждое начало уже содержит путь вперёд.',
+      'Learn more': 'Подробнее',
+      'About us': 'О нас',
+      'Located at Aia tn 17, amid the historic architecture of the Old Town, the gallery creates a space where art and people meet.': 'Расположенная на Aia tn 17, среди исторической архитектуры Старого города, галерея создаёт пространство, где встречаются искусство и люди.',
+      'Exhibitions, concerts, auctions, lectures, meetings with artists, educational and charitable projects take place here. It is a place where art does not exist separately from life — it becomes a part of it.': 'Здесь проходят выставки, концерты, аукционы, лекции, встречи с художниками, образовательные и благотворительные проекты. Это место, где искусство не существует отдельно от жизни — оно становится её частью.',
+      'View map': 'Смотреть карту',
+      'On view, right now': 'Сейчас в галерее',
+      'CURRENT EXHIBITION': 'ТЕКУЩАЯ ВЫСТАВКА',
+      'Evgeny Kos solo exhibition continues an artistic journey begun earlier. Nature, dreamlike imagery and the mechanical world meet in surreal works. The railway becomes a symbol of movement, inner searching and change. Each canvas creates a space for sincere dialogue with the viewer. The exhibition invites us to pause, look closer and feel life’s movement.': 'Персональная выставка Евгения Коса продолжает художественный путь, начатый ранее. Природа, сновидческие образы и мир механизмов встречаются в сюрреалистичных работах. Железная дорога становится символом движения, внутреннего поиска и перемен. Каждое полотно создаёт пространство искреннего диалога со зрителем. Выставка приглашает остановиться, всмотреться и почувствовать движение жизни.',
+      'DATES': 'ДАТЫ', 'ARTIST': 'ХУДОЖНИК', 'VENUE': 'ПЛОЩАДКА', 'ADDRESS': 'АДРЕС',
+      'THE': '', 'ARTISTS': 'ХУДОЖНИКИ',
+      'Meet the artists whose practices shape the gallery’s evolving dialogue.': 'Познакомьтесь с художниками, чьи практики формируют живой диалог галереи.',
+      'Philosophy': 'Философия',
+      'We believe that art brings people closer together.': 'Мы верим, что искусство сближает людей.',
+      'LET’S CREATE TOGETHER!': 'ДАВАЙТЕ ТВОРИТЬ ВМЕСТЕ!',
+      'News about exhibitions, gatherings, concerts, auctions, and special projects of Sarle Art Gallery & Studio.': 'Новости о выставках, встречах, концертах, аукционах и специальных проектах Sarle Art Gallery & Studio.',
+      'Your email': 'Ваш e-mail', 'Subscribe': 'Подписаться',
+      'You consent to the use of your personal data.': 'Вы соглашаетесь на использование ваших персональных данных.',
+      'Thank you. Your subscription is confirmed — we will write when the next exhibition opens.': 'Спасибо. Подписка подтверждена — мы напишем, когда откроется следующая выставка.',
+      'That email address does not look complete. Please check it and try again.': 'Адрес электронной почты выглядит неполным. Проверьте его и попробуйте снова.',
+      'Please enter your email address.': 'Введите ваш адрес электронной почты.',
+      'PLAN YOUR VISIT': 'ПЛАНИРУЙТЕ ВИЗИТ', 'YOU WILL BE WELCOMED': 'МЫ БУДЕМ РАДЫ ВАМ',
+      'Address': 'Адрес', 'Phone': 'Телефон', 'Email': 'Эл. почта',
+      'Located in Old Town, Tallinn, Estonia, Aia tn 17.': 'Старый город, Таллинн, Эстония, Aia tn 17.',
+      'Get directions': 'Построить маршрут',
+      'A cultural space in the very heart of Old Tallinn, bringing together art, music, exhibitions, and creative events.': 'Культурное пространство в самом сердце Старого Таллинна, объединяющее искусство, музыку, выставки и творческие события.',
+      'Visit': 'Визит', 'Navigate': 'Навигация', 'Current Exhibition': 'Текущая выставка', 'Language': 'Язык',
+      'Privacy policy': 'Политика конфиденциальности', 'Back to top ↑': 'Наверх ↑',
+      'Sculptor — bronze and stone': 'Скульптор — бронза и камень',
+      'Painter': 'Живописец',
+      'Industrial painter — on view now': 'Индустриальный живописец — сейчас в галерее',
+      'Painter and graphic artist': 'Живописец и график',
+      'Architect, artist and scenographer': 'Архитектор, художник и сценограф',
+      'Painter, lecturer and art writer': 'Живописец, преподаватель и автор текстов об искусстве',
+      'Artist, illustrator and animation director': 'Художник, иллюстратор и режиссёр анимации',
+      'A renowned Estonian sculptor who works primarily with bronze and stone. His creations are inspired by mythology, nature, and the human figure, blending monumentality with expressiveness and warmth. Tauno Kangro’s works are displayed in public spaces across Estonia and beyond, and are also held in private collections in various countries around the world.': 'Известный эстонский скульптор, работающий преимущественно с бронзой и камнем. Его произведения вдохновлены мифологией, природой и человеческой фигурой, соединяя монументальность с выразительностью и теплотой. Работы Тауно Кангро установлены в общественных пространствах Эстонии и за её пределами, а также хранятся в частных коллекциях разных стран мира.',
+      'An Azerbaijani artist who has been living and working in Estonia since 2008. His paintings are filled with light, warmth, and deep inner tranquility, while vibrant color becomes a language of emotions and memories. Rovshan Nur’s works have been exhibited in Estonia and abroad and are held in private collections in various countries around the world.': 'Азербайджанский художник, живущий и работающий в Эстонии с 2008 года. Его картины наполнены светом, теплом и глубоким внутренним покоем, а насыщенный цвет становится языком эмоций и воспоминаний. Работы Ровшана Нура выставлялись в Эстонии и за рубежом и находятся в частных коллекциях разных стран мира.',
+      'An industrial painter who transforms the cold language of machines into the language of human emotion. In his works, metal and mechanisms seem to come alive, becoming reflections of a person’s feelings and inner states. Through the austere aesthetics of the industrial world, Evgeny explores inner drama and the subtle movements of the human soul.': 'Индустриальный живописец, превращающий холодный язык машин в язык человеческих чувств. В его работах металл и механизмы словно оживают, становясь отражением переживаний и внутренних состояний человека. Через суровую эстетику индустриального мира Евгений исследует внутреннюю драму и тонкие движения человеческой души.',
+      'Born in 1957. An artist who works freely on the border between painting and graphic art, using oil, watercolor, pastel, and ink. His solo exhibitions have been held in Finland, Sweden, Norway, and at the Embassy of China in Estonia. The artist’s works are part of museum and private collections, including the collection of the Estonian National Museum.': 'Родился в 1957 году. Художник, свободно работающий на границе живописи и графики, используя масло, акварель, пастель и тушь. Его персональные выставки проходили в Финляндии, Швеции, Норвегии и в посольстве Китая в Эстонии. Работы художника входят в музейные и частные собрания, включая коллекцию Эстонского национального музея.',
+      'An architect, artist, designer, and scenographer. Founder of the Narva Art School. She works in painting, film, theatre, interior design, and book illustration. Her solo exhibitions have been held in the United States, Poland, Austria, Slovenia, Finland, and Estonia, and her works have received international recognition. Laureate of the LaPersona Award 2025 and Narva Cultural Figure of the Year 2025.': 'Архитектор, художник, дизайнер и сценограф. Основательница Нарвской художественной школы. Работает в живописи, кино, театре, дизайне интерьера и книжной иллюстрации. Её персональные выставки проходили в США, Польше, Австрии, Словении, Финляндии и Эстонии, а работы получили международное признание. Лауреат премии LaPersona 2025 и «Деятель культуры Нарвы 2025».',
+      'Born in 1967 in Tallinn. A painter, author of several texts on art theory and contemporary artists, and a lecturer; she lives and works in Narva. For Maie, painting is a way of looking and seeing — a means of conveying the uniqueness of the natural world through a personal selection of artistic tools, and a large, colorful canvas is a selfless form of happiness.': 'Родилась в 1967 году в Таллинне. Живописец, автор ряда текстов по теории искусства и о современных художниках, преподаватель; живёт и работает в Нарве. Для Майе живопись — это способ смотреть и видеть, средство передать уникальность мира природы через личный выбор художественных инструментов, а большой цветной холст — бескорыстная форма счастья.',
+      'Born in Yerevan, Armenia, she lives and works in Estonia. An artist, illustrator, and animation film director, she holds a Master’s degree in Animation from the Estonian Academy of Arts (EKA). Her films have participated in prestigious international festivals, including Berlinale, Annecy, Zagreb, and Hiroshima, and have received numerous awards.': 'Родилась в Ереване, Армения, живёт и работает в Эстонии. Художник, иллюстратор и режиссёр анимационного кино, магистр анимации Эстонской академии художеств (EKA). Её фильмы участвовали в престижных международных фестивалях, включая Берлинале, Аннси, Загреб и Хиросиму, и получили множество наград.'
+    };
+
+    var DICT = { EN: null, EST: EST, RUS: RUS };
+    var lang = 'EN';
+    try { lang = localStorage.getItem('sarle-lang') || 'EN'; } catch (e) {}
+
+    function t(en) {
+      var d = DICT[lang];
+      return d && Object.prototype.hasOwnProperty.call(d, en) ? d[en] : en;
+    }
+    window.sarleT = t;
+
+    function applyLang() {
+      var caption = document.getElementById('art-caption');
+      var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+        acceptNode: function (n) {
+          if (n.__sarleEn === undefined && (!n.nodeValue || !n.nodeValue.trim())) return NodeFilter.FILTER_REJECT;
+          var p = n.parentNode;
+          if (!p || p.nodeName === 'SCRIPT' || p.nodeName === 'STYLE') return NodeFilter.FILTER_REJECT;
+          if (caption && caption.contains(p)) return NodeFilter.FILTER_REJECT;
+          if (p.closest && p.closest('[data-lang-btn]')) return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+      var nodes = [], cur;
+      while ((cur = walker.nextNode())) nodes.push(cur);
+      nodes.forEach(function (n) {
+        if (n.__sarleEn === undefined) n.__sarleEn = n.nodeValue;
+        var en = n.__sarleEn, key = en.trim(), out = t(key);
+        n.nodeValue = out === key ? en : en.replace(key, out);
+      });
+
+      document.querySelectorAll('.ar-item').forEach(function (el) {
+        if (!el.dataset.roleEn) { el.dataset.roleEn = el.getAttribute('data-role'); el.dataset.bioEn = el.getAttribute('data-bio'); }
+        el.setAttribute('data-role', t(el.dataset.roleEn));
+        el.setAttribute('data-bio', t(el.dataset.bioEn));
+      });
+      if (window.sarleRefreshArtist) window.sarleRefreshArtist();
+      document.documentElement.lang = lang === 'RUS' ? 'ru' : (lang === 'EST' ? 'et' : 'en');
+    }
+    window.sarleApplyLang = applyLang;
+
+    function paint() {
+      document.querySelectorAll('[data-lang-btn]').forEach(function (b) {
+        var on = b.getAttribute('data-lang-btn') === lang;
+        b.classList.toggle('is-active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('[data-lang-btn]') : null;
+      if (!b) return;
+      lang = b.getAttribute('data-lang-btn');
+      try { localStorage.setItem('sarle-lang', lang); } catch (err) {}
+      paint();
+      applyLang();
+    });
+
+    paint();
+    if (lang !== 'EN') applyLang();
   })();
 
   /* ---------------------------------------------------------------------
