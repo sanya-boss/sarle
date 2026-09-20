@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sarle | Art Gallery &amp; Studio</title>
+<meta name="description" content="Sarle Art Gallery &amp; Studio — a contemporary art and cultural space in the heart of Old Tallinn.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to content</a>
+
+<header class="site-header" id="site-header">
+  <a href="#top" class="brand" aria-label="Sarle Art Gallery and Studio, home">
+    <img id="site-logo" class="brand-logo" src="assets/sarle-wordmark.svg?v=2" alt="Sarle Art Gallery &amp; Studio">
+    <span class="brand-logo-text">Gallery &amp; Art Studio</span>
+  </a>
+
+  <nav class="desk-nav" aria-label="Main" data-desknav>
+    <a href="#exhibition" class="nav-link">Gallery</a>
+    <a href="#exhibition" class="nav-link">Exhibition</a>
+    <a href="#artists" class="nav-link">Artists</a>
+    <a href="#contact" class="nav-link">Contact</a>
+  </nav>
+
+  <div class="desk-lang" data-desknav>
+    <div class="lang-group" role="group" aria-label="Language">
+      <button type="button" class="lang-btn is-active" data-lang-btn="EN" aria-pressed="true">EN</button>
+      <span class="lang-sep">/</span>
+      <button type="button" class="lang-btn" data-lang-btn="EST" aria-pressed="false">EST</button>
+      <span class="lang-sep">/</span>
+      <button type="button" class="lang-btn" data-lang-btn="RUS" aria-pressed="false">RUS</button>
+    </div>
+  </div>
+
+  <button type="button" id="burger-btn" class="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+    <span class="burger-bar"></span>
+    <span class="burger-bar"></span>
+  </button>
+</header>
+
+<div id="mobile-menu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
+  <nav class="mobile-nav" aria-label="Mobile">
+    <a href="#exhibition" class="mobile-nav-link" data-close-menu>Gallery</a>
+    <a href="#exhibition" class="mobile-nav-link" data-close-menu>Exhibition</a>
+    <a href="#artists" class="mobile-nav-link" data-close-menu>Artists</a>
+    <a href="#contact" class="mobile-nav-link" data-close-menu>Contact</a>
+  </nav>
+  <div class="mobile-foot">
+    <a class="btn btn-outline mobile-subscribe" href="#newsletter" data-close-menu>Subscribe to the newsletter</a>
+    <div class="lang-group mobile-lang">
+      <button type="button" class="lang-btn is-active" data-lang-btn="EN">EN</button>
+      <span class="lang-sep">/</span>
+      <button type="button" class="lang-btn" data-lang-btn="EST">EST</button>
+      <span class="lang-sep">/</span>
+      <button type="button" class="lang-btn" data-lang-btn="RUS">RUS</button>
+    </div>
+    <p class="mobile-contact">AIA TN 17, TALLINN<br>+372 5886 5898</p>
+  </div>
+</div>
+
+<main id="main">
+
+<section id="top" class="hero" aria-label="Hero carousel">
+  <div id="ring-wrap" class="ring-wrap">
+    <div id="ring" class="ring">
+      <div class="ring-item"><img src="https://static.tildacdn.net/tild3062-6539-4963-b765-653436356435/ChatGPT_Image_23__20.png" alt=""></div>
+      <div class="ring-item"><img src="https://static.tildacdn.net/tild6164-3861-4532-b562-656532323732/P2283147_sp.jpg" alt=""></div>
+      <div class="ring-item"><img src="https://static.tildacdn.net/tild3466-3330-4035-a239-346364353239/P2283148_sp.jpg" alt=""></div>
+      <div class="ring-item"><img src="https://static.tildacdn.net/tild6462-3331-4663-b833-626133636364/P2116542_sp.jpg" alt=""></div>
+      <div class="ring-item"><img src="https://static.tildacdn.net/tild6538-6162-4966-b765-333137666236/P2381693_sp.jpg" alt=""></div>
+      <div class="ring-item"><img src="https://static.tildacdn.net/tild6432-3761-4061-a564-373238393034/P2215869_sp.jpg" alt=""></div>
+      <div class="ring-item"><img src="https://static.tildacdn.net/tild3263-6135-4433-b431-653766613839/P2226029_sp.jpg" alt=""></div>
+      <div class="ring-item"><img src="https://static.tildacdn.net/tild6361-3137-4439-a462-623833613930/ChatGPT_Image_23__20.png" alt=""></div>
+      <div class="ring-item"><img src="https://static.tildacdn.net/tild3734-3533-4435-a439-326138393234/photo_2026-08-30_17-.jpg" alt=""></div>
+    </div>
+    <div class="hero-logo" aria-hidden="true">
+      <img src="assets/logo-white.svg?v=4" alt="">
+    </div>
+  </div>
+  <div class="hero-vignette" aria-hidden="true"></div>
+  <p class="hero-hint">Drag &amp; press to explore</p>
+</section>
+
+<section class="intro" aria-label="Intro slides">
+
+  <div class="slide is-active" data-slide>
+    <img src="https://static.tildacdn.net/tild6361-3137-4439-a462-623833613930/ChatGPT_Image_23__20.png" alt="Sarle Art Gallery" loading="lazy" class="slide-img">
+    <div class="slide-scrim" aria-hidden="true"></div>
+    <div class="slide-fade" aria-hidden="true"></div>
+    <div class="slide-pad" data-slide-pad>
+      <div class="slide-grid" data-hero-grid>
+        <div>
+          <p class="eyebrow">Sarle Art Gallery &amp; Studio</p>
+          <h2 class="display-xl">WHERE ART<br>MEETS SOUL</h2>
+        </div>
+        <div class="slide-copy">
+          <p class="lead">A contemporary art and cultural space in the very heart of Old Tallinn.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide" data-slide>
+    <img src="https://static.tildacdn.net/tild3062-6539-4963-b765-653436356435/ChatGPT_Image_23__20.png" alt="Continuation of the Beginning" class="slide-img">
+    <div class="slide-scrim" aria-hidden="true"></div>
+    <div class="slide-fade" aria-hidden="true"></div>
+    <div class="slide-pad" data-slide-pad>
+      <div class="slide-grid" data-hero-grid>
+        <div>
+          <p class="eyebrow">Current exhibition</p>
+          <h1 class="display-xl">CONTINUATION<br>OF THE BEGINNING</h1>
+          <p class="slide-dates">19.09 &mdash; 03.10.2026</p>
+        </div>
+        <div class="slide-copy">
+          <p class="lead">Every continuation carries a beginning within it. Every beginning already contains the path ahead.</p>
+          <div class="slide-actions">
+            <a class="btn btn-outline" href="#contact">Learn more</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button type="button" id="slide-prev" class="slide-arrow slide-arrow-prev btn-outline" data-slide-arrow="prev" aria-label="Previous slide"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 5 8 12 15 19"></polyline></svg></button>
+  <button type="button" id="slide-next" class="slide-arrow slide-arrow-next btn-outline" data-slide-arrow="next" aria-label="Next slide"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 5 16 12 9 19"></polyline></svg></button>
+  <span id="slide-count" class="slide-count">01 / 02</span>
+</section>
+
+<section id="about" class="about" aria-label="About">
+  <div class="wrap two-col">
+    <div class="about-media" data-reveal>
+      <img src="https://static.tildacdn.net/tild3263-6135-4433-b431-653766613839/P2226029_sp.jpg" alt="Inside the gallery at Aia tn 17" loading="lazy">
+    </div>
+    <div class="about-copy" data-reveal data-reveal-delay="100">
+      <p class="eyebrow">About us</p>
+      <p class="about-lead">Located at Aia tn 17, amid the historic architecture of the Old Town, the gallery creates a space where art and people meet.</p>
+      <p class="about-body">Exhibitions, concerts, auctions, lectures, meetings with artists, educational and charitable projects take place here. It is a place where art does not exist separately from life &mdash; it becomes a part of it.</p>
+      <a href="https://maps.google.com/?q=Aia+tn+17,+Tallinn,+Estonia" target="_blank" rel="noopener" class="map-link">
+        <span class="map-link-title">Aia tn 17, Tallinn</span>
+        <span class="map-link-cta">View map</span>
+      </a>
+      <div class="about-cta">
+        <a class="btn btn-outline" href="#exhibition">Learn more</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="exhibition" class="exhibition" aria-label="Current exhibition">
+  <div class="wrap">
+    <div class="exhibition-head" data-reveal>
+      <p class="live-tag"><span class="pulse-dot" data-pulse aria-hidden="true"></span>On view, right now</p>
+      <p class="kicker">CURRENT EXHIBITION</p>
+    </div>
+
+    <h2 class="display-huge" data-reveal>CONTINUATION <br>OF THE BEGINNING</h2>
+
+    <div class="exhibition-hero" data-reveal data-reveal-delay="80">
+      <img src="https://static.tildacdn.net/tild6164-3861-4532-b562-656532323732/P2283147_sp.jpg" alt="Work from the exhibition" loading="lazy">
+    </div>
+
+    <div class="exhibition-grid two-col">
+      <div data-reveal>
+        <p class="body-copy">Evgeny Kos solo exhibition continues an artistic journey begun earlier. Nature, dreamlike imagery and the mechanical world meet in surreal works. The railway becomes a symbol of movement, inner searching and change. Each canvas creates a space for sincere dialogue with the viewer. The exhibition invites us to pause, look closer and feel life&rsquo;s movement.</p>
+        <div class="exhibition-cta">
+          <a class="btn btn-outline" href="#exhibition">Learn more</a>
+        </div>
+      </div>
+      <dl class="fact-list" data-reveal data-reveal-delay="100">
+        <div class="fact-row">
+          <dt>DATES</dt><dd>19.09 &mdash; 03.10.2026</dd>
+        </div>
+        <div class="fact-row">
+          <dt>ARTIST</dt><dd>Jevgeni Kos</dd>
+        </div>
+        <div class="fact-row">
+          <dt>VENUE</dt><dd>Sarle Art Gallery &amp; Studio</dd>
+        </div>
+        <div class="fact-row fact-row-last">
+          <dt>ADDRESS</dt><dd>Aia tn 17, Tallinn</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="exhibition-grid3" data-reveal data-grid3>
+      <div class="grid3-item"><img src="https://static.tildacdn.net/tild3466-3330-4035-a239-346364353239/P2283148_sp.jpg" alt="Exhibition view" loading="lazy"></div>
+      <div class="grid3-item"><img src="https://static.tildacdn.net/tild6462-3331-4663-b833-626133636364/P2116542_sp.jpg" alt="Exhibition view" loading="lazy"></div>
+      <div class="grid3-item"><img src="https://static.tildacdn.net/tild6538-6162-4966-b765-333137666236/P2381693_sp.jpg" alt="Exhibition view" loading="lazy"></div>
+    </div>
+  </div>
+</section>
+
+<section id="artists" class="artists" aria-label="Artists">
+  <div class="wrap">
+    <div class="artists-head two-col" data-reveal>
+      <h2 class="display-large"><span class="the-tilt">THE</span> ARTISTS</h2>
+      <p class="lead">Meet the artists whose practices shape the gallery&rsquo;s evolving dialogue.</p>
+    </div>
+  </div>
+
+  <div class="artist-ring-block">
+    <div id="art-ring-wrap" class="art-ring-wrap">
+      <div id="art-ring" class="art-ring">
+        <div class="ar-item" data-name="Tauno Kangro" data-role="Sculptor — bronze and stone" data-bio="A renowned Estonian sculptor who works primarily with bronze and stone. His creations are inspired by mythology, nature, and the human figure, blending monumentality with expressiveness and warmth. Tauno Kangro&rsquo;s works are displayed in public spaces across Estonia and beyond, and are also held in private collections in various countries around the world."><img src="https://static.tildacdn.net/tild3963-6435-4837-b237-326130363935/rltkvgaphnz.webp" alt="Tauno Kangro" loading="lazy"></div>
+        <div class="ar-item" data-name="Rovshan Nur" data-role="Painter" data-bio="An Azerbaijani artist who has been living and working in Estonia since 2008. His paintings are filled with light, warmth, and deep inner tranquility, while vibrant color becomes a language of emotions and memories. Rovshan Nur&rsquo;s works have been exhibited in Estonia and abroad and are held in private collections in various countries around the world."><img src="https://static.tildacdn.net/tild3136-3662-4962-a630-643563653132/_2026-08-28_16302617.png" alt="Rovshan Nur" loading="lazy"></div>
+        <div class="ar-item" data-name="Jevgeni Kos" data-role="Industrial painter — on view now" data-bio="An industrial painter who transforms the cold language of machines into the language of human emotion. In his works, metal and mechanisms seem to come alive, becoming reflections of a person&rsquo;s feelings and inner states. Through the austere aesthetics of the industrial world, Evgeny explores inner drama and the subtle movements of the human soul."><img src="https://static.tildacdn.net/tild3931-3431-4431-b231-313262633638/_2026-08-28_16330322.png" alt="Jevgeni Kos" loading="lazy"></div>
+        <div class="ar-item" data-name="Nikolai Bleskov" data-role="Painter and graphic artist" data-bio="Born in 1957. An artist who works freely on the border between painting and graphic art, using oil, watercolor, pastel, and ink. His solo exhibitions have been held in Finland, Sweden, Norway, and at the Embassy of China in Estonia. The artist&rsquo;s works are part of museum and private collections, including the collection of the Estonian National Museum."><img src="https://static.tildacdn.net/tild3234-3861-4936-b332-383733343261/_2026-08-28_16333099.png" alt="Nikolai Bleskov" loading="lazy"></div>
+        <div class="ar-item" data-name="Tatjana Sonina" data-role="Architect, artist and scenographer" data-bio="An architect, artist, designer, and scenographer. Founder of the Narva Art School. She works in painting, film, theatre, interior design, and book illustration. Her solo exhibitions have been held in the United States, Poland, Austria, Slovenia, Finland, and Estonia, and her works have received international recognition. Laureate of the LaPersona Award 2025 and Narva Cultural Figure of the Year 2025."><img src="https://static.tildacdn.net/tild6466-3335-4566-b432-643139346335/_2026-08-28_16331402.png" alt="Tatjana Sonina" loading="lazy"></div>
+        <div class="ar-item" data-name="Maie Matsar" data-role="Painter, lecturer and art writer" data-bio="Born in 1967 in Tallinn. A painter, author of several texts on art theory and contemporary artists, and a lecturer; she lives and works in Narva. For Maie, painting is a way of looking and seeing &mdash; a means of conveying the uniqueness of the natural world through a personal selection of artistic tools, and a large, colorful canvas is a selfless form of happiness."><img src="https://static.tildacdn.net/tild6533-3964-4535-b834-393762636566/_2026-08-28_16334201.png" alt="Maie Matsar" loading="lazy"></div>
+        <div class="ar-item" data-name="Natalia Mirzoyan" data-role="Artist, illustrator and animation director" data-bio="Born in Yerevan, Armenia, she lives and works in Estonia. An artist, illustrator, and animation film director, she holds a Master&rsquo;s degree in Animation from the Estonian Academy of Arts (EKA). Her films have participated in prestigious international festivals, including Berlinale, Annecy, Zagreb, and Hiroshima, and have received numerous awards."><img src="https://static.tildacdn.net/tild6539-3964-4437-a235-306631653762/_2026-08-28_16305990.png" alt="Natalia Mirzoyan" loading="lazy"></div>
+      </div>
+    </div>
+
+    <div class="artist-row" data-art-row>
+      <button type="button" id="artist-prev" class="artist-arrow btn-outline" aria-label="Previous artist"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 5 8 12 15 19"></polyline></svg></button>
+      <div id="art-caption" class="artist-caption">
+        <p id="art-role" class="artist-role">Sculptor &mdash; bronze and stone</p>
+        <h3 id="art-name" class="artist-name">Tauno Kangro</h3>
+        <p id="art-bio" class="artist-bio">A renowned Estonian sculptor who works primarily with bronze and stone.</p>
+      </div>
+      <button type="button" id="artist-next" class="artist-arrow btn-outline" aria-label="Next artist"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 5 16 12 9 19"></polyline></svg></button>
+    </div>
+  </div>
+</section>
+
+<section class="philosophy" aria-label="Philosophy">
+  <div class="wrap two-col philosophy-grid">
+    <div data-reveal>
+      <p class="eyebrow">Philosophy</p>
+      <blockquote class="philosophy-quote">We believe that art brings people closer together.</blockquote>
+    </div>
+    <div class="philosophy-media" data-reveal data-reveal-delay="140">
+      <img data-parallax src="https://static.tildacdn.net/tild6432-3761-4061-a564-373238393034/P2215869_sp.jpg" alt="Visitors at the gallery" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<section id="newsletter" class="newsletter" aria-label="Newsletter">
+  <div class="newsletter-wrap">
+    <h2 class="display-xl-center" data-reveal>LET&rsquo;S CREATE TOGETHER!</h2>
+    <p class="lead lead-center" data-reveal data-reveal-delay="80">News about exhibitions, gatherings, concerts, auctions, and special projects of Sarle Art Gallery &amp; Studio.</p>
+
+    <form id="newsletter-form" class="newsletter-form" data-reveal data-reveal-delay="140" novalidate>
+      <label for="nl-email" class="field-label">Your email</label>
+      <div class="newsletter-row">
+        <input id="nl-email" name="email" type="email" autocomplete="email" placeholder="name@example.com" aria-describedby="nl-help" class="newsletter-input">
+        <button type="submit" class="btn btn-outline newsletter-submit">Subscribe</button>
+      </div>
+      <p id="nl-help" class="newsletter-help">You consent to the use of your personal data.</p>
+      <p id="nl-error" role="alert" class="newsletter-msg" hidden><span aria-hidden="true">!</span><span id="nl-error-text"></span></p>
+      <p id="nl-success" role="status" class="newsletter-msg" hidden><span aria-hidden="true">&check;</span><span>Thank you. Your subscription is confirmed &mdash; we will write when the next exhibition opens.</span></p>
+    </form>
+  </div>
+</section>
+
+<section id="contact" class="contact" aria-label="Visit and contact">
+  <div class="wrap">
+    <div class="contact-head">
+      <h2 class="display-medium">PLAN YOUR VISIT</h2>
+      <p class="kicker">YOU WILL BE WELCOMED</p>
+    </div>
+
+    <div class="contact-grid two-col">
+      <div data-reveal>
+        <div class="contact-map">
+          <iframe title="Map — Aia tn 17, Tallinn" src="https://www.google.com/maps?q=Aia%20tn%2017,%20Tallinn,%20Estonia&z=16&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+
+      <div data-reveal data-reveal-delay="100">
+        <dl class="contact-facts">
+          <div class="contact-fact">
+            <dt>Address</dt>
+            <dd><a href="https://maps.google.com/?q=Aia+tn+17,+Tallinn,+Estonia" target="_blank" rel="noopener">Located in Old Town, Tallinn, Estonia, Aia tn 17.</a></dd>
+          </div>
+          <div class="contact-fact">
+            <dt>Phone</dt>
+            <dd><a href="tel:+37258865898">+372 5886 5898</a></dd>
+          </div>
+          <div class="contact-fact contact-fact-last">
+            <dt>Email</dt>
+            <dd><a href="mailto:gallery@sarle.ee">gallery@sarle.ee</a></dd>
+          </div>
+        </dl>
+        <a class="btn btn-outline contact-directions" href="https://maps.google.com/?q=Aia+tn+17,+Tallinn,+Estonia" target="_blank" rel="noopener">Get directions</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Enlarged artwork">
+  <img id="lightbox-img" class="lightbox-img" alt="">
+  <button type="button" id="lightbox-close" class="lightbox-close btn-outline" aria-label="Close">&#10005;</button>
+</div>
+
+<footer id="footer" class="site-footer" aria-label="Footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <img class="footer-logo" src="assets/logo-white.svg?v=4" alt="Sarle Art Gallery &amp; Studio">
+        <p class="footer-blurb">A cultural space in the very heart of Old Tallinn, bringing together art, music, exhibitions, and creative events.</p>
+      </div>
+
+      <div class="footer-col">
+        <p class="footer-heading">Visit</p>
+        <p class="footer-address">Aia tn 17<br>Tallinn, Estonia</p>
+        <a href="mailto:gallery@sarle.ee" class="footer-link">gallery@sarle.ee</a>
+        <a href="tel:+37258865898" class="footer-link">+372 5886 5898</a>
+      </div>
+
+      <nav class="footer-col" aria-label="Footer">
+        <p class="footer-heading">Navigate</p>
+        <a href="#exhibition" class="footer-nav-link">Gallery</a>
+        <a href="#exhibition" class="footer-nav-link">Current Exhibition</a>
+        <a href="#artists" class="footer-nav-link">Artists</a>
+        <a href="#contact" class="footer-nav-link">Contact</a>
+        <a href="#newsletter" class="footer-nav-link">Subscribe to the newsletter</a>
+      </nav>
+
+      <div class="footer-col">
+        <p class="footer-heading">Language</p>
+        <div class="lang-group">
+          <button type="button" class="lang-btn is-active" data-lang-btn="EN">EN</button>
+          <span class="lang-sep">/</span>
+          <button type="button" class="lang-btn" data-lang-btn="EST">EST</button>
+          <span class="lang-sep">/</span>
+          <button type="button" class="lang-btn" data-lang-btn="RUS">RUS</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">&copy; 2026 Sarle Art Gallery &amp; Studio</p>
+      <div class="footer-bottom-links">
+        <a href="#footer" class="footer-bottom-link">Privacy policy</a>
+        <a href="#top" class="footer-bottom-link footer-bottom-link-strong">Back to top &uarr;</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
