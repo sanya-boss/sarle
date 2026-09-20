@@ -470,7 +470,10 @@
     function paint() {
       var R = radius();
       var h = wrap.clientHeight;
-      var ih = Math.max(220, Math.min(460, h * 0.67));
+      // The front card is magnified by the CSS perspective (1500px); size it
+      // against that factor so it never overflows the ring container.
+      var frontMag = 0.98 * (1500 / Math.max(300, 1500 - R));
+      var ih = Math.max(200, Math.min(460, (h * 0.94) / frontMag));
       var w = ih * 3 / 4;
       for (var i = 0; i < n; i++) {
         var a = angle + i * step;
