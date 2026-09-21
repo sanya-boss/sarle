@@ -622,7 +622,7 @@ img { max-width: none; }
   font-family: 'Cormorant Garamond', serif;
   font-weight: 300;
   font-size: clamp(32px, 5.2vw, 82px);
-  line-height: 1.06;
+  line-height: 0.91;
   letter-spacing: -0.02em;
   color: var(--fg);
   text-wrap: pretty;
