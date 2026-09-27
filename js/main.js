@@ -2,7 +2,7 @@
  * Sarle Art Gallery & Studio — front-end behavior.
  * Vanilla JS, no dependencies. Ported 1:1 from the original design's
  * DCLogic component (header blur, hero + artist 3D ring carousels,
- * intro slider, lightbox, philosophy parallax, newsletter validation).
+ * intro slider, lightbox, philosophy parallax, newsletter sign-up).
  */
 (function () {
   'use strict';
@@ -641,32 +641,162 @@
   })();
 
   /* ---------------------------------------------------------------------
-   * Newsletter form — client-side validation, simulated success
+   * Newsletter form → Google Apps Script web app → Google Sheets.
+   * Transport: POST x-www-form-urlencoded (a CORS "simple" request, no
+   * preflight). Apps Script answers with a 302 to googleusercontent.com,
+   * which serves the JSON with Access-Control-Allow-Origin: *, so the reply
+   * is readable here. Success is shown only when the server's JSON says ok
+   * and echoes this request's id. Client checks are convenience, not bot
+   * protection; the server re-validates everything.
    * ------------------------------------------------------------------- */
   (function setupNewsletter() {
     var form = document.getElementById('newsletter-form');
     if (!form) return;
     var input = document.getElementById('nl-email');
+    var consent = document.getElementById('nl-consent');
+    var honeypot = document.getElementById('nl-website');
+    var button = form.querySelector('button[type="submit"]');
+    var pendingEl = document.getElementById('nl-pending');
     var errorEl = document.getElementById('nl-error');
-    var errorText = document.getElementById('nl-error-text');
     var successEl = document.getElementById('nl-success');
+    var config = window.SARLE_NEWSLETTER || {};
+    var endpoint = String(config.endpoint || '').trim();
+    var TIMEOUT_MS = Number(config.timeoutMs) > 0 ? Number(config.timeoutMs) : 20000;
+    var MIN_INTERVAL_MS = 4000;
+    var EMAIL_RE = /^[A-Za-z0-9][A-Za-z0-9._%+'-]{0,63}@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,24}$/;
+
+    var TEXT = {
+      EN: {
+        sending: 'Sending…',
+        ok: 'Thank you. Your subscription is confirmed — we will write when the next exhibition opens.',
+        empty_email: 'Please enter your email address.',
+        invalid_email: 'That email address does not look complete. Please check it and try again.',
+        consent_required: 'Please confirm that you agree to receive the newsletter.',
+        invalid_language: 'Could not determine the page language. Please choose EN, EST or RUS and try again.',
+        rate_limited: 'Too many attempts. Please wait a minute and try again.',
+        busy: 'The server is busy right now. Please try again in a moment.',
+        server_error: 'Something went wrong on our side. Your email was not saved — please try again later.',
+        network_error: 'Could not reach the server. Check your connection and try again.',
+        timeout: 'The server is taking too long to respond. Please try again.',
+        not_configured: 'Subscription is temporarily unavailable. Please try again later.'
+      },
+      RU: {
+        sending: 'Отправляем…',
+        ok: 'Спасибо. Подписка подтверждена — мы напишем, когда откроется следующая выставка.',
+        empty_email: 'Введите ваш адрес электронной почты.',
+        invalid_email: 'Адрес электронной почты выглядит неполным. Проверьте его и попробуйте снова.',
+        consent_required: 'Подтвердите согласие на получение новостной рассылки.',
+        invalid_language: 'Не удалось определить язык страницы. Выберите EN, EST или RUS и попробуйте снова.',
+        rate_limited: 'Слишком много попыток. Подождите минуту и попробуйте снова.',
+        busy: 'Сервер сейчас занят. Попробуйте ещё раз через несколько секунд.',
+        server_error: 'Что-то пошло не так на нашей стороне. Адрес не сохранён — попробуйте позже.',
+        network_error: 'Не удалось связаться с сервером. Проверьте подключение и попробуйте снова.',
+        timeout: 'Сервер отвечает слишком долго. Попробуйте снова.',
+        not_configured: 'Подписка временно недоступна. Попробуйте позже.'
+      },
+      ET: {
+        sending: 'Saadame…',
+        ok: 'Aitäh. Tellimus on kinnitatud — kirjutame, kui avaneb järgmine näitus.',
+        empty_email: 'Palun sisesta oma e-posti aadress.',
+        invalid_email: 'See e-posti aadress ei tundu täielik. Palun kontrolli ja proovi uuesti.',
+        consent_required: 'Palun kinnita nõusolek uudiskirja saamiseks.',
+        invalid_language: 'Lehe keelt ei õnnestunud määrata. Vali EN, EST või RUS ja proovi uuesti.',
+        rate_limited: 'Liiga palju katseid. Oota minut ja proovi uuesti.',
+        busy: 'Server on praegu hõivatud. Proovi mõne hetke pärast uuesti.',
+        server_error: 'Midagi läks meie poolel valesti. Aadressi ei salvestatud — proovi hiljem uuesti.',
+        network_error: 'Serveriga ei õnnestunud ühendust saada. Kontrolli ühendust ja proovi uuesti.',
+        timeout: 'Server vastab liiga kaua. Proovi uuesti.',
+        not_configured: 'Tellimine pole praegu saadaval. Proovi hiljem uuesti.'
+      }
+    };
+
+    // Site codes (EN/EST/RUS) and ISO tags (en-GB, ru-RU, et-EE…) → RU/EN/ET.
+    // Anything else is null: never guess a column.
+    function normalizeLang(raw) {
+      var base = String(raw || '').trim().toLowerCase().replace('_', '-').split('-')[0];
+      return { en: 'EN', ru: 'RU', rus: 'RU', et: 'ET', est: 'ET' }[base] || null;
+    }
+    function pageLang() {
+      return normalizeLang(window.sarleGetLang ? window.sarleGetLang() : document.documentElement.lang);
+    }
+
+    var shown = null; // { kind: 'pending' | 'error' | 'success', code }
+    function render() {
+      var dict = TEXT[pageLang() || 'EN'];
+      [pendingEl, errorEl, successEl].forEach(function (el) { el.hidden = true; });
+      if (!shown) return;
+      var el = shown.kind === 'pending' ? pendingEl : shown.kind === 'error' ? errorEl : successEl;
+      document.getElementById(el.id + '-text').textContent = dict[shown.code] || dict.server_error;
+      el.hidden = false;
+    }
+    function show(kind, code) { shown = { kind: kind, code: code }; render(); }
+    document.addEventListener('sarle:langchange', render);
+
+    function newRequestId() {
+      if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 12);
+    }
+
+    var busy = false;
+    var lastSentAt = 0;
+    function setBusy(on) {
+      busy = on;
+      button.disabled = on;
+      form.setAttribute('aria-busy', on ? 'true' : 'false');
+    }
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var v = (input.value || '').trim();
-      var ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
-      if (!ok) {
-        var msg = v
-          ? 'That email address does not look complete. Please check it and try again.'
-          : 'Please enter your email address.';
-        errorText.textContent = window.sarleT ? window.sarleT(msg) : msg;
-        errorEl.hidden = false;
-        successEl.hidden = true;
-        return;
-      }
-      errorEl.hidden = true;
-      successEl.hidden = false;
-      input.value = '';
+      if (busy) return;
+      var email = (input.value || '').trim();
+      if (!email) { show('error', 'empty_email'); input.focus(); return; }
+      if (email.length > 254 || email.indexOf('..') !== -1 || !EMAIL_RE.test(email)) { show('error', 'invalid_email'); input.focus(); return; }
+      if (!consent.checked) { show('error', 'consent_required'); consent.focus(); return; }
+      var lang = pageLang();
+      if (!lang) { show('error', 'invalid_language'); return; }
+      if (!endpoint) { show('error', 'not_configured'); return; }
+      if (Date.now() - lastSentAt < MIN_INTERVAL_MS) { show('error', 'rate_limited'); return; }
+
+      lastSentAt = Date.now();
+      var requestId = newRequestId();
+      var body = new URLSearchParams();
+      body.set('email', email);
+      body.set('lang', lang);
+      body.set('consent', 'yes');
+      body.set('website', honeypot ? honeypot.value : '');
+      body.set('requestId', requestId);
+
+      var controller = window.AbortController ? new AbortController() : null;
+      var timedOut = false;
+      var timer = setTimeout(function () { timedOut = true; if (controller) controller.abort(); }, TIMEOUT_MS);
+      setBusy(true);
+      show('pending', 'sending');
+
+      fetch(endpoint, { method: 'POST', body: body, redirect: 'follow', cache: 'no-store', credentials: 'omit', signal: controller ? controller.signal : undefined })
+        .then(function (res) {
+          if (!res.ok) { var httpErr = new Error('HTTP ' + res.status); httpErr.name = 'HttpError'; throw httpErr; }
+          return res.json();
+        })
+        .then(function (data) {
+          if (timedOut) return;
+          if (!data || data.requestId !== requestId) { show('error', 'server_error'); return; }
+          if (data.ok === true) {
+            show('success', 'ok');
+            input.value = '';
+            consent.checked = false;
+          } else {
+            show('error', TEXT.EN[data.code] ? data.code : 'server_error');
+          }
+        })
+        .catch(function (err) {
+          if (timedOut) { show('error', 'timeout'); return; }
+          // A reply that is not our JSON (HTTP error, HTML error page) is a server problem.
+          show('error', err && (err.name === 'SyntaxError' || err.name === 'HttpError') ? 'server_error' : 'network_error');
+        })
+        .then(function () {
+          clearTimeout(timer);
+          setBusy(false);
+        });
     });
   })();
 
@@ -706,6 +836,7 @@
       'News about exhibitions, gatherings, concerts, auctions, and special projects of Sarle Art Gallery & Studio.': 'Uudised näituste, kohtumiste, kontsertide, oksjonite ja Sarle Art Gallery & Studio eriprojektide kohta.',
       'Your email': 'Sinu e-post', 'Subscribe': 'Telli',
       'You consent to the use of your personal data.': 'Nõustud oma isikuandmete kasutamisega.',
+      'I agree to receive the Sarle Art Gallery & Studio newsletter by email.': 'Nõustun saama Sarle Art Gallery & Studio uudiskirja e-posti teel.',
       'Thank you. Your subscription is confirmed — we will write when the next exhibition opens.': 'Aitäh. Tellimus on kinnitatud — kirjutame, kui avaneb järgmine näitus.',
       'That email address does not look complete. Please check it and try again.': 'See e-posti aadress ei tundu täielik. Palun kontrolli ja proovi uuesti.',
       'Please enter your email address.': 'Palun sisesta oma e-posti aadress.',
@@ -810,6 +941,7 @@
       'News about exhibitions, gatherings, concerts, auctions, and special projects of Sarle Art Gallery & Studio.': 'Новости о выставках, встречах, концертах, аукционах и специальных проектах Sarle Art Gallery & Studio.',
       'Your email': 'Ваш e-mail', 'Subscribe': 'Подписаться',
       'You consent to the use of your personal data.': 'Вы соглашаетесь на использование ваших персональных данных.',
+      'I agree to receive the Sarle Art Gallery & Studio newsletter by email.': 'Я даю согласие на получение новостной рассылки Sarle Art Gallery & Studio по электронной почте.',
       'Thank you. Your subscription is confirmed — we will write when the next exhibition opens.': 'Спасибо. Подписка подтверждена — мы напишем, когда откроется следующая выставка.',
       'That email address does not look complete. Please check it and try again.': 'Адрес электронной почты выглядит неполным. Проверьте его и попробуйте снова.',
       'Please enter your email address.': 'Введите ваш адрес электронной почты.',
@@ -912,6 +1044,7 @@
           if (caption && caption.contains(p)) return NodeFilter.FILTER_REJECT;
           if (p.closest && p.closest('[data-lang-btn]')) return NodeFilter.FILTER_REJECT;
           if (p.closest && p.closest('[data-i18n]')) return NodeFilter.FILTER_REJECT;
+          if (p.closest && p.closest('[data-i18n-dynamic]')) return NodeFilter.FILTER_REJECT;
           return NodeFilter.FILTER_ACCEPT;
         }
       });
@@ -930,8 +1063,10 @@
       });
       if (window.sarleRefreshArtist) window.sarleRefreshArtist();
       document.documentElement.lang = lang === 'RUS' ? 'ru' : (lang === 'EST' ? 'et' : 'en');
+      document.dispatchEvent(new CustomEvent('sarle:langchange', { detail: { lang: lang } }));
     }
     window.sarleApplyLang = applyLang;
+    window.sarleGetLang = function () { return lang; };
 
     function paint() {
       document.querySelectorAll('[data-lang-btn]').forEach(function (b) {

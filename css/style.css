@@ -730,11 +730,20 @@ img { max-width: none; }
 .newsletter-help { margin: 14px 0 0; font-size: 12.5px; line-height: 1.6; color: var(--muted); }
 .newsletter-msg { margin: 14px 0 0; display: flex; align-items: flex-start; gap: 9px; font-size: 13px; line-height: 1.6; color: var(--fg); }
 .newsletter-msg[hidden] { display: none; }
-.newsletter-msg span:first-child { font-family: 'Space Grotesk', sans-serif; font-size: 12px; }
+.newsletter-msg span[aria-hidden] { font-family: 'Space Grotesk', sans-serif; font-size: 12px; }
+.newsletter-msg-muted { color: var(--muted); }
+.newsletter-submit:disabled { opacity: 0.5; cursor: progress; }
+.newsletter-consent { margin: 16px 0 0; display: flex; align-items: flex-start; gap: 10px; text-align: left; }
+.newsletter-consent input { flex: none; width: 16px; height: 16px; margin: 3px 0 0; accent-color: var(--fg); cursor: pointer; }
+.newsletter-consent p { margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--muted); }
+.newsletter-consent label { cursor: pointer; }
+.newsletter-privacy { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
+.newsletter-hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
 
 @media (max-width: 759px) {
   .newsletter-form { text-align: center; }
   .newsletter-row { justify-content: center; }
+  .newsletter-msg { justify-content: center; }
   .newsletter-input { flex: 1 1 100%; text-align: center; }
   .newsletter-submit { width: 100%; }
 }

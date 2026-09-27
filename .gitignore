@@ -1,0 +1,14 @@
+# Subscriber data must never be committed (public repository).
+*.xlsx
+*.xls
+*.xlsm
+*.ods
+*.csv
+*.tsv
+Sarle_News_CRM*
+*subscribers*
+uploads/
+
+# Local tooling
+node_modules/
+.DS_Store
