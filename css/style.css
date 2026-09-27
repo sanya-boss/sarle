@@ -299,6 +299,9 @@ img { max-width: none; }
   overflow: hidden;
   background: var(--bg);
 }
+@media (max-width: 768px) {
+  .hero { height: 100vh; height: 100svh; min-height: 520px; max-height: none; }
+}
 .ring-wrap {
   position: absolute;
   inset: 0;
@@ -307,7 +310,7 @@ img { max-width: none; }
   overflow: hidden;
   cursor: grab;
   user-select: none;
-  touch-action: none;
+  touch-action: pan-y;
 }
 .ring-wrap.is-dragging { cursor: grabbing; }
 .ring { position: absolute; inset: 0; transform-style: preserve-3d; }
@@ -668,7 +671,7 @@ img { max-width: none; }
 @media (max-width: 759px) {
   .newsletter-form { text-align: center; }
   .newsletter-row { justify-content: center; }
-  .newsletter-input { flex: 1 1 100%; }
+  .newsletter-input { flex: 1 1 100%; text-align: center; }
   .newsletter-submit { width: 100%; }
 }
 

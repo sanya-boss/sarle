@@ -235,6 +235,24 @@
     var prevBtn = document.getElementById('slide-prev');
     if (next) next.addEventListener('click', function () { userStopped = true; if (timer) clearInterval(timer); go(current + 1, 1); });
     if (prevBtn) prevBtn.addEventListener('click', function () { userStopped = true; if (timer) clearInterval(timer); go(current - 1, -1); });
+
+    if (section) {
+      var sx = 0, sy = 0, sAxis = null;
+      section.style.touchAction = 'pan-y';
+      section.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; sAxis = null; }, { passive: true });
+      section.addEventListener('touchmove', function (e) {
+        if (sAxis) return;
+        var dx = Math.abs(e.touches[0].clientX - sx), dy = Math.abs(e.touches[0].clientY - sy);
+        if (dx > 10 || dy > 10) sAxis = dx > dy ? 'x' : 'y';
+      }, { passive: true });
+      section.addEventListener('touchend', function (e) {
+        if (sAxis !== 'x') return;
+        var dx = e.changedTouches[0].clientX - sx;
+        if (Math.abs(dx) < 40) return;
+        userStopped = true; if (timer) clearInterval(timer);
+        if (dx < 0) go(current + 1, 1); else go(current - 1, -1);
+      }, { passive: true });
+    }
   })();
 
   /* ---------------------------------------------------------------------
@@ -323,11 +341,22 @@
       wrap.classList.add('is-dragging');
       moved = 0;
       lastX = e.touches ? e.touches[0].clientX : e.clientX;
+      startX = lastX;
+      startY = e.touches ? e.touches[0].clientY : 0;
+      axis = e.touches ? null : 'x';
       lastT = Date.now();
       vel = 0;
     }
+    var startX = 0, startY = 0, axis = null;
     function move(e) {
       if (!dragging) return;
+      if (e.touches && axis === null) {
+        var tdx = Math.abs(e.touches[0].clientX - startX);
+        var tdy = Math.abs(e.touches[0].clientY - startY);
+        if (tdx < 8 && tdy < 8) return;
+        axis = tdx > tdy ? 'x' : 'y';
+        if (axis === 'y') { up(); return; }
+      }
       var x = e.touches ? e.touches[0].clientX : e.clientX;
       var dx = x - lastX;
       var dt = Math.max(16, Date.now() - lastT);
@@ -522,18 +551,25 @@
       setIndex(Math.round(-angle / step));
     }
 
-    items.forEach(function (el, i) { el.addEventListener('click', function () { if (moved <= 6) setIndex(i); }); });
+    var isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    items.forEach(function (el, i) { el.addEventListener('click', function () { if (isTouch) return; if (moved <= 6) setIndex(i); }); });
     wrap.addEventListener('mousedown', down);
     window.addEventListener('mousemove', move);
     window.addEventListener('mouseup', up);
-    wrap.addEventListener('touchstart', down, { passive: true });
-    wrap.addEventListener('touchmove', move, { passive: true });
-    window.addEventListener('touchend', up);
+    if (isTouch) {
+      wrap.addEventListener('click', function (e) {
+        var cur = items[index];
+        if (cur && cur.contains(e.target)) { if (!userStop) { userStop = true; setIndex(index); } return; }
+        var r = wrap.getBoundingClientRect();
+        if (e.clientX < r.left + r.width / 2) goPrev(); else goNext();
+      });
+    }
 
     var prevBtn = document.getElementById('artist-prev');
     var nextBtn = document.getElementById('artist-next');
     function goNext() { userStop = true; setIndex(index + 1); }
     function goPrev() { userStop = true; setIndex(index - 1); }
+    wrap.goNext = goNext; wrap.goPrev = goPrev;
     if (nextBtn) nextBtn.addEventListener('click', goNext);
     if (prevBtn) prevBtn.addEventListener('click', goPrev);
 
