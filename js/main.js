@@ -557,11 +557,31 @@
     window.addEventListener('mousemove', move);
     window.addEventListener('mouseup', up);
     if (isTouch) {
+      var tsx = 0, tsy = 0, tAxis = null;
+      wrap.addEventListener('touchstart', function (e) {
+        tsx = lastX = e.touches[0].clientX; tsy = e.touches[0].clientY; tAxis = null; moved = 0;
+      }, { passive: true });
+      wrap.addEventListener('touchmove', function (e) {
+        var x = e.touches[0].clientX;
+        if (tAxis === null) {
+          var adx = Math.abs(x - tsx), ady = Math.abs(e.touches[0].clientY - tsy);
+          if (adx < 6 && ady < 6) return;
+          tAxis = adx > ady ? 'x' : 'y';
+          if (tAxis === 'x') { dragging = true; userStop = true; wrap.classList.add('is-dragging'); lastX = x; }
+        }
+        if (tAxis !== 'x') return;
+        if (e.cancelable) e.preventDefault();
+        var dx = x - lastX;
+        moved += Math.abs(dx);
+        angle += dx * 0.009;
+        lastX = x;
+        paint();
+      }, { passive: false });
+      wrap.addEventListener('touchend', function () { if (tAxis === 'x') up(); tAxis = null; }, { passive: true });
       wrap.addEventListener('click', function (e) {
+        if (moved > 6) return;
         var cur = items[index];
-        if (cur && cur.contains(e.target)) { if (!userStop) { userStop = true; setIndex(index); } return; }
-        var r = wrap.getBoundingClientRect();
-        if (e.clientX < r.left + r.width / 2) goPrev(); else goNext();
+        if (cur && cur.contains(e.target) && !userStop) { userStop = true; setIndex(index); }
       });
     }
 
@@ -645,7 +665,7 @@
       'Gallery': 'Galerii', 'Exhibition': 'Näitus', 'Artists': 'Kunstnikud', 'Contact': 'Kontakt',
       'Gallery & Art Studio': 'Galerii ja kunstistuudio',
       'Subscribe to the newsletter': 'Telli uudiskiri',
-      'Drag & press to explore': 'Lohista ja klõpsa',
+      'Scroll down': 'Keri alla',
       'Skip to content': 'Liigu sisu juurde',
       "WE'LL BE GLAD TO SEE YOU!": 'OLED OODATUD!',
       'WHERE ART': 'KUS KUNST', 'MEETS SOUL': 'KOHTUB HINGEGA',
@@ -722,7 +742,7 @@
       'Gallery': 'Галерея', 'Exhibition': 'Выставка', 'Artists': 'Художники', 'Contact': 'Контакты',
       'Gallery & Art Studio': 'Галерея и арт-студия',
       'Subscribe to the newsletter': 'Подписаться на рассылку',
-      'Drag & press to explore': 'Прокрутите картины',
+      'Scroll down': 'Листайте вниз',
       'Skip to content': 'Перейти к содержимому',
       "WE'LL BE GLAD TO SEE YOU!": 'МЫ БУДЕМ РАДЫ ВАМ!',
       'WHERE ART': 'ГДЕ ИСКУССТВО', 'MEETS SOUL': 'ВСТРЕЧАЕТ ДУШУ',
@@ -798,7 +818,7 @@
 
     var DICT = { EN: null, EST: EST, RUS: RUS };
     var lang = 'EN';
-    try { lang = localStorage.getItem('sarle-lang') || 'EN'; } catch (e) {}
+    try { lang = sessionStorage.getItem('sarle-lang') || 'EN'; } catch (e) {}
 
     function t(en) {
       var d = DICT[lang];
@@ -848,7 +868,7 @@
       var b = e.target.closest ? e.target.closest('[data-lang-btn]') : null;
       if (!b) return;
       lang = b.getAttribute('data-lang-btn');
-      try { localStorage.setItem('sarle-lang', lang); } catch (err) {}
+      try { sessionStorage.setItem('sarle-lang', lang); } catch (err) {}
       paint();
       applyLang();
     });
