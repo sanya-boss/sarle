@@ -81,6 +81,7 @@
   letter-spacing: -0.02em;
   color: var(--fg);
 }
+.shop-artist-last { display: inline-block; padding-left: 0.14em; }
 .shop-facts { margin: clamp(26px, 4vh, 44px) 0 0; font-size: 14.5px; line-height: 1.7; color: var(--fg); }
 .shop-fact {
   display: flex;

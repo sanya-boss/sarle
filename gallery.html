@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sarle | Gallery</title>
+<meta name="description" content="The story of Sarle Art Gallery &amp; Studio in Tallinn — founded by Svetlana Sarle in memory of Vilnis Strazdinš.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/shop.css">
+<link rel="stylesheet" href="css/gallery.css">
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to content</a>
+
+<header class="site-header" id="site-header">
+  <a href="index.html" class="brand" aria-label="Sarle Art Gallery and Studio, home">
+    <img id="site-logo" class="brand-logo" src="assets/sarle-wordmark.svg?v=2" alt="Sarle Art Gallery &amp; Studio">
+    <span class="brand-logo-text">Gallery &amp; Art Studio</span>
+  </a>
+
+  <nav class="desk-nav" aria-label="Main" data-desknav>
+    <a href="index.html" class="nav-link">Main page</a>
+    <a href="#story" class="nav-link">The story</a>
+    <a href="#founder" class="nav-link">The founder</a>
+    <a href="#footer" class="nav-link">Contact</a>
+  </nav>
+
+  <div class="desk-lang" data-desknav>
+    <div class="lang-group" role="group" aria-label="Language">
+      <button type="button" class="lang-btn is-active" data-lang-btn="EN" aria-pressed="true">EN</button>
+      <span class="lang-sep">/</span>
+      <button type="button" class="lang-btn" data-lang-btn="EST" aria-pressed="false">EST</button>
+      <span class="lang-sep">/</span>
+      <button type="button" class="lang-btn" data-lang-btn="RUS" aria-pressed="false">RUS</button>
+    </div>
+  </div>
+
+  <button type="button" id="burger-btn" class="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+    <span class="burger-bar"></span>
+    <span class="burger-bar"></span>
+  </button>
+</header>
+
+<div id="mobile-menu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
+  <nav class="mobile-nav" aria-label="Mobile">
+    <a href="index.html" class="mobile-nav-link">Main page</a>
+    <a href="#story" class="mobile-nav-link" data-close-menu>The story</a>
+    <a href="#founder" class="mobile-nav-link" data-close-menu>The founder</a>
+    <a href="#footer" class="mobile-nav-link" data-close-menu>Contact</a>
+  </nav>
+  <div class="mobile-foot">
+    <a class="btn btn-outline mobile-subscribe" href="index.html#newsletter">Subscribe to the newsletter</a>
+    <div class="lang-group mobile-lang">
+      <button type="button" class="lang-btn is-active" data-lang-btn="EN">EN</button>
+      <span class="lang-sep">/</span>
+      <button type="button" class="lang-btn" data-lang-btn="EST">EST</button>
+      <span class="lang-sep">/</span>
+      <button type="button" class="lang-btn" data-lang-btn="RUS">RUS</button>
+    </div>
+    <p class="mobile-contact">AIA TN 17, TALLINN<br>+372 5886 5898</p>
+  </div>
+</div>
+
+<main id="main">
+
+<section id="top" class="shop-title">
+  <div class="wrap">
+    <div class="shop-title-meta" data-reveal>
+      <p>Sarle Art Gallery &amp; Studio</p>
+      <p>Tallinn, Estonia</p>
+    </div>
+
+    <h1 class="shop-wordmark" data-reveal data-reveal-delay="60">GALLERY</h1>
+
+    <div class="shop-title-foot" data-reveal data-reveal-delay="120">
+      <p class="shop-title-lead">Founded by Svetlana Sarle</p>
+      <p class="shop-title-note">In memory of Vilnis Strazdinš</p>
+    </div>
+  </div>
+</section>
+
+<section id="intro" class="g-section">
+  <div class="wrap g-story two-col">
+    <div data-reveal>
+      <p class="eyebrow">Aia tn 17, Old Town</p>
+      <p class="g-intro-lead" data-i18n="g.intro1">Estonia, Tallinn, the Old Town — the heart of its people, and it is here, at Aia tn 17, that <strong>Sarle Art Gallery &amp; Studio</strong> is located.</p>
+    </div>
+    <div data-reveal data-reveal-delay="100">
+      <div class="g-text" style="margin-top: 0;">
+        <p>A contemporary artistic and cultural space that has organically become part of the historical environment of the Old Town.</p>
+        <p data-i18n="g.intro2">At the same address, you will also find the gallery of renowned Estonian sculptor <strong>Tauno Kangro</strong>. The coexistence of different artistic directions creates a unique atmosphere — a space of dialogue between tradition and contemporary art.</p>
+        <p class="g-lead">Today, Sarle Art Gallery &amp; Studio brings together painting, graphics, photography, sculpture, installation, multimedia art, music, and educational projects.</p>
+      </div>
+    </div>
+  </div>
+  <div class="wrap g-mosaic" data-reveal>
+    <div class="g-tile g-tile--tall"><img src="assets/gallery/intro-1.jpg" alt="An evening at the gallery" loading="lazy"></div>
+    <div class="g-tile"><img src="assets/gallery/intro-2.jpg" alt="A young visitor at the gallery" loading="lazy"></div>
+    <div class="g-tile"><img src="assets/gallery/intro-3.jpg" alt="Painting on display" loading="lazy"></div>
+    <div class="g-tile g-tile--tall"><img src="assets/gallery/intro-4.jpg" alt="Painting on the stone wall of the gallery" loading="lazy"></div>
+    <div class="g-tile"><img src="assets/gallery/intro-5.jpg" alt="Reception at the gallery" loading="lazy"></div>
+    <div class="g-tile"><img src="assets/gallery/intro-wide.jpg" alt="Artists at work in the studio" loading="lazy"></div>
+    <div class="g-tile"><img src="assets/gallery/intro-bg.jpg" alt="Painting in the gallery collection" loading="lazy"></div>
+  </div>
+</section>
+
+<section id="story" class="g-section">
+  <div class="wrap g-story two-col">
+    <div data-reveal>
+      <div class="g-photo">
+        <img src="assets/gallery/vilnis-1.jpg" alt="Vilnis Strazdinš" loading="lazy">
+      </div>
+      <p class="g-caption">Vilnis Strazdinš</p>
+      <div class="g-photo" style="margin-top: clamp(16px, 2vw, 24px);">
+        <img src="assets/gallery/vilnis-2.jpg" alt="Svetlana Sarle and Vilnis Strazdinš" loading="lazy">
+      </div>
+      <p class="g-caption">Svetlana Sarle and Vilnis Strazdinš</p>
+    </div>
+
+    <div class="g-sticky" data-reveal data-reveal-delay="100">
+      <p class="eyebrow">Gallery</p>
+      <h2 class="g-name">VILNIS<br>STRAZDINŠ</h2>
+      <div class="g-text">
+        <p class="g-lead" data-i18n="g.story1">Sarle Art Gallery &amp; Studio was founded by <strong>Svetlana Sarle</strong> in memory of her close friend <strong>Vilnis Strazdinš</strong>, who first envisioned the idea of opening a gallery.</p>
+        <p>Vilnis Strazdinš was a prominent Latvian businessman, yet deeply passionate about painting, music, and the dream of having his own gallery.</p>
+        <p>In Tallinn, Vilnis opened a clinic and, seeing people struggling with illness, said:</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="g-section">
+  <div class="wrap g-quote-wrap" data-reveal>
+    <blockquote class="g-quote">«We must distract them from their suffering and create a project where, by spending a few hours in a hall, people can immerse themselves in healthy beauty and classical music.»</blockquote>
+    <p class="g-quote-by">— Vilnis Strazdinš</p>
+  </div>
+</section>
+
+<section id="atmosphere" class="g-section">
+  <div class="wrap g-values two-col">
+    <div data-reveal>
+      <p class="eyebrow">Art enthusiast</p>
+    </div>
+    <div data-reveal data-reveal-delay="100">
+      <p class="g-intro-lead">His dream was for the gallery to have a dress code — and that dream has come true.</p>
+      <div class="g-text">
+        <p data-i18n="g.sky">At 63, he passed away, leaving behind bright, warm, heartfelt memories. He had another wish: to help parents in raising their children. He was genuinely happy when speaking about his little friend with the unusual name <strong>Sky</strong>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="g-section">
+  <div class="wrap g-quote-wrap" data-reveal>
+    <blockquote class="g-quote">“Heavenly beings,” — Vilnis would say, — “must be untouchable and surrounded by music and love.”</blockquote>
+    <p class="g-quote-by">— Vilnis Strazdinš</p>
+  </div>
+</section>
+
+<section class="g-closing" data-reveal>
+  <p class="g-closing-line">His dream has come true: the temple of art is alive.</p>
+  <p class="g-closing-year">In one year, it has hosted 13 exhibitions, 7 concerts, and numerous lectures.</p>
+  <p class="g-closing-thanks">Thank you, Vilnis Strazdinš.</p>
+  <p class="g-closing-memory">Tallinn will preserve your memory.</p>
+  <p class="eyebrow g-closing-label">A dream</p>
+</section>
+
+<section id="founder" class="g-section">
+  <div class="wrap" data-reveal>
+    <div class="g-bleed" style="margin-bottom: clamp(40px, 7vh, 90px);">
+      <img src="assets/gallery/svetlana-1.jpg" alt="Svetlana Sarle in the gallery" loading="lazy" style="object-position: 50% 30%;">
+    </div>
+  </div>
+  <div class="wrap g-story two-col">
+    <div class="g-sticky" data-reveal>
+      <div class="g-photo">
+        <img src="assets/gallery/svetlana-2.jpg" alt="Svetlana Sarle" loading="lazy">
+      </div>
+      <p class="g-caption">Svetlana Sarle</p>
+    </div>
+
+    <div data-reveal data-reveal-delay="100">
+      <p class="eyebrow">The founder</p>
+      <h2 class="g-name">SVETLANA<br>SARLE</h2>
+      <div class="g-text">
+        <p class="g-lead">Behind Sarle Art Gallery &amp; Studio stands a person for whom art is inseparable from human feelings, relationships, and inner honesty.</p>
+        <p>Svetlana Sarle possesses a rare combination of strength and sensitivity. Those who know her closely speak of her openness, remarkable emotional depth, kindness, and her ability to empathize profoundly with others.</p>
+        <p>Her character unites an inner core with a warm and open attitude toward people. Despite disappointments and life’s challenges, she has preserved her ability to believe in others, to remain honest, decent, and deeply compassionate.</p>
+        <p data-i18n="g.values">For Svetlana, creating the gallery became not only the fulfillment of her close friend Vilnis Strazdinš’s dream, but also a continuation of her own values — <strong>love for people and beauty, respect for memory, gratitude, and the desire to create.</strong></p>
+        <p>Svetlana is a trained dramatic theatre actress. She worked in theatre and as a television announcer. Later, she led a clinic and, after completing that chapter of her life, returned once again to creativity.</p>
+        <p class="g-lead">Sarle Art Gallery &amp; Studio was born from the desire to create a space where art remains genuine, and where a person can remain themselves.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer id="footer" class="site-footer" aria-label="Footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <img class="footer-logo" src="assets/logo-white.svg?v=4" alt="Sarle Art Gallery &amp; Studio">
+        <p class="footer-blurb">A cultural space in the very heart of Old Tallinn, bringing together art, music, exhibitions, and creative events.</p>
+      </div>
+
+      <div class="footer-col">
+        <p class="footer-heading">Visit</p>
+        <p class="footer-address">Aia tn 17<br>Tallinn, Estonia</p>
+        <a href="mailto:gallery@sarle.ee" class="footer-link">gallery@sarle.ee</a>
+        <a href="tel:+37258865898" class="footer-link">+372 5886 5898</a>
+      </div>
+
+      <nav class="footer-col" aria-label="Footer">
+        <p class="footer-heading">Navigate</p>
+        <a href="index.html" class="footer-nav-link">Main page</a>
+        <a href="index.html#exhibition" class="footer-nav-link">Current Exhibition</a>
+        <a href="index.html#artists" class="footer-nav-link">Artists</a>
+        <a href="shop.html" class="footer-nav-link">Shop</a>
+        <a href="shop.html#shop-contact" class="footer-nav-link">Contact</a>
+        <a href="index.html#newsletter" class="footer-nav-link">Subscribe to the newsletter</a>
+      </nav>
+
+      <div class="footer-col">
+        <p class="footer-heading">Language</p>
+        <div class="lang-group">
+          <button type="button" class="lang-btn is-active" data-lang-btn="EN">EN</button>
+          <span class="lang-sep">/</span>
+          <button type="button" class="lang-btn" data-lang-btn="EST">EST</button>
+          <span class="lang-sep">/</span>
+          <button type="button" class="lang-btn" data-lang-btn="RUS">RUS</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">&copy; 2026 Sarle Art Gallery &amp; Studio</p>
+      <div class="footer-bottom-links">
+        <a href="#privacy" class="footer-bottom-link" data-privacy>Privacy policy</a>
+        <a href="#top" class="footer-bottom-link footer-bottom-link-strong">Back to top &uarr;</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/privacy.js"></script>
+</body>
+</html>
