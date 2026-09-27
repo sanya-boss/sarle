@@ -80,16 +80,21 @@
     var nodes = document.querySelectorAll('[data-reveal]');
     if (!nodes.length || reduced || !('IntersectionObserver' in window)) return;
 
+    var fadeOnly = !!document.querySelector('.shop-title');
     nodes.forEach(function (el) {
       el.style.opacity = '0';
-      el.style.transform = 'translateY(22px)';
-      el.style.transition = 'opacity 1000ms cubic-bezier(.22,.61,.36,1), transform 1000ms cubic-bezier(.22,.61,.36,1)';
+      if (fadeOnly) {
+        el.style.transition = 'opacity 900ms ease';
+      } else {
+        el.style.transform = 'translateY(22px)';
+        el.style.transition = 'opacity 1000ms cubic-bezier(.22,.61,.36,1), transform 1000ms cubic-bezier(.22,.61,.36,1)';
+      }
     });
 
     function revealNode(el, delay) {
       if (el.dataset.revealed) return;
       el.dataset.revealed = '1';
-      setTimeout(function () { el.style.opacity = '1'; el.style.transform = 'none'; }, delay || 0);
+      setTimeout(function () { el.style.opacity = '1'; if (!fadeOnly) el.style.transform = 'none'; }, delay || 0);
       io.unobserve(el);
     }
 
@@ -102,12 +107,18 @@
       });
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
 
-    nodes.forEach(function (el) { io.observe(el); });
+    function startObserve() { nodes.forEach(function (el) { io.observe(el); }); }
+    if (document.fonts && document.fonts.ready) {
+      var started = false;
+      var go = function () { if (!started) { started = true; startObserve(); } };
+      document.fonts.ready.then(go);
+      setTimeout(go, 1200);
+    } else startObserve();
 
     setTimeout(function () {
       if (ioFired) return;
       nodes.forEach(function (el) { revealNode(el, 0); });
-    }, 700);
+    }, 2000);
   })();
 
   /* ---------------------------------------------------------------------
@@ -294,7 +305,12 @@
     var raf = null;
     var visible = true;
 
-    function radius() { return Math.max(opts.rMin, Math.min(opts.rMax, wrap.clientWidth * opts.rFactor)); }
+    function radius() {
+      var cw = wrap.clientWidth;
+      var r = Math.max(opts.rMin, Math.min(opts.rMax, cw * opts.rFactor));
+      var fit = cw / 2 - Math.max(opts.wMin, Math.min(opts.wMax, wrap.clientHeight * opts.wFactor)) * 0.5 - 16;
+      return Math.max(80, Math.min(r, fit));
+    }
 
     items.forEach(function (el) {
       el.addEventListener('click', function () {
@@ -395,8 +411,8 @@
     ring: document.getElementById('ring'),
     itemSelector: '.ring-item',
     autoSpeed: 0.00045,
-    rMin: 360, rMax: 680, rFactor: 0.36,
-    wMin: 110, wMax: 205, wFactor: 0.255,
+    rMin: 430, rMax: 820, rFactor: 0.43,
+    wMin: 100, wMax: 190, wFactor: 0.235,
     aspect: 16 / 9,
     scaleBase: 0.66, scaleRange: 0.40,
     opBase: 0.3, opRange: 0.7,
@@ -551,12 +567,12 @@
       setIndex(Math.round(-angle / step));
     }
 
-    var isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    var isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0 || window.matchMedia('(pointer: coarse)').matches;
     items.forEach(function (el, i) { el.addEventListener('click', function () { if (isTouch) return; if (moved <= 6) setIndex(i); }); });
     wrap.addEventListener('mousedown', down);
     window.addEventListener('mousemove', move);
     window.addEventListener('mouseup', up);
-    if (isTouch) {
+    if (true) {
       var tsx = 0, tsy = 0, tAxis = null;
       wrap.addEventListener('touchstart', function (e) {
         tsx = lastX = e.touches[0].clientX; tsy = e.touches[0].clientY; tAxis = null; moved = 0;
@@ -736,13 +752,40 @@
       'Born in 1957. An artist who works freely on the border between painting and graphic art, using oil, watercolor, pastel, and ink. His solo exhibitions have been held in Finland, Sweden, Norway, and at the Embassy of China in Estonia. The artist’s works are part of museum and private collections, including the collection of the Estonian National Museum.': 'Sündinud 1957. Kunstnik, kes liigub vabalt maali ja graafika piiril, kasutades õli, akvarelli, pastelli ja tušši. Tema isikunäitusi on toimunud Soomes, Rootsis, Norras ja Hiina saatkonnas Eestis. Kunstniku tööd kuuluvad muuseumi- ja erakogudesse, sealhulgas Eesti Rahva Muuseumi kogusse.',
       'An architect, artist, designer, and scenographer. Founder of the Narva Art School. She works in painting, film, theatre, interior design, and book illustration. Her solo exhibitions have been held in the United States, Poland, Austria, Slovenia, Finland, and Estonia, and her works have received international recognition. Laureate of the LaPersona Award 2025 and Narva Cultural Figure of the Year 2025.': 'Arhitekt, kunstnik, disainer ja stsenograaf. Narva kunstikooli asutaja. Ta tegutseb maalikunstis, filmis, teatris, sisekujunduses ja raamatuillustratsioonis. Tema isikunäitusi on toimunud Ameerika Ühendriikides, Poolas, Austrias, Sloveenias, Soomes ja Eestis ning tema tööd on pälvinud rahvusvahelist tunnustust. LaPersona auhinna 2025 laureaat ja Narva aasta kultuuritegija 2025.',
       'Born in 1967 in Tallinn. A painter, author of several texts on art theory and contemporary artists, and a lecturer; she lives and works in Narva. For Maie, painting is a way of looking and seeing — a means of conveying the uniqueness of the natural world through a personal selection of artistic tools, and a large, colorful canvas is a selfless form of happiness.': 'Sündinud 1967 Tallinnas. Maalikunstnik, mitme kunstiteooriat ja kaasaegseid kunstnikke käsitleva teksti autor ning õppejõud; elab ja töötab Narvas. Maie jaoks on maalimine vaatamise ja nägemise viis — vahend loodusmaailma ainulaadsuse edasiandmiseks isiklikult valitud kunstivahenditega, ning suur värviline lõuend on omakasupüüdmatu õnn.',
-      'Born in Yerevan, Armenia, she lives and works in Estonia. An artist, illustrator, and animation film director, she holds a Master’s degree in Animation from the Estonian Academy of Arts (EKA). Her films have participated in prestigious international festivals, including Berlinale, Annecy, Zagreb, and Hiroshima, and have received numerous awards.': 'Sündinud Jerevanis Armeenias, elab ja töötab Eestis. Kunstnik, illustraator ja animafilmide režissöör, omandanud animatsiooni magistrikraadi Eesti Kunstiakadeemias (EKA). Tema filmid on osalenud mainekatel rahvusvahelistel festivalidel, sealhulgas Berlinale, Annecy, Zagreb ja Hiroshima, ning pälvinud arvukalt auhindu.'
+      'Born in Yerevan, Armenia, she lives and works in Estonia. An artist, illustrator, and animation film director, she holds a Master’s degree in Animation from the Estonian Academy of Arts (EKA). Her films have participated in prestigious international festivals, including Berlinale, Annecy, Zagreb, and Hiroshima, and have received numerous awards.': 'Sündinud Jerevanis Armeenias, elab ja töötab Eestis. Kunstnik, illustraator ja animafilmide režissöör, omandanud animatsiooni magistrikraadi Eesti Kunstiakadeemias (EKA). Tema filmid on osalenud mainekatel rahvusvahelistel festivalidel, sealhulgas Berlinale, Annecy, Zagreb ja Hiroshima, ning pälvinud arvukalt auhindu.',
+      "The story": "Lugu",
+      "The founder": "Asutaja",
+      "GALLERY": "GALERII",
+      "Founded by Svetlana Sarle": "Asutanud Svetlana Sarle",
+      "In memory of Vilnis Strazdinš": "Vilnis Strazdinši mälestuseks",
+      "Tallinn, Estonia": "Tallinn, Eesti",
+      "Aia tn 17, Old Town": "Aia tn 17, vanalinn",
+      "A contemporary artistic and cultural space that has organically become part of the historical environment of the Old Town.": "Kaasaegne kunsti- ja kultuuriruum, mis on orgaaniliselt saanud osaks vanalinna ajaloolisest keskkonnast.",
+      "Today, Sarle Art Gallery & Studio brings together painting, graphics, photography, sculpture, installation, multimedia art, music, and educational projects.": "Täna ühendab Sarle Art Gallery & Studio maali, graafikat, fotograafiat, skulptuuri, installatsiooni, multimeediakunsti, muusikat ja haridusprojekte.",
+      "Svetlana Sarle and Vilnis Strazdinš": "Svetlana Sarle ja Vilnis Strazdinš",
+      "Vilnis Strazdinš was a prominent Latvian businessman, yet deeply passionate about painting, music, and the dream of having his own gallery.": "Vilnis Strazdinš oli tuntud Läti ärimees, kes oli sügavalt kirglik maalikunsti ja muusika vastu ning unistas oma galeriist.",
+      "In Tallinn, Vilnis opened a clinic and, seeing people struggling with illness, said:": "Tallinnas avas Vilnis kliiniku ning, nähes haigustega võitlevaid inimesi, ütles:",
+      "«We must distract them from their suffering and create a project where, by spending a few hours in a hall, people can immerse themselves in healthy beauty and classical music.»": "«Peame juhtima nende mõtted kannatustelt eemale ja looma projekti, kus inimesed saavad mõne tunni saalis veetes sukelduda tervislikku ilusse ja klassikalisse muusikasse.»",
+      "Art enthusiast": "Kunstisõber",
+      "His dream was for the gallery to have a dress code — and that dream has come true.": "Tema unistus oli, et galeriis kehtiks riietumiskood — ja see unistus on täitunud.",
+      "“Heavenly beings,” — Vilnis would say, — “must be untouchable and surrounded by music and love.”": "„Taevased olendid,” — ütles Vilnis, — „peavad olema puutumatud ning ümbritsetud muusika ja armastusega.”",
+      "His dream has come true: the temple of art is alive.": "Tema unistus on täitunud: kunstitempel elab.",
+      "In one year, it has hosted 13 exhibitions, 7 concerts, and numerous lectures.": "Ühe aastaga on siin toimunud 13 näitust, 7 kontserti ja arvukalt loenguid.",
+      "Thank you, Vilnis Strazdinš.": "Aitäh, Vilnis Strazdinš.",
+      "Tallinn will preserve your memory.": "Tallinn hoiab sinu mälestust.",
+      "A dream": "Unistus",
+      "Behind Sarle Art Gallery & Studio stands a person for whom art is inseparable from human feelings, relationships, and inner honesty.": "Sarle Art Gallery & Studio taga seisab inimene, kelle jaoks kunst on lahutamatu inimlikest tunnetest, suhetest ja sisemisest aususest.",
+      "Svetlana Sarle possesses a rare combination of strength and sensitivity. Those who know her closely speak of her openness, remarkable emotional depth, kindness, and her ability to empathize profoundly with others.": "Svetlana Sarles on haruldane jõu ja tundlikkuse ühendus. Need, kes teda lähedalt tunnevad, räägivad tema avatusest, erakordsest emotsionaalsest sügavusest, lahkusest ja oskusest teistele sügavalt kaasa tunda.",
+      "Her character unites an inner core with a warm and open attitude toward people. Despite disappointments and life’s challenges, she has preserved her ability to believe in others, to remain honest, decent, and deeply compassionate.": "Tema iseloomus ühinevad sisemine tugevus ning soe ja avatud suhtumine inimestesse. Vaatamata pettumustele ja elu katsumustele on ta säilitanud oskuse uskuda teistesse, jääda ausaks, korralikuks ja sügavalt kaastundlikuks.",
+      "Svetlana is a trained dramatic theatre actress. She worked in theatre and as a television announcer. Later, she led a clinic and, after completing that chapter of her life, returned once again to creativity.": "Svetlana on hariduselt draamanäitleja. Ta töötas teatris ja telediktorina. Hiljem juhtis ta kliinikut ning pärast selle eluetapi lõppu pöördus taas loomingu juurde.",
+      "Sarle Art Gallery & Studio was born from the desire to create a space where art remains genuine, and where a person can remain themselves.": "Sarle Art Gallery & Studio sündis soovist luua ruum, kus kunst jääb ehtsaks ja kus inimene saab jääda iseendaks.",
+      "FIVE WORKS · PRIVATE COLLECTION": "VIIS TÖÖD · ERAKOGU",
     };
     const RUS = {
       'Gallery': 'Галерея', 'Exhibition': 'Выставка', 'Artists': 'Художники', 'Contact': 'Контакты',
       'Gallery & Art Studio': 'Галерея и арт-студия',
       'Subscribe to the newsletter': 'Подписаться на рассылку',
-      'Scroll down': 'Листайте вниз',
+      'Scroll down': 'Скролльте вниз',
       'Skip to content': 'Перейти к содержимому',
       "WE'LL BE GLAD TO SEE YOU!": 'МЫ БУДЕМ РАДЫ ВАМ!',
       'WHERE ART': 'ГДЕ ИСКУССТВО', 'MEETS SOUL': 'ВСТРЕЧАЕТ ДУШУ',
@@ -813,10 +856,38 @@
       'Born in 1957. An artist who works freely on the border between painting and graphic art, using oil, watercolor, pastel, and ink. His solo exhibitions have been held in Finland, Sweden, Norway, and at the Embassy of China in Estonia. The artist’s works are part of museum and private collections, including the collection of the Estonian National Museum.': 'Родился в 1957 году. Художник, свободно работающий на границе живописи и графики, используя масло, акварель, пастель и тушь. Его персональные выставки проходили в Финляндии, Швеции, Норвегии и в посольстве Китая в Эстонии. Работы художника входят в музейные и частные собрания, включая коллекцию Эстонского национального музея.',
       'An architect, artist, designer, and scenographer. Founder of the Narva Art School. She works in painting, film, theatre, interior design, and book illustration. Her solo exhibitions have been held in the United States, Poland, Austria, Slovenia, Finland, and Estonia, and her works have received international recognition. Laureate of the LaPersona Award 2025 and Narva Cultural Figure of the Year 2025.': 'Архитектор, художник, дизайнер и сценограф. Основательница Нарвской художественной школы. Работает в живописи, кино, театре, дизайне интерьера и книжной иллюстрации. Её персональные выставки проходили в США, Польше, Австрии, Словении, Финляндии и Эстонии, а работы получили международное признание. Лауреат премии LaPersona 2025 и «Деятель культуры Нарвы 2025».',
       'Born in 1967 in Tallinn. A painter, author of several texts on art theory and contemporary artists, and a lecturer; she lives and works in Narva. For Maie, painting is a way of looking and seeing — a means of conveying the uniqueness of the natural world through a personal selection of artistic tools, and a large, colorful canvas is a selfless form of happiness.': 'Родилась в 1967 году в Таллинне. Живописец, автор ряда текстов по теории искусства и о современных художниках, преподаватель; живёт и работает в Нарве. Для Майе живопись — это способ смотреть и видеть, средство передать уникальность мира природы через личный выбор художественных инструментов, а большой цветной холст — бескорыстная форма счастья.',
-      'Born in Yerevan, Armenia, she lives and works in Estonia. An artist, illustrator, and animation film director, she holds a Master’s degree in Animation from the Estonian Academy of Arts (EKA). Her films have participated in prestigious international festivals, including Berlinale, Annecy, Zagreb, and Hiroshima, and have received numerous awards.': 'Родилась в Ереване, Армения, живёт и работает в Эстонии. Художник, иллюстратор и режиссёр анимационного кино, магистр анимации Эстонской академии художеств (EKA). Её фильмы участвовали в престижных международных фестивалях, включая Берлинале, Аннси, Загреб и Хиросиму, и получили множество наград.'
+      'Born in Yerevan, Armenia, she lives and works in Estonia. An artist, illustrator, and animation film director, she holds a Master’s degree in Animation from the Estonian Academy of Arts (EKA). Her films have participated in prestigious international festivals, including Berlinale, Annecy, Zagreb, and Hiroshima, and have received numerous awards.': 'Родилась в Ереване, Армения, живёт и работает в Эстонии. Художник, иллюстратор и режиссёр анимационного кино, магистр анимации Эстонской академии художеств (EKA). Её фильмы участвовали в престижных международных фестивалях, включая Берлинале, Аннси, Загреб и Хиросиму, и получили множество наград.',
+      "The story": "История",
+      "The founder": "Основательница",
+      "GALLERY": "ГАЛЕРЕЯ",
+      "Founded by Svetlana Sarle": "Основательница — Svetlana Sarle",
+      "In memory of Vilnis Strazdinš": "В память о Vilnis Strazdinš",
+      "Tallinn, Estonia": "Таллин, Эстония",
+      "Aia tn 17, Old Town": "Aia tn 17, Старый город",
+      "A contemporary artistic and cultural space that has organically become part of the historical environment of the Old Town.": "Современное художественное и культурное пространство, органично ставшее частью исторической среды Старого города.",
+      "Today, Sarle Art Gallery & Studio brings together painting, graphics, photography, sculpture, installation, multimedia art, music, and educational projects.": "Сегодня Sarle Art Gallery & Studio объединяет живопись, графику, фотографию, скульптуру, инсталляцию, мультимедийное искусство, музыку и образовательные проекты.",
+      "Svetlana Sarle and Vilnis Strazdinš": "Svetlana Sarle и Vilnis Strazdinš",
+      "Vilnis Strazdinš was a prominent Latvian businessman, yet deeply passionate about painting, music, and the dream of having his own gallery.": "Vilnis Strazdinš был известным латвийским бизнесменом, но при этом глубоко увлекался живописью, музыкой и мечтал о собственной галерее.",
+      "In Tallinn, Vilnis opened a clinic and, seeing people struggling with illness, said:": "В Таллине Vilnis открыл клинику и, видя людей, борющихся с болезнями, сказал:",
+      "«We must distract them from their suffering and create a project where, by spending a few hours in a hall, people can immerse themselves in healthy beauty and classical music.»": "«Мы должны отвлечь их от страданий и создать проект, где люди, проведя несколько часов в зале, смогут погрузиться в здоровую красоту и классическую музыку».",
+      "Art enthusiast": "Ценитель искусства",
+      "His dream was for the gallery to have a dress code — and that dream has come true.": "Он мечтал, чтобы в галерее был дресс-код, — и эта мечта сбылась.",
+      "“Heavenly beings,” — Vilnis would say, — “must be untouchable and surrounded by music and love.”": "«Небесные создания, — говорил Vilnis, — должны быть неприкосновенны и окружены музыкой и любовью».",
+      "His dream has come true: the temple of art is alive.": "Его мечта сбылась: храм искусства живёт.",
+      "In one year, it has hosted 13 exhibitions, 7 concerts, and numerous lectures.": "За один год здесь прошли 13 выставок, 7 концертов и множество лекций.",
+      "Thank you, Vilnis Strazdinš.": "Спасибо, Vilnis Strazdinš.",
+      "Tallinn will preserve your memory.": "Таллин сохранит память о тебе.",
+      "A dream": "Мечта",
+      "Behind Sarle Art Gallery & Studio stands a person for whom art is inseparable from human feelings, relationships, and inner honesty.": "За Sarle Art Gallery & Studio стоит человек, для которого искусство неотделимо от человеческих чувств, отношений и внутренней честности.",
+      "Svetlana Sarle possesses a rare combination of strength and sensitivity. Those who know her closely speak of her openness, remarkable emotional depth, kindness, and her ability to empathize profoundly with others.": "Svetlana Sarle обладает редким сочетанием силы и чуткости. Те, кто знает её близко, говорят о её открытости, удивительной эмоциональной глубине, доброте и способности глубоко сопереживать другим.",
+      "Her character unites an inner core with a warm and open attitude toward people. Despite disappointments and life’s challenges, she has preserved her ability to believe in others, to remain honest, decent, and deeply compassionate.": "В её характере соединяются внутренний стержень и тёплое, открытое отношение к людям. Несмотря на разочарования и жизненные испытания, она сохранила способность верить в людей, оставаться честной, порядочной и глубоко сострадающей.",
+      "Svetlana is a trained dramatic theatre actress. She worked in theatre and as a television announcer. Later, she led a clinic and, after completing that chapter of her life, returned once again to creativity.": "Svetlana — профессиональная драматическая актриса. Она работала в театре и диктором на телевидении. Позже руководила клиникой, а завершив этот этап жизни, вновь вернулась к творчеству.",
+      "Sarle Art Gallery & Studio was born from the desire to create a space where art remains genuine, and where a person can remain themselves.": "Sarle Art Gallery & Studio родилась из желания создать пространство, где искусство остаётся подлинным, а человек может оставаться собой.",
+      "FIVE WORKS · PRIVATE COLLECTION": "ПЯТЬ РАБОТ · ЧАСТНАЯ КОЛЛЕКЦИЯ",
     };
 
     var DICT = { EN: null, EST: EST, RUS: RUS };
+    var HTML_DICT = {"EST":{"g.intro1":"Eesti, Tallinn, vanalinn — oma inimeste süda, ja just siin, Aia tn 17, asub <strong>Sarle Art Gallery &amp; Studio</strong>.","g.intro2":"Samal aadressil asub ka tuntud Eesti skulptori <strong>Tauno Kangro</strong> galerii. Erinevate kunstisuundade kooseksisteerimine loob ainulaadse õhkkonna — dialoogiruumi traditsiooni ja kaasaegse kunsti vahel.","g.story1":"<strong>Svetlana Sarle</strong> asutas Sarle Art Gallery &amp; Studio oma lähedase sõbra <strong>Vilnis Strazdinši</strong> mälestuseks — tema oli see, kes esimesena mõtles galerii avamisele.","g.sky":"Ta lahkus 63-aastaselt, jättes endast maha helged, soojad ja südamlikud mälestused. Tal oli veel üks soov: aidata vanemaid laste kasvatamisel. Ta oli siiralt õnnelik, kui rääkis oma väikesest sõbrast, kelle ebatavaline nimi oli <strong>Sky</strong>.","g.values":"Svetlana jaoks sai galerii loomine mitte ainult oma lähedase sõbra Vilnis Strazdinši unistuse täitumiseks, vaid ka tema enda väärtuste jätkuks — <strong>armastus inimeste ja ilu vastu, austus mälestuse vastu, tänulikkus ja soov luua.</strong>","shop.bio1":"<strong>Sarle Art Gallery &amp; Studio</strong> erakogus on läti kunstniku <strong>Juris Jurjānsi (1944–2023)</strong> teosed. Valitud töid kogust on võimalik omandada."},"RUS":{"g.intro1":"Эстония, Таллин, Старый город — сердце его жителей, и именно здесь, на Aia tn 17, находится <strong>Sarle Art Gallery &amp; Studio</strong>.","g.intro2":"По этому же адресу находится галерея известного эстонского скульптора <strong>Tauno Kangro</strong>. Сосуществование разных художественных направлений создаёт особую атмосферу — пространство диалога между традицией и современным искусством.","g.story1":"Sarle Art Gallery &amp; Studio основала <strong>Svetlana Sarle</strong> в память о своём близком друге <strong>Vilnis Strazdinš</strong>, который первым задумал открыть галерею.","g.sky":"Он ушёл из жизни в 63 года, оставив после себя светлые, тёплые и искренние воспоминания. У него было ещё одно желание — помогать родителям в воспитании детей. Он был по-настоящему счастлив, рассказывая о своём маленьком друге с необычным именем <strong>Sky</strong>.","g.values":"Для Svetlana создание галереи стало не только исполнением мечты её близкого друга Vilnis Strazdinš, но и продолжением её собственных ценностей — <strong>любви к людям и красоте, уважения к памяти, благодарности и стремления созидать.</strong>","shop.bio1":"В частной коллекции <strong>Sarle Art Gallery &amp; Studio</strong> находятся работы латвийского художника <strong>Юриса Юрьянса (1944–2023)</strong>. Избранные работы из коллекции доступны для приобретения."}};
     var lang = 'EN';
     try { lang = sessionStorage.getItem('sarle-lang') || 'EN'; } catch (e) {}
 
@@ -827,6 +898,11 @@
     window.sarleT = t;
 
     function applyLang() {
+      document.querySelectorAll('[data-i18n]').forEach(function (el) {
+        if (el.__sarleEnHtml === undefined) el.__sarleEnHtml = el.innerHTML;
+        var h = HTML_DICT[lang] && HTML_DICT[lang][el.getAttribute('data-i18n')];
+        el.innerHTML = h || el.__sarleEnHtml;
+      });
       var caption = document.getElementById('art-caption');
       var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
         acceptNode: function (n) {
@@ -835,6 +911,7 @@
           if (!p || p.nodeName === 'SCRIPT' || p.nodeName === 'STYLE') return NodeFilter.FILTER_REJECT;
           if (caption && caption.contains(p)) return NodeFilter.FILTER_REJECT;
           if (p.closest && p.closest('[data-lang-btn]')) return NodeFilter.FILTER_REJECT;
+          if (p.closest && p.closest('[data-i18n]')) return NodeFilter.FILTER_REJECT;
           return NodeFilter.FILTER_ACCEPT;
         }
       });
