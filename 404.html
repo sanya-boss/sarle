@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+(function(){var h=location.hostname,p=location.pathname.split('/').filter(Boolean);
+if(/github\.io$/.test(h)&&p.length)document.write('<base href="/'+p[0]+'/">');})();
+</script>
+<title>Sarle | 404</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#131312">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  html, body { height: 100%; }
+  body { display: flex; flex-direction: column; min-height: 100svh; }
+  .e-header { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: clamp(18px, 3vh, 30px) clamp(18px, 4vw, 56px); }
+  .e-header .brand-logo { height: clamp(22px, 2.4vw, 30px); width: auto; display: block; }
+  .e-main { flex: 1 1 auto; display: grid; align-content: center; padding: clamp(24px, 5vh, 64px) clamp(18px, 4vw, 56px); }
+  .e-meta { display: flex; justify-content: space-between; gap: 20px; padding-bottom: 18px; border-bottom: 1px solid var(--hairline); font-family: 'Space Grotesk', sans-serif; font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); }
+  .e-meta p { margin: 0; }
+  .e-stage { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 110px); align-items: center; padding: clamp(28px, 6vh, 72px) 0; }
+  .e-num { margin: 0; font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(120px, min(27vw, 52vh), 440px); line-height: 0.78; letter-spacing: -0.04em; display: flex; align-items: baseline; }
+  .e-num span { display: block; }
+  .e-num .e-zero { font-style: italic; color: transparent; background-image: url('assets/hero/hero-06.webp'); background-size: cover; background-position: center; -webkit-background-clip: text; background-clip: text; padding: 0 0.02em; }
+  .e-copy { max-width: 440px; padding-bottom: clamp(6px, 2vh, 24px); }
+  .e-title { margin: 0; font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(32px, 3.4vw, 52px); line-height: 1.06; text-wrap: balance; }
+  .e-lead { margin: 20px 0 0; font-size: 15px; line-height: 1.75; color: var(--muted); text-wrap: pretty; }
+  .e-actions { margin-top: 34px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .e-btn-solid { background: var(--fg); color: var(--bg); border: 1px solid var(--fg); }
+  .e-btn-solid:hover { background: transparent; color: var(--fg); }
+  .e-label { margin-top: 44px; padding: 16px 18px; border: 1px solid var(--hairline); max-width: 300px; font-size: 13px; line-height: 1.6; color: var(--muted); }
+  .e-label strong { display: block; font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 400; font-size: 20px; color: var(--fg); }
+  .e-label em { font-style: normal; font-family: 'Space Grotesk', sans-serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; }
+  .e-foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px; padding: 22px clamp(18px, 4vw, 56px) 28px; border-top: 1px solid var(--hairline); font-family: 'Space Grotesk', sans-serif; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+  .e-foot p { margin: 0; }
+  .e-foot a { color: var(--muted); }
+  .e-foot a:hover { color: var(--fg); }
+  .e-in { opacity: 0; transform: translateY(14px); animation: eIn 1.1s cubic-bezier(.2,.7,.2,1) forwards; }
+  @keyframes eIn { to { opacity: 1; transform: none; } }
+  @media (max-width: 1099px), (max-height: 760px) { .e-label { display: none; } }
+  @media (max-width: 859px) {
+    .e-stage { grid-template-columns: minmax(0, 1fr); align-items: start; }
+    .e-num { font-size: clamp(110px, min(44vw, 34vh), 300px); }
+  }
+  @media (prefers-reduced-motion: reduce) { .e-in { animation: none; opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+
+<header class="e-header">
+  <a href="index.html" class="brand" aria-label="Sarle Art Gallery and Studio, home">
+    <img class="brand-logo" src="assets/sarle-wordmark.svg?v=2" alt="Sarle Art Gallery &amp; Studio">
+  </a>
+  <div class="lang-group" role="group" aria-label="Language">
+    <button type="button" class="lang-btn is-active" data-lang-btn="EN" aria-pressed="true">EN</button>
+    <span class="lang-sep">/</span>
+    <button type="button" class="lang-btn" data-lang-btn="EST" aria-pressed="false">EST</button>
+    <span class="lang-sep">/</span>
+    <button type="button" class="lang-btn" data-lang-btn="RUS" aria-pressed="false">RUS</button>
+  </div>
+</header>
+
+<main class="e-main" id="main">
+  <div class="e-meta e-in">
+    <p data-t="meta">Error 404 — Room not found</p>
+    <p>Aia tn 17, Tallinn</p>
+  </div>
+
+  <div class="e-stage">
+    <h1 class="e-num e-in" style="animation-delay: 120ms;" aria-label="404">
+      <span>4</span><span class="e-zero" id="e-zero">0</span><span>4</span>
+    </h1>
+
+    <div class="e-copy e-in" style="animation-delay: 260ms;">
+      <h2 class="e-title" data-t="title">This room of the gallery doesn’t exist.</h2>
+      <p class="e-lead" data-t="lead">The page may have moved, or the work was never hung here. Let us walk you back to the exhibition.</p>
+      <div class="e-actions">
+        <a class="btn e-btn-solid" href="index.html" data-t="home">Main page</a>
+        <a class="btn btn-outline" href="gallery.html" data-t="gallery">Gallery</a>
+        <a class="btn btn-outline" href="shop.html" data-t="shop">Shop</a>
+      </div>
+      <div class="e-label">
+        <strong data-t="work">Untitled (Absence), 2026</strong>
+        <span data-t="medium">Empty frame, silence.</span><br>
+        <em data-t="coll">Sarle collection</em>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="e-foot">
+  <p>© 2026 Sarle Art Gallery &amp; Studio</p>
+  <p><a href="tel:+37258865898">+372 5886 5898</a></p>
+</footer>
+
+<script>
+(function(){
+  var D = {
+    EN: { meta:'Error 404 — Room not found', title:'This room of the gallery doesn’t exist.', lead:'The page may have moved, or the work was never hung here. Let us walk you back to the exhibition.', home:'Main page', gallery:'Gallery', shop:'Shop', work:'Untitled (Absence), 2026', medium:'Empty frame, silence.', coll:'Sarle collection' },
+    EST: { meta:'Viga 404 — Saali ei leitud', title:'Sellist galeriisaali ei ole olemas.', lead:'Leht võib olla kolinud või pole teost siia kunagi üles riputatud. Juhatame teid tagasi näitusele.', home:'Avaleht', gallery:'Galerii', shop:'Pood', work:'Pealkirjata (Puudumine), 2026', medium:'Tühi raam, vaikus.', coll:'Sarle kogu' },
+    RUS: { meta:'Ошибка 404 — Зал не найден', title:'Такого зала в галерее нет.', lead:'Возможно, страница переехала или работа здесь никогда не висела. Давайте вернёмся к выставке.', home:'Главная', gallery:'Галерея', shop:'Магазин', work:'Без названия (Отсутствие), 2026', medium:'Пустая рама, тишина.', coll:'Коллекция Sarle' }
+  };
+  var lang = 'EN';
+  try { lang = sessionStorage.getItem('sarle-lang') || 'EN'; } catch (e) {}
+  function paint(){
+    var d = D[lang] || D.EN;
+    document.documentElement.lang = lang === 'EST' ? 'et' : lang === 'RUS' ? 'ru' : 'en';
+    document.querySelectorAll('[data-t]').forEach(function(el){ el.textContent = d[el.getAttribute('data-t')]; });
+    document.querySelectorAll('[data-lang-btn]').forEach(function(b){ var on = b.getAttribute('data-lang-btn') === lang; b.classList.toggle('is-active', on); b.setAttribute('aria-pressed', on); });
+  }
+  document.addEventListener('click', function(e){
+    var b = e.target.closest('[data-lang-btn]'); if (!b) return;
+    lang = b.getAttribute('data-lang-btn');
+    try { sessionStorage.setItem('sarle-lang', lang); } catch (err) {}
+    paint();
+  });
+  paint();
+  var z = document.getElementById('e-zero');
+  var pics = ['hero/hero-01','hero/hero-02','hero/hero-03','hero/hero-04','hero/hero-05','hero/hero-06','hero/hero-07','hero/hero-08','hero/hero-09','hero/hero-10','hero/hero-11','hero/hero-12','hero/hero-13','hero/hero-14','hero/hero-15','exhibition/exh-main','exhibition/exh-1','exhibition/exh-2','exhibition/exh-3','shop/art-1-engelis','shop/art-2-irisi','shop/art-3-puce','shop/art-4-rokoko','shop/art-5-magonu','philosophy/philosophy','gallery/intro-wide'].map(function(p){ return 'assets/' + p + '.webp'; });
+  pics.forEach(function(s){ var i = new Image(); i.src = s; });
+  var cur = -1;
+  function next(){ var n; do { n = Math.floor(Math.random() * pics.length); } while (n === cur); cur = n; z.style.backgroundImage = 'url("' + pics[n] + '")'; }
+  next();
+  setInterval(next, 500);
+})();
+</script>
+</body>
+</html>
