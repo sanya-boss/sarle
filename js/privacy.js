@@ -15,7 +15,7 @@
         '<p>When you contact us, we use the contact details and message content you provide to reply to your enquiry and handle your request. The legal basis is our legitimate interest in communicating with visitors and, for purchase or service enquiries, preparing or performing a contract.</p>' +
         '<p>If you subscribe to the newsletter, we use your email to send news about exhibitions and events on the basis of your consent. You can withdraw consent at any time by writing to ' + MAIL + '. This does not affect the lawfulness of processing before withdrawal.</p>' +
         '<h3>3. Technical data and third-party services</h3>' +
-        '<p>The website uses GitHub Pages, Google Fonts, Google Maps and images hosted on Tilda servers. When the site loads, these services may receive your IP address, browser information and other technical data. Google Maps may also use cookies.</p>' +
+        '<p>The website uses GitHub Pages, Google Fonts and Google Maps. When the site loads, these services may receive your IP address, browser information and other technical data. Google Maps may also use cookies.</p>' +
         '<p>Processing by these services is governed by their own privacy policies and may take place outside the European Economic Area. Where consent is required for optional cookies, it is requested separately.</p>' +
         '<h3>4. Sharing and retention</h3>' +
         '<p>We do not sell your personal data. It may be accessed by service providers needed to run the website and communicate with you, and by competent authorities where required by law.</p>' +
@@ -38,7 +38,7 @@
         '<p>Kui võtate meiega ühendust, kasutame teie esitatud kontaktandmeid ja sõnumi sisu, et pöördumisele vastata ja päringut menetleda. Õiguslikuks aluseks on meie õigustatud huvi külastajatega suhelda ning ostu- või teenusepäringute puhul lepingu ettevalmistamine või täitmine.</p>' +
         '<p>Kui tellite uudiskirja, kasutame teie e-posti aadressi näituste ja ürituste uudiste saatmiseks teie nõusoleku alusel. Nõusoleku saate igal ajal tagasi võtta, kirjutades aadressil ' + MAIL + '. See ei mõjuta enne tagasivõtmist toimunud töötlemise seaduslikkust.</p>' +
         '<h3>3. Tehnilised andmed ja kolmandate osapoolte teenused</h3>' +
-        '<p>Veebisaidi toimimiseks kasutatakse GitHub Pagesi, Google Fontsi, Google Mapsi ja Tilda serverites asuvaid pilte. Saidi laadimisel võivad need teenused saada teie IP-aadressi, brauseri andmed ja muud tehnilised andmed. Google Maps võib kasutada ka küpsiseid.</p>' +
+        '<p>Veebisaidi toimimiseks kasutatakse GitHub Pagesi, Google Fontsi ja Google Mapsi. Saidi laadimisel võivad need teenused saada teie IP-aadressi, brauseri andmed ja muud tehnilised andmed. Google Maps võib kasutada ka küpsiseid.</p>' +
         '<p>Nende teenuste poolset andmetöötlust reguleerivad nende endi privaatsuspoliitikad ning see võib toimuda väljaspool Euroopa Majanduspiirkonda. Kui valikuliste küpsiste kasutamiseks on vaja nõusolekut, küsitakse seda eraldi.</p>' +
         '<h3>4. Andmete edastamine ja säilitamine</h3>' +
         '<p>Me ei müü teie isikuandmeid. Neile võivad juurde pääseda veebisaidi toimimiseks ja teiega suhtlemiseks vajalikud teenusepakkujad ning seaduses sätestatud juhtudel pädevad asutused.</p>' +
@@ -61,7 +61,7 @@
         '<p>Когда вы связываетесь с нами, мы используем предоставленные вами контактные данные и содержание сообщения, чтобы ответить на обращение и обработать запрос. Основанием является наш законный интерес в общении с посетителями, а для запросов о покупке или услугах — подготовка или исполнение договора.</p>' +
         '<p>Если вы подписываетесь на рассылку, мы используем ваш email для отправки новостей о выставках и мероприятиях на основании вашего согласия. Отозвать согласие можно в любое время, написав на ' + MAIL + '. Это не влияет на законность обработки до отзыва.</p>' +
         '<h3>3. Технические данные и сторонние сервисы</h3>' +
-        '<p>Для работы сайта используются GitHub Pages, Google Fonts, Google Maps и изображения, размещённые на серверах Tilda. При загрузке сайта эти сервисы могут получать ваш IP-адрес, сведения о браузере и другие технические данные. Google Maps также может использовать файлы cookie.</p>' +
+        '<p>Для работы сайта используются GitHub Pages, Google Fonts и Google Maps. При загрузке сайта эти сервисы могут получать ваш IP-адрес, сведения о браузере и другие технические данные. Google Maps также может использовать файлы cookie.</p>' +
         '<p>Обработка данных такими сервисами регулируется их политиками конфиденциальности и может происходить за пределами Европейской экономической зоны. Если для использования необязательных файлов cookie требуется согласие, оно запрашивается отдельно.</p>' +
         '<h3>4. Передача и хранение данных</h3>' +
         '<p>Мы не продаём ваши персональные данные. Доступ к ним могут получать поставщики услуг, необходимые для работы сайта и связи с вами, а также уполномоченные органы в предусмотренных законом случаях.</p>' +

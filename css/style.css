@@ -529,7 +529,12 @@ img { max-width: none; }
 .about-photo--tall { aspect-ratio: 4 / 5; width: 78%; justify-self: end; }
 .about-photo--tall img { object-position: 50% 20%; }
 .about-copy { padding-top: clamp(0px, 2vw, 26px); position: sticky; top: 120px; }
-@media (max-width: 879px) { .about-copy { position: static; } }
+@media (max-width: 879px) {
+  .about-copy { position: static; order: 2; }
+  .about-media--duo { display: contents; }
+  .about-photo--wide { order: 1; }
+  .about-photo--tall { order: 3; width: 100%; justify-self: stretch; }
+}
 .about-lead {
   margin: 0;
   font-family: 'Cormorant Garamond', serif;
@@ -607,7 +612,10 @@ img { max-width: none; }
 .fact-row dd { margin: 0; text-align: right; }
 .fact-row-last { border-bottom: 1px solid var(--hairline); }
 .exhibition-grid3 { margin-top: clamp(20px, 3vh, 32px); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(12px, 1.6vw, 22px); }
-@media (max-width: 619px) { .exhibition-grid3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 619px) {
+  .exhibition-grid3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .exhibition-grid3 .grid3-item:nth-child(3) { grid-column: 1 / -1; aspect-ratio: 3 / 2; }
+}
 .grid3-item { aspect-ratio: 3 / 4; overflow: hidden; }
 .grid3-item img { width: 100%; height: 100%; object-fit: cover; display: block; position: relative; top: 5px; }
 
