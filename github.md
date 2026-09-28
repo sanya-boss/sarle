@@ -10,5 +10,5 @@ date: 2026-09-27T16:31:58Z
 ## Screen map
 | Screen | Repo files |
 |---|---|
-| Home | index.html, css/style.css, js/main.js |
-| Shop | shop.html, css/shop.css |
+| Home | site/index.html, site/css/style.css, site/js/main.js |
+| Shop | site/shop.html, site/css/shop.css |
