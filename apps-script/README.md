@@ -1,6 +1,6 @@
 # Подписка на новости → Google Таблица
 
-Форма подписки на главной странице (`index.html`, блок `#newsletter`) отправляет адрес в веб-приложение Google Apps Script. Скрипт добавляет строку в Google Таблицу. Платных сервисов и отдельной CRM нет.
+Форма подписки на главной странице (`site/index.html`, блок `#newsletter`) отправляет адрес в веб-приложение Google Apps Script. Скрипт добавляет строку в Google Таблицу. Платных сервисов и отдельной CRM нет.
 
 ```
 Сайт (GitHub Pages) ──POST──▶ Apps Script /exec ──▶ Google Таблица «Подписчики»
@@ -13,8 +13,8 @@
 |---|---|
 | `apps-script/Code.gs` | Серверный код. Его нужно вставить в редактор Apps Script. |
 | `apps-script/appsscript.json` | Манифест: часовой пояс Europe/Tallinn и настройки веб-приложения. |
-| `js/newsletter-config.js` | **Единственное место**, где хранится URL `/exec`. |
-| `js/main.js` | Логика формы (блок `setupNewsletter`). |
+| `site/js/newsletter-config.js` | **Единственное место**, где хранится URL `/exec`. |
+| `site/js/main.js` | Логика формы (блок `setupNewsletter`). |
 | `apps-script/tests/` | Локальные тесты. На сайт они не влияют. |
 
 ## Формат таблицы
@@ -85,7 +85,7 @@
 
 ### 6. Вставьте URL в сайт
 
-Откройте `js/newsletter-config.js` и вставьте URL:
+Откройте `site/js/newsletter-config.js` и вставьте URL:
 
 ```js
 window.SARLE_NEWSLETTER = {
@@ -116,7 +116,7 @@ window.SARLE_NEWSLETTER = {
 2. Выберите текущее развертывание и нажмите ✏️ (изменить).
 3. В поле **Версия** выберите **Новая версия** и нажмите **Развернуть**.
 
-URL `/exec` при этом **не меняется**. Не выбирайте «Новое развертывание»: оно выдаст новый URL, и его придётся заново вставлять в `js/newsletter-config.js`.
+URL `/exec` при этом **не меняется**. Не выбирайте «Новое развертывание»: оно выдаст новый URL, и его придётся заново вставлять в `site/js/newsletter-config.js`.
 
 Если поменять только Script Properties, переразвёртывать не нужно.
 

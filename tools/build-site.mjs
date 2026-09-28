@@ -6,7 +6,7 @@
 //    and /ru/, using the same dictionaries js/main.js uses in the browser,
 //    so search engines can index each language at its own URL.
 //
-// The English pages in the repo root stay the only source to edit.
+// The English pages in site/ stay the only source to edit.
 // Run: npm run build (in tools/). Output: ../_site
 
 import { JSDOM } from 'jsdom';
@@ -15,10 +15,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const SRC = path.join(ROOT, 'site');
 const OUT = path.join(ROOT, '_site');
 const SITE = 'https://sarle.ee';
 
-// Everything else in the repo stays private to GitHub.
+// Only these from site/ are published; everything else stays in the repo.
 const COPY = ['css', 'js', 'assets', '404.html', 'favicon.ico', 'site.webmanifest',
   'browserconfig.xml', 'robots.txt', 'sitemap.xml', 'CNAME'];
 const PAGES = [
@@ -60,7 +61,7 @@ const warnings = [];
 
 // The translator block of js/main.js, run as-is against each page.
 function i18nSource() {
-  const src = fs.readFileSync(path.join(ROOT, 'js/main.js'), 'utf8');
+  const src = fs.readFileSync(path.join(SRC, 'js/main.js'), 'utf8');
   const start = src.indexOf('(function setupI18n() {');
   const endMarker = "if (lang !== 'EN') applyLang();\n  })();";
   const end = src.indexOf(endMarker, start);
@@ -88,7 +89,7 @@ function isLocal(url) {
 }
 
 function renderPage(page, lang, i18n) {
-  const html = fs.readFileSync(path.join(ROOT, page.file), 'utf8');
+  const html = fs.readFileSync(path.join(SRC, page.file), 'utf8');
   const dom = new JSDOM(html, { url: pageUrl(lang, page.slug), runScripts: 'outside-only' });
   const { window } = dom;
   const doc = window.document;
@@ -177,7 +178,7 @@ function main() {
   fs.rmSync(OUT, { recursive: true, force: true });
   fs.mkdirSync(OUT, { recursive: true });
   for (const item of COPY) {
-    fs.cpSync(path.join(ROOT, item), path.join(OUT, item), { recursive: true });
+    fs.cpSync(path.join(SRC, item), path.join(OUT, item), { recursive: true });
   }
   const i18n = i18nSource();
   const written = [];

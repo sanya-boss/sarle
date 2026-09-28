@@ -14,7 +14,7 @@ const path = require('path');
 const { chromium } = require('playwright');
 const { createSandbox } = require('./gas-sandbox');
 
-const ROOT = path.join(__dirname, '..', '..');
+const ROOT = path.join(__dirname, '..', '..', 'site');
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp' };
 
 function listen(handler) {
