@@ -1033,8 +1033,14 @@
 
     var DICT = { EN: null, EST: EST, RUS: RUS };
     var HTML_DICT = {"EST":{"g.intro1":"Eesti, Tallinn, vanalinn — oma inimeste süda, ja just siin, Aia tn 17, asub <strong>Sarle Art Gallery &amp; Studio</strong>.","g.intro2":"Samal aadressil asub ka tuntud Eesti skulptori <strong>Tauno Kangro</strong> galerii. Erinevate kunstisuundade kooseksisteerimine loob ainulaadse õhkkonna — dialoogiruumi traditsiooni ja kaasaegse kunsti vahel.","g.story1":"<strong>Svetlana Sarle</strong> asutas Sarle Art Gallery &amp; Studio oma lähedase sõbra <strong>Vilnis Strazdinši</strong> mälestuseks — tema oli see, kes esimesena mõtles galerii avamisele.","g.sky":"Ta lahkus 63-aastaselt, jättes endast maha helged, soojad ja südamlikud mälestused. Tal oli veel üks soov: aidata vanemaid laste kasvatamisel. Ta oli siiralt õnnelik, kui rääkis oma väikesest sõbrast, kelle ebatavaline nimi oli <strong>Sky</strong>.","g.values":"Svetlana jaoks sai galerii loomine mitte ainult oma lähedase sõbra Vilnis Strazdinši unistuse täitumiseks, vaid ka tema enda väärtuste jätkuks — <strong>armastus inimeste ja ilu vastu, austus mälestuse vastu, tänulikkus ja soov luua.</strong>","shop.bio1":"<strong>Sarle Art Gallery &amp; Studio</strong> erakogus on läti kunstniku <strong>Juris Jurjānsi (1944–2023)</strong> teosed. Valitud töid kogust on võimalik omandada."},"RUS":{"g.intro1":"Эстония, Таллинн, Старый город — сердце его жителей, и именно здесь, на Aia tn 17, находится <strong>Sarle Art Gallery &amp; Studio</strong>.","g.intro2":"По этому же адресу находится галерея известного эстонского скульптора <strong>Тауно Кангро</strong>. Сосуществование разных художественных направлений создаёт особую атмосферу — пространство диалога между традицией и современным искусством.","g.story1":"Sarle Art Gallery &amp; Studio основала <strong>Светлана Шарле</strong> в память о своём близком друге <strong>Вилнисе Страздиньше</strong>, который первым задумал открыть галерею.","g.sky":"Он ушёл из жизни в 63 года, оставив после себя светлые, тёплые и искренние воспоминания. У него было ещё одно желание — помогать родителям в воспитании детей. Он был по-настоящему счастлив, рассказывая о своём маленьком друге с необычным именем <strong>Sky</strong>.","g.values":"Для Светланы создание галереи стало не только исполнением мечты её близкого друга Вилниса Страздиньша, но и продолжением её собственных ценностей — <strong>любви к людям и красоте, уважения к памяти, благодарности и стремления созидать.</strong>","shop.bio1":"В частной коллекции <strong>Sarle Art Gallery &amp; Studio</strong> находятся работы латвийского художника <strong>Юриса Юрьянса (1944–2023)</strong>. Избранные работы из коллекции доступны для приобретения."}};
+    // Published pages (/, /et/, /ru/) are pre-translated at build time and
+    // carry their language in <html data-lang>. Source pages without it
+    // (local preview, tests) keep translating in place.
+    var pageLang = document.documentElement.getAttribute('data-lang');
     var lang = 'EN';
     try { lang = sessionStorage.getItem('sarle-lang') || 'EN'; } catch (e) {}
+    if (DICT.hasOwnProperty(pageLang)) lang = pageLang;
+    var HREFLANG = { EN: 'en', EST: 'et', RUS: 'ru' };
 
     function t(en) {
       var d = DICT[lang];
@@ -1092,8 +1098,16 @@
     document.addEventListener('click', function (e) {
       var b = e.target.closest ? e.target.closest('[data-lang-btn]') : null;
       if (!b) return;
-      lang = b.getAttribute('data-lang-btn');
-      try { sessionStorage.setItem('sarle-lang', lang); } catch (err) {}
+      var next = b.getAttribute('data-lang-btn');
+      try { sessionStorage.setItem('sarle-lang', next); } catch (err) {}
+      // On published pages each language has its own URL: go there.
+      var alt = pageLang && document.querySelector('link[rel="alternate"][hreflang="' + HREFLANG[next] + '"]');
+      if (alt) {
+        // Same host, path from the alternate link (works on www and apex).
+        if (next !== lang) location.href = new URL(alt.getAttribute('href'), location.href).pathname + location.hash;
+        return;
+      }
+      lang = next;
       paint();
       applyLang();
     });
