@@ -128,9 +128,11 @@ test('switching language without reload routes to RU (B) and ET (D)', async () =
   assert.match(await visibleText(page, 'nl-success'), /Aitäh/);
   await page.waitForTimeout(4100); // client-side minimum interval between sends
   await fill(page, 'et-user@example.com');
-  const reply = page.waitForResponse(r => r.url().includes('/macros/echo'));
   await page.click('.newsletter-submit');
-  await reply;
+  // Wait for the form's own success state (the email is cleared only on ok).
+  // Chromium does not always report the redirected echo fetch as a network
+  // event, so waiting for that response made this test flaky.
+  await page.waitForFunction(() => document.getElementById('nl-email').value === '');
   await page.waitForSelector('#nl-success:not([hidden])');
   assert.deepEqual(rowsFor('ru-user@example.com'), [['ru-user@example.com', '', '']]);
   assert.deepEqual(rowsFor('et-user@example.com'), [['', '', 'et-user@example.com']]);
