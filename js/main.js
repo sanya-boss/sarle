@@ -10,6 +10,19 @@
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---------------------------------------------------------------------
+   * Clean URLs: old links like /gallery.html or /index.html show as
+   * /gallery or / in the address bar (GitHub Pages serves both forms).
+   * Only on the live domain, so local previews keep working.
+   * ------------------------------------------------------------------- */
+  (function cleanUrl() {
+    if (!/(^|\.)sarle\.ee$/.test(location.hostname) || !window.history.replaceState) return;
+    var clean = location.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
+    if (clean !== location.pathname) {
+      history.replaceState(history.state, '', clean + location.search + location.hash);
+    }
+  })();
+
+  /* ---------------------------------------------------------------------
    * Header: solid background once the page is scrolled
    * ------------------------------------------------------------------- */
   (function headerScroll() {
