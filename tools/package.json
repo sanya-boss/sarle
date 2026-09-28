@@ -1,0 +1,13 @@
+{
+  "name": "sarle-site-tools",
+  "private": true,
+  "type": "module",
+  "description": "Builds the published site: copies public files and pre-renders /et/ and /ru/ pages.",
+  "scripts": {
+    "build": "node build-site.mjs",
+    "test": "node --test build-site.test.mjs"
+  },
+  "dependencies": {
+    "jsdom": "30.1.1"
+  }
+}

@@ -12,3 +12,6 @@ uploads/
 # Local tooling
 node_modules/
 .DS_Store
+
+# Build output
+_site/

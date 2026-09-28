@@ -53,7 +53,7 @@
 <body>
 
 <header class="e-header">
-  <a href="/" class="brand" aria-label="Sarle Art Gallery and Studio, home">
+  <a href="/" data-page="/" class="brand" aria-label="Sarle Art Gallery and Studio, home">
     <img class="brand-logo" src="assets/sarle-wordmark.svg?v=2" alt="Sarle Art Gallery &amp; Studio">
   </a>
   <div class="lang-group" role="group" aria-label="Language">
@@ -80,9 +80,9 @@
       <h2 class="e-title" data-t="title">This room of the gallery doesn’t exist.</h2>
       <p class="e-lead" data-t="lead">The page may have moved, or the work was never hung here. Let us walk you back to the exhibition.</p>
       <div class="e-actions">
-        <a class="btn e-btn-solid" href="/" data-t="home">Main page</a>
-        <a class="btn btn-outline" href="/gallery" data-t="gallery">Gallery</a>
-        <a class="btn btn-outline" href="/shop" data-t="shop">Shop</a>
+        <a class="btn e-btn-solid" href="/" data-page="/" data-t="home">Main page</a>
+        <a class="btn btn-outline" href="/gallery" data-page="/gallery" data-t="gallery">Gallery</a>
+        <a class="btn btn-outline" href="/shop" data-page="/shop" data-t="shop">Shop</a>
       </div>
       <div class="e-label">
         <strong data-t="work">Untitled (Absence), 2026</strong>
@@ -107,11 +107,17 @@
   };
   var lang = 'EN';
   try { lang = sessionStorage.getItem('sarle-lang') || 'EN'; } catch (e) {}
+  // A missing URL under /et/ or /ru/ opens the page in that language.
+  var seg = location.pathname.split('/')[1];
+  if (seg === 'et') lang = 'EST'; else if (seg === 'ru') lang = 'RUS';
   function paint(){
     var d = D[lang] || D.EN;
     document.documentElement.lang = lang === 'EST' ? 'et' : lang === 'RUS' ? 'ru' : 'en';
     document.querySelectorAll('[data-t]').forEach(function(el){ el.textContent = d[el.getAttribute('data-t')]; });
     document.querySelectorAll('[data-lang-btn]').forEach(function(b){ var on = b.getAttribute('data-lang-btn') === lang; b.classList.toggle('is-active', on); b.setAttribute('aria-pressed', on); });
+    // Point the links at the pages in the chosen language (/, /et/, /ru/).
+    var prefix = lang === 'EST' ? '/et' : lang === 'RUS' ? '/ru' : '';
+    document.querySelectorAll('[data-page]').forEach(function(a){ var p = a.getAttribute('data-page'); a.setAttribute('href', prefix ? prefix + (p === '/' ? '/' : p) : p); });
   }
   document.addEventListener('click', function(e){
     var b = e.target.closest('[data-lang-btn]'); if (!b) return;
