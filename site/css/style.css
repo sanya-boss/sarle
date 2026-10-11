@@ -35,6 +35,15 @@ a:hover { color: var(--muted); }
 
 ::selection { background: var(--fg); color: var(--bg); }
 
+/* No browser-default blue flash on tap and no stray selection on controls */
+html { -webkit-tap-highlight-color: transparent; }
+a, button, label, summary, [role="button"], [tabindex] { -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
+button, .btn, .lang-btn, .burger, .nav-link, .mobile-nav-link, .footer-nav-link,
+.hp-gallery-3d, .art-ring-wrap, .lightbox { -webkit-user-select: none; user-select: none; }
+a, button, label { touch-action: manipulation; }
+img { -webkit-user-drag: none; }
+:focus:not(:focus-visible) { outline: none; }
+
 button { font: inherit; }
 
 img { max-width: none; }
@@ -639,7 +648,7 @@ img { max-width: none; }
   perspective-origin: 50% 50%;
   overflow: hidden;
   cursor: grab;
-  user-select: none;
+  user-select: none; -webkit-user-select: none;
   touch-action: pan-y;
 }
 .art-ring-wrap.is-dragging { cursor: grabbing; }
