@@ -110,27 +110,33 @@
       if (hasImg) return; // its photos animate themselves
       el.style.opacity = '0';
       el.style.transform = 'translateY(24px)';
-      el.style.transition = 'opacity 1000ms ' + EASE + ', transform 1100ms ' + EASE;
+      el.style.transition = 'opacity 650ms ' + EASE + ', transform 750ms ' + EASE;
       el.style.willChange = 'opacity, transform';
     });
 
+    var vh = window.innerHeight;
+    imgs = imgs.filter(function (img) {
+      // already on screen at load: leave as is, no hide-then-show flash
+      var r = (img.parentNode || img).getBoundingClientRect();
+      return r.top > vh * 0.9;
+    });
     imgs.forEach(function (img) {
       var par = img.hasAttribute('data-parallax');
       img.style.clipPath = 'inset(100% 0 0 0)';
       img.style.webkitClipPath = 'inset(100% 0 0 0)';
-      img.style.opacity = '0';
+      img.loading = 'eager';
       var box = img.parentNode;
       var solo = box && box.children.length === 1 && box.tagName !== 'MAIN';
       if (solo && getComputedStyle(box).overflow === 'visible') box.style.overflow = 'hidden';
       if (!par && solo) img.style.scale = '1.14';
-      img.style.transition = 'clip-path 1300ms ' + EASE + ', -webkit-clip-path 1300ms ' + EASE + ', opacity 700ms ease, scale 1800ms ' + EASE;
+      img.style.transition = 'clip-path 750ms ' + EASE + ', -webkit-clip-path 750ms ' + EASE + ', scale 1100ms ' + EASE;
     });
 
     function showText(el, delay) {
       setTimeout(function () {
         el.style.opacity = '1';
         el.style.transform = 'none';
-        setTimeout(function () { el.style.willChange = ''; }, 1200);
+        setTimeout(function () { el.style.willChange = ''; }, 800);
       }, delay);
     }
     function showImg(img, delay) {
@@ -138,9 +144,8 @@
         setTimeout(function () {
           img.style.clipPath = 'inset(0 0 0 0)';
           img.style.webkitClipPath = 'inset(0 0 0 0)';
-          img.style.opacity = '1';
           img.style.scale = '1';
-          setTimeout(function () { img.style.clipPath = ''; img.style.webkitClipPath = ''; }, 1900);
+          setTimeout(function () { img.style.transition = ''; img.style.clipPath = ''; img.style.webkitClipPath = ''; img.style.scale = ''; }, 1200);
         }, delay);
       };
       if (img.complete && img.naturalWidth) return go();
@@ -148,7 +153,7 @@
       var once = function () { if (!done) { done = true; go(); } };
       img.addEventListener('load', once, { once: true });
       img.addEventListener('error', once, { once: true });
-      setTimeout(once, 1800);
+      setTimeout(once, 250);
     }
 
     var targets = blocks.filter(function (el) { return el.dataset.revealKind === 'text'; }).concat(imgs);
@@ -165,13 +170,13 @@
           if (el.tagName === 'IMG') {
             var host = el.closest('[data-reveal-delay]');
             var base = host ? parseInt(host.getAttribute('data-reveal-delay'), 10) || 0 : 0;
-            showImg(el, base + batch++ * 140);
+            showImg(el, Math.min(base, 120) + Math.min(batch++, 3) * 80);
           } else {
-            showText(el, parseInt(el.getAttribute('data-reveal-delay') || '0', 10));
+            showText(el, Math.min(parseInt(el.getAttribute('data-reveal-delay') || '0', 10), 120));
           }
         });
       });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    }, { rootMargin: '0px 0px 10% 0px', threshold: 0 });
 
     var started = false;
     var start = function () { if (started) return; started = true; targets.forEach(function (el) {
@@ -179,8 +184,7 @@
       // (a box may hold several photos; all of them reveal together)
       if (el.tagName === 'IMG') { var box = el.parentNode; (box.__revealImgs = box.__revealImgs || []).push(el); io.observe(box); } else io.observe(el);
     }); };
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(start);
-    setTimeout(start, 1000);
+    start();
 
     setTimeout(function () {
       if (ioFired) return;
@@ -189,7 +193,7 @@
         el.dataset.revealed = '1';
         el.tagName === 'IMG' ? showImg(el, 0) : showText(el, 0);
       });
-    }, 2600);
+    }, 1200);
   })();
 
   /* ---------------------------------------------------------------------
