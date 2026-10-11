@@ -87,51 +87,109 @@
   });
 
   /* ---------------------------------------------------------------------
-   * Scroll reveal (fade + rise into view)
+   * Scroll animations — one system for every page.
+   * Text blocks: fade + rise. Photos: curtain wipe from the bottom with a
+   * slow settle-in zoom, staggered inside a group, started once loaded.
+   * Carousels, slides, lightboxes, header/footer logos are left alone.
    * ------------------------------------------------------------------- */
   (function setupReveal() {
-    var nodes = document.querySelectorAll('[data-reveal]');
-    if (!nodes.length || reduced || !('IntersectionObserver' in window)) return;
+    if (reduced || !('IntersectionObserver' in window)) return;
+    var EASE = 'cubic-bezier(.22,.61,.36,1)';
+    var SKIP = 'section#hero:not(.g-section), section#intro:not(.g-section), section#artists:not(.g-section), [data-slide], .lightbox, .hp-gallery-3d, .hp-gallery-3d__lightbox, header, footer, [data-no-reveal]';
 
-    var fadeOnly = !!document.querySelector('.shop-title');
-    nodes.forEach(function (el) {
-      el.style.opacity = '0';
-      if (fadeOnly) {
-        el.style.transition = 'opacity 900ms ease';
-      } else {
-        el.style.transform = 'translateY(22px)';
-        el.style.transition = 'opacity 1000ms cubic-bezier(.22,.61,.36,1), transform 1000ms cubic-bezier(.22,.61,.36,1)';
-      }
+    var imgs = Array.prototype.slice.call(document.querySelectorAll('main img')).filter(function (img) {
+      return !img.closest(SKIP) && !/\.svg(\?|$)/.test(img.getAttribute('src') || '');
+    });
+    var blocks = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]')).filter(function (el) {
+      return !el.closest('[data-slide], .hp-gallery-3d');
     });
 
-    function revealNode(el, delay) {
-      if (el.dataset.revealed) return;
-      el.dataset.revealed = '1';
-      setTimeout(function () { el.style.opacity = '1'; if (!fadeOnly) el.style.transform = 'none'; }, delay || 0);
-      io.unobserve(el);
+    blocks.forEach(function (el) {
+      var hasImg = imgs.some(function (i) { return el.contains(i); });
+      el.dataset.revealKind = hasImg ? 'media' : 'text';
+      if (hasImg) return; // its photos animate themselves
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(24px)';
+      el.style.transition = 'opacity 1000ms ' + EASE + ', transform 1100ms ' + EASE;
+      el.style.willChange = 'opacity, transform';
+    });
+
+    imgs.forEach(function (img) {
+      var par = img.hasAttribute('data-parallax');
+      img.style.clipPath = 'inset(100% 0 0 0)';
+      img.style.webkitClipPath = 'inset(100% 0 0 0)';
+      img.style.opacity = '0';
+      var box = img.parentNode;
+      var solo = box && box.children.length === 1 && box.tagName !== 'MAIN';
+      if (solo && getComputedStyle(box).overflow === 'visible') box.style.overflow = 'hidden';
+      if (!par && solo) img.style.scale = '1.14';
+      img.style.transition = 'clip-path 1300ms ' + EASE + ', -webkit-clip-path 1300ms ' + EASE + ', opacity 700ms ease, scale 1800ms ' + EASE;
+    });
+
+    function showText(el, delay) {
+      setTimeout(function () {
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+        setTimeout(function () { el.style.willChange = ''; }, 1200);
+      }, delay);
+    }
+    function showImg(img, delay) {
+      var go = function () {
+        setTimeout(function () {
+          img.style.clipPath = 'inset(0 0 0 0)';
+          img.style.webkitClipPath = 'inset(0 0 0 0)';
+          img.style.opacity = '1';
+          img.style.scale = '1';
+          setTimeout(function () { img.style.clipPath = ''; img.style.webkitClipPath = ''; }, 1900);
+        }, delay);
+      };
+      if (img.complete && img.naturalWidth) return go();
+      var done = false;
+      var once = function () { if (!done) { done = true; go(); } };
+      img.addEventListener('load', once, { once: true });
+      img.addEventListener('error', once, { once: true });
+      setTimeout(once, 1800);
     }
 
+    var targets = blocks.filter(function (el) { return el.dataset.revealKind === 'text'; }).concat(imgs);
     var ioFired = false;
     var io = new IntersectionObserver(function (entries) {
       ioFired = true;
+      var batch = 0;
       entries.forEach(function (en) {
         if (!en.isIntersecting) return;
-        revealNode(en.target, parseInt(en.target.getAttribute('data-reveal-delay') || '0', 10));
+        io.unobserve(en.target);
+        (en.target.__revealImgs || [en.target]).forEach(function (el) {
+          if (el.dataset.revealed) return;
+          el.dataset.revealed = '1';
+          if (el.tagName === 'IMG') {
+            var host = el.closest('[data-reveal-delay]');
+            var base = host ? parseInt(host.getAttribute('data-reveal-delay'), 10) || 0 : 0;
+            showImg(el, base + batch++ * 140);
+          } else {
+            showText(el, parseInt(el.getAttribute('data-reveal-delay') || '0', 10));
+          }
+        });
       });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
 
-    function startObserve() { nodes.forEach(function (el) { io.observe(el); }); }
-    if (document.fonts && document.fonts.ready) {
-      var started = false;
-      var go = function () { if (!started) { started = true; startObserve(); } };
-      document.fonts.ready.then(go);
-      setTimeout(go, 1200);
-    } else startObserve();
+    var started = false;
+    var start = function () { if (started) return; started = true; targets.forEach(function (el) {
+      // clip-path hides the img from IntersectionObserver, so watch its box
+      // (a box may hold several photos; all of them reveal together)
+      if (el.tagName === 'IMG') { var box = el.parentNode; (box.__revealImgs = box.__revealImgs || []).push(el); io.observe(box); } else io.observe(el);
+    }); };
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(start);
+    setTimeout(start, 1000);
 
     setTimeout(function () {
       if (ioFired) return;
-      nodes.forEach(function (el) { revealNode(el, 0); });
-    }, 2000);
+      targets.forEach(function (el) {
+        if (el.dataset.revealed) return;
+        el.dataset.revealed = '1';
+        el.tagName === 'IMG' ? showImg(el, 0) : showText(el, 0);
+      });
+    }, 2600);
   })();
 
   /* ---------------------------------------------------------------------
