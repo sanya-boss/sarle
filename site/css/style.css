@@ -845,8 +845,8 @@ img { max-width: none; }
   flex-wrap: wrap;
 }
 .footer-copy { margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
-.footer-bottom-links { display: flex; align-items: center; gap: 26px; }
-.footer-bottom-link { font-family: 'Space Grotesk', sans-serif; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.footer-bottom-links { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 26px; }
+.footer-bottom-link { white-space: nowrap; font-family: 'Space Grotesk', sans-serif; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
 .footer-bottom-link-strong { color: var(--fg); }
 
 /* Privacy policy modal ---------------------------------------------------- */
