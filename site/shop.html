@@ -33,6 +33,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/shop.css">
+<script>if('IntersectionObserver' in window&&!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.classList.add('rv');setTimeout(function(){if(!window.__rv)document.documentElement.classList.add('rv-done');},4000);}</script>
 </head>
 <body>
 
@@ -93,7 +94,7 @@
   <div class="wrap">
     <div class="shop-title-meta" data-reveal>
       <p>Sarle Art Gallery &amp; Studio</p>
-      <p>Aia tn 17, Tallinn</p>
+      <p>Tallinn, Estonia</p>
     </div>
 
     <h1 class="shop-wordmark" data-reveal data-reveal-delay="60">SHOP</h1>
@@ -110,7 +111,7 @@
     <div data-reveal>
       <div class="shop-artist-media">
         <div class="shop-artist-photo">
-          <img src="assets/shop/shop-portrait.webp" alt="Juris Jurjāns in his studio" loading="lazy">
+          <img width="562" height="813" src="assets/shop/shop-portrait.webp" alt="Juris Jurjāns in his studio" loading="lazy">
         </div>
         <p class="shop-artist-caption">Juris Jurjāns in his studio</p>
       </div>
@@ -148,7 +149,7 @@
   </div>
 </section>
 
-<section id="artworks" class="shop-works">
+<section id="artworks" class="shop-works" data-no-reveal>
   <div class="wrap">
     <div class="shop-works-head" data-reveal>
       <h2>ARTWORKS<br>ON SALE</h2>
@@ -158,7 +159,7 @@
     <div class="shop-grid">
       <article class="work" data-reveal>
         <div class="work-frame">
-          <img src="assets/shop/art-1-engelis.webp" alt="Eņģelis — The Angel, canvas, oil, 2009" loading="lazy">
+          <img width="410" height="319" src="assets/shop/art-1-engelis.webp" alt="Eņģelis — The Angel, canvas, oil, 2009" loading="lazy">
         </div>
         <h3 class="work-title">«Eņģelis»</h3>
         <p class="work-subtitle">«The Angel»</p>
@@ -170,7 +171,7 @@
       </article>
       <article class="work" data-reveal data-reveal-delay="90">
         <div class="work-frame">
-          <img src="assets/shop/art-2-irisi.webp" alt="Zelta oranžie īrisi — Golden orange irises, canvas, oil, 2007" loading="lazy">
+          <img width="407" height="307" src="assets/shop/art-2-irisi.webp" alt="Zelta oranžie īrisi — Golden orange irises, canvas, oil, 2007" loading="lazy">
         </div>
         <h3 class="work-title">«Zelta oranžie īrisi»</h3>
         <p class="work-subtitle">«Golden orange irises»</p>
@@ -182,7 +183,7 @@
       </article>
       <article class="work" data-reveal data-reveal-delay="180">
         <div class="work-frame">
-          <img src="assets/shop/art-3-puce.webp" alt="Pūce saulrietā — Owl at sunset, canvas, oil, 2009" loading="lazy">
+          <img width="266" height="316" src="assets/shop/art-3-puce.webp" alt="Pūce saulrietā — Owl at sunset, canvas, oil, 2009" loading="lazy">
         </div>
         <h3 class="work-title">«Pūce saulrietā»</h3>
         <p class="work-subtitle">«Owl at sunset»</p>
@@ -194,7 +195,7 @@
       </article>
       <article class="work" data-reveal>
         <div class="work-frame">
-          <img src="assets/shop/art-4-rokoko.webp" alt="Rokoko — Rococo, canvas, oil, 2005" loading="lazy">
+          <img width="366" height="318" src="assets/shop/art-4-rokoko.webp" alt="Rokoko — Rococo, canvas, oil, 2005" loading="lazy">
         </div>
         <h3 class="work-title">«Rokoko»</h3>
         <p class="work-subtitle">«Rococo»</p>
@@ -206,7 +207,7 @@
       </article>
       <article class="work" data-reveal data-reveal-delay="90">
         <div class="work-frame">
-          <img src="assets/shop/art-5-magonu.webp" alt="Magonu smarža — The smell of poppy, canvas, oil, 2001" loading="lazy">
+          <img width="203" height="363" src="assets/shop/art-5-magonu.webp" alt="Magonu smarža — The smell of poppy, canvas, oil, 2001" loading="lazy">
         </div>
         <h3 class="work-title">«Magonu smarža»</h3>
         <p class="work-subtitle">«The smell of poppy»</p>
@@ -267,7 +268,7 @@
   <div class="wrap">
     <div class="footer-grid">
       <div>
-        <img class="footer-logo" src="assets/logo-white.svg?v=4" alt="Sarle Art Gallery &amp; Studio">
+        <a href="index.html" class="footer-logo-link" aria-label="Sarle Art Gallery &amp; Studio — home" style="display: inline-block;"><img class="footer-logo" src="assets/logo-white.svg?v=4" alt="Sarle Art Gallery &amp; Studio"></a>
         <p class="footer-blurb">A cultural space in the very heart of Old Tallinn, bringing together art, music, exhibitions, and creative events.</p>
       </div>
 
