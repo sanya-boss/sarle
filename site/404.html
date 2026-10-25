@@ -68,7 +68,7 @@
 <main class="e-main" id="main">
   <div class="e-meta e-in">
     <p data-t="meta">Error 404 — Room not found</p>
-    <p>Aia tn 17, Tallinn</p>
+    <p data-t="city">Tallinn, Estonia</p>
   </div>
 
   <div class="e-stage">
@@ -101,9 +101,9 @@
 <script>
 (function(){
   var D = {
-    EN: { meta:'Error 404 — Room not found', title:'This room of the gallery doesn’t exist.', lead:'The page may have moved, or the work was never hung here. Let us walk you back to the exhibition.', home:'Main page', gallery:'Gallery', shop:'Shop', work:'Untitled (Absence), 2026', medium:'Empty frame, silence.', coll:'Sarle collection' },
-    EST: { meta:'Viga 404 — Saali ei leitud', title:'Sellist galeriisaali ei ole olemas.', lead:'Leht võib olla kolinud või pole teost siia kunagi üles riputatud. Juhatame teid tagasi näitusele.', home:'Avaleht', gallery:'Galerii', shop:'Pood', work:'Pealkirjata (Puudumine), 2026', medium:'Tühi raam, vaikus.', coll:'Sarle kogu' },
-    RUS: { meta:'Ошибка 404 — Зал не найден', title:'Такого зала в галерее нет.', lead:'Возможно, страница переехала или работа здесь никогда не висела. Давайте вернёмся к выставке.', home:'Главная', gallery:'Галерея', shop:'Магазин', work:'Без названия (Отсутствие), 2026', medium:'Пустая рама, тишина.', coll:'Коллекция Sarle' }
+    EN: { city:'Tallinn, Estonia', meta:'Error 404 — Room not found', title:'This room of the gallery doesn’t exist.', lead:'The page may have moved, or the work was never hung here. Let us walk you back to the exhibition.', home:'Main page', gallery:'Gallery', shop:'Shop', work:'Untitled (Absence), 2026', medium:'Empty frame, silence.', coll:'Sarle collection' },
+    EST: { city:'Tallinn, Eesti', meta:'Viga 404 — Saali ei leitud', title:'Sellist galeriisaali ei ole olemas.', lead:'Leht võib olla kolinud või pole teost siia kunagi üles riputatud. Juhatame teid tagasi näitusele.', home:'Avaleht', gallery:'Galerii', shop:'Pood', work:'Pealkirjata (Puudumine), 2026', medium:'Tühi raam, vaikus.', coll:'Sarle kogu' },
+    RUS: { city:'Таллинн, Эстония', meta:'Ошибка 404 — Зал не найден', title:'Такого зала в галерее нет.', lead:'Возможно, страница переехала или работа здесь никогда не висела. Давайте вернёмся к выставке.', home:'Главная', gallery:'Галерея', shop:'Магазин', work:'Без названия (Отсутствие), 2026', medium:'Пустая рама, тишина.', coll:'Коллекция Sarle' }
   };
   var lang = 'EN';
   try { lang = sessionStorage.getItem('sarle-lang') || 'EN'; } catch (e) {}

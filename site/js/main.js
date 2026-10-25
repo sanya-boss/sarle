@@ -87,113 +87,60 @@
   });
 
   /* ---------------------------------------------------------------------
-   * Scroll animations — one system for every page.
-   * Text blocks: fade + rise. Photos: curtain wipe from the bottom with a
-   * slow settle-in zoom, staggered inside a group, started once loaded.
-   * Carousels, slides, lightboxes, header/footer logos are left alone.
+   * Scroll reveal — initial states live in CSS under html.rv (set in <head>).
+   * Photos: curtain wipe once decoded. Text: fade + rise. Adds .rv-in only.
    * ------------------------------------------------------------------- */
   (function setupReveal() {
-    if (reduced || !('IntersectionObserver' in window)) return;
-    var EASE = 'cubic-bezier(.22,.61,.36,1)';
-    var SKIP = 'section#hero:not(.g-section), section#intro:not(.g-section), section#artists:not(.g-section), [data-slide], .lightbox, .hp-gallery-3d, .hp-gallery-3d__lightbox, header, footer, [data-no-reveal]';
-
-    var imgs = Array.prototype.slice.call(document.querySelectorAll('main img')).filter(function (img) {
-      return !img.closest(SKIP) && !/\.svg(\?|$)/.test(img.getAttribute('src') || '');
+    var root = document.documentElement;
+    if (!root.classList.contains('rv')) return;
+    window.__rv = true;
+    var SKIP = 'section.hero, section.intro, section#artists:not(.g-section), [data-slide], .lightbox, .hp-gallery-3d, .hp-gallery-3d__lightbox, [data-no-reveal]';
+    var imgs = Array.prototype.filter.call(document.querySelectorAll('main img'), function (i) {
+      return !i.closest(SKIP) && !/\.svg(\?|$)/.test(i.getAttribute('src') || '');
     });
-    var blocks = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]')).filter(function (el) {
-      return !el.closest('[data-slide], .hp-gallery-3d');
-    });
-
-    blocks.forEach(function (el) {
-      var hasImg = imgs.some(function (i) { return el.contains(i); });
-      el.dataset.revealKind = hasImg ? 'media' : 'text';
-      if (hasImg) return; // its photos animate themselves
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(24px)';
-      el.style.transition = 'opacity 650ms ' + EASE + ', transform 750ms ' + EASE;
-      el.style.willChange = 'opacity, transform';
-    });
-
-    var vh = window.innerHeight;
-    imgs = imgs.filter(function (img) {
-      // already on screen at load: leave as is, no hide-then-show flash
-      var r = (img.parentNode || img).getBoundingClientRect();
-      return r.top > vh * 0.9;
+    var texts = Array.prototype.filter.call(document.querySelectorAll('[data-reveal]'), function (el) {
+      return !el.closest(SKIP) && !el.querySelector('img');
     });
     imgs.forEach(function (img) {
-      var par = img.hasAttribute('data-parallax');
-      img.style.clipPath = 'inset(100% 0 0 0)';
-      img.style.webkitClipPath = 'inset(100% 0 0 0)';
-      img.loading = 'eager';
       var box = img.parentNode;
-      var solo = box && box.children.length === 1 && box.tagName !== 'MAIN';
-      if (solo && getComputedStyle(box).overflow === 'visible') box.style.overflow = 'hidden';
-      if (!par && solo) img.style.scale = '1.14';
-      img.style.transition = 'clip-path 750ms ' + EASE + ', -webkit-clip-path 750ms ' + EASE + ', scale 1100ms ' + EASE;
+      if (box && box.tagName !== 'MAIN' && getComputedStyle(box).overflow === 'visible') box.style.overflow = 'hidden';
     });
 
-    function showText(el, delay) {
-      setTimeout(function () {
-        el.style.opacity = '1';
-        el.style.transform = 'none';
-        setTimeout(function () { el.style.willChange = ''; }, 800);
-      }, delay);
+    function ready(img) {
+      return new Promise(function (res) {
+        var t = setTimeout(res, 700);
+        var done = function () { clearTimeout(t); res(); };
+        if (img.complete && img.naturalWidth) {
+          if (img.decode) img.decode().then(done, done); else done();
+        } else {
+          img.loading = 'eager';
+          img.addEventListener('load', function () { if (img.decode) img.decode().then(done, done); else done(); }, { once: true });
+          img.addEventListener('error', done, { once: true });
+        }
+      });
     }
-    function showImg(img, delay) {
-      var go = function () {
-        setTimeout(function () {
-          img.style.clipPath = 'inset(0 0 0 0)';
-          img.style.webkitClipPath = 'inset(0 0 0 0)';
-          img.style.scale = '1';
-          setTimeout(function () { img.style.transition = ''; img.style.clipPath = ''; img.style.webkitClipPath = ''; img.style.scale = ''; }, 1200);
-        }, delay);
-      };
-      if (img.complete && img.naturalWidth) return go();
-      var done = false;
-      var once = function () { if (!done) { done = true; go(); } };
-      img.addEventListener('load', once, { once: true });
-      img.addEventListener('error', once, { once: true });
-      setTimeout(once, 250);
+    function show(el, delay) {
+      el.style.transitionDelay = delay ? delay + 'ms' : '';
+      requestAnimationFrame(function () { el.classList.add('rv-in'); });
+      setTimeout(function () { el.style.transitionDelay = ''; }, delay + 1500);
     }
 
-    var targets = blocks.filter(function (el) { return el.dataset.revealKind === 'text'; }).concat(imgs);
-    var ioFired = false;
     var io = new IntersectionObserver(function (entries) {
-      ioFired = true;
-      var batch = 0;
+      var n = 0;
       entries.forEach(function (en) {
         if (!en.isIntersecting) return;
         io.unobserve(en.target);
-        (en.target.__revealImgs || [en.target]).forEach(function (el) {
-          if (el.dataset.revealed) return;
-          el.dataset.revealed = '1';
-          if (el.tagName === 'IMG') {
-            var host = el.closest('[data-reveal-delay]');
-            var base = host ? parseInt(host.getAttribute('data-reveal-delay'), 10) || 0 : 0;
-            showImg(el, Math.min(base, 120) + Math.min(batch++, 3) * 80);
-          } else {
-            showText(el, Math.min(parseInt(el.getAttribute('data-reveal-delay') || '0', 10), 120));
-          }
+        // a box may hold several photos; all of them reveal together
+        (en.target.__rv || [en.target]).forEach(function (el) {
+          var d = Math.min(n++, 3) * 90;
+          if (el.tagName === 'IMG') ready(el).then(function () { show(el, d); });
+          else show(el, d);
         });
       });
-    }, { rootMargin: '0px 0px 10% 0px', threshold: 0 });
+    }, { rootMargin: '0px 0px 8% 0px', threshold: 0 });
 
-    var started = false;
-    var start = function () { if (started) return; started = true; targets.forEach(function (el) {
-      // clip-path hides the img from IntersectionObserver, so watch its box
-      // (a box may hold several photos; all of them reveal together)
-      if (el.tagName === 'IMG') { var box = el.parentNode; (box.__revealImgs = box.__revealImgs || []).push(el); io.observe(box); } else io.observe(el);
-    }); };
-    start();
-
-    setTimeout(function () {
-      if (ioFired) return;
-      targets.forEach(function (el) {
-        if (el.dataset.revealed) return;
-        el.dataset.revealed = '1';
-        el.tagName === 'IMG' ? showImg(el, 0) : showText(el, 0);
-      });
-    }, 1200);
+    imgs.forEach(function (img) { var box = img.parentNode || img; (box.__rv = box.__rv || []).push(img); io.observe(box); });
+    texts.forEach(function (el) { io.observe(el); });
   })();
 
   /* ---------------------------------------------------------------------
@@ -229,115 +176,119 @@
   (function setupSlides() {
     var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
     if (slides.length < 2) return;
-    var countEl = document.getElementById('slide-count');
-    var current = 0;
-    var slidesVisible = true;
-    var userStopped = false;
-    var timer = null;
-    var hideTimeout = null;
-    var EASE = 'cubic-bezier(.76,0,.24,1)';
-
-    function go(i, dir) {
-      var n = slides.length;
-      var prev = current;
-      current = ((i % n) + n) % n;
-      var d = dir === -1 ? -1 : 1;
-
-      slides.forEach(function (el, k) {
-        var on = k === current;
-        var was = k === prev && !on;
-        var img = el.querySelector('img');
-        var pad = el.querySelector('[data-slide-pad]');
-
-        if (reduced) {
-          el.style.transition = 'opacity 400ms ease';
-          el.style.transform = 'none';
-          el.style.opacity = on ? '1' : '0';
-          el.style.visibility = on ? 'visible' : 'hidden';
-        } else if (on) {
-          el.style.zIndex = '3';
-          el.style.transition = 'none';
-          el.style.visibility = 'visible';
-          el.style.opacity = '1';
-          el.style.clipPath = 'inset(0 0 0 0)';
-          if (prev !== current) {
-            el.style.transform = 'translate3d(' + (d * 100) + '%,0,0)';
-            if (img) { img.style.transition = 'none'; img.style.transform = 'translate3d(' + (-d * 12) + '%,0,0) scale(1.06)'; }
-            if (pad) { pad.style.transition = 'none'; pad.style.opacity = '0'; pad.style.transform = 'translate3d(' + (d * 46) + 'px,0,0)'; }
-            void el.offsetWidth;
-            el.style.transition = 'transform 1150ms ' + EASE;
-            el.style.transform = 'translate3d(0,0,0)';
-            if (img) { img.style.transition = 'transform 1500ms ' + EASE; img.style.transform = 'translate3d(0,0,0) scale(1.02)'; }
-            if (pad) { pad.style.transition = 'opacity 760ms ease 340ms, transform 950ms cubic-bezier(.22,.61,.36,1) 300ms'; pad.style.opacity = '1'; pad.style.transform = 'none'; }
-          } else {
-            el.style.transform = 'translate3d(0,0,0)';
-            if (img) img.style.transform = 'translate3d(0,0,0) scale(1.02)';
-          }
-        } else if (was) {
-          el.style.zIndex = '2';
-          el.style.transition = 'transform 1150ms ' + EASE + ', clip-path 1150ms ' + EASE;
-          el.style.transform = 'translate3d(' + (-d * 16) + '%,0,0)';
-          el.style.clipPath = d === 1 ? 'inset(0 100% 0 0)' : 'inset(0 0 0 100%)';
-          if (img) { img.style.transition = 'transform 1150ms ' + EASE; img.style.transform = 'translate3d(' + (d * 6) + '%,0,0) scale(1.02)'; }
-          clearTimeout(hideTimeout);
-          hideTimeout = setTimeout(function () {
-            if (current === k) return;
-            el.style.visibility = 'hidden';
-            el.style.opacity = '0';
-          }, 1200);
-        } else {
-          el.style.transition = 'none';
-          el.style.visibility = 'hidden';
-          el.style.opacity = '0';
-          el.style.zIndex = '1';
-        }
-        el.setAttribute('aria-hidden', on ? 'false' : 'true');
-      });
-
-      if (countEl) countEl.textContent = ('0' + (current + 1)).slice(-2) + ' / ' + ('0' + slides.length).slice(-2);
-    }
-
-    function startTimer() {
-      if (timer) clearInterval(timer);
-      if (userStopped) return;
-      timer = setInterval(function () { if (slidesVisible !== false) go(current + 1, 1); }, 12000);
-    }
-
-    goSlide = go;
-    go(0);
-
     var section = slides[0].closest('section');
-    if (section && 'IntersectionObserver' in window) {
-      slidesVisible = false;
-      var io = new IntersectionObserver(function (ents) {
-        ents.forEach(function (en) { slidesVisible = en.isIntersecting; });
-        if (slidesVisible) startTimer();
-      }, { threshold: 0.3 });
-      io.observe(section);
-    }
-    startTimer();
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('[data-slide-tab]'));
+    var DUR = 9000;
+    var current = -1, timer = null, userStopped = false, visible = false, leaveT = [];
 
-    var next = document.getElementById('slide-next');
-    var prevBtn = document.getElementById('slide-prev');
-    if (next) next.addEventListener('click', function () { userStopped = true; if (timer) clearInterval(timer); go(current + 1, 1); });
-    if (prevBtn) prevBtn.addEventListener('click', function () { userStopped = true; if (timer) clearInterval(timer); go(current - 1, -1); });
+    function fill(run) {
+      tabs.forEach(function (t, k) {
+        var f = t.querySelector('[data-tab-fill]');
+        if (!f) return;
+        f.style.transition = 'none';
+        f.style.transform = k === current && !run ? 'scaleX(1)' : 'scaleX(0)';
+        if (k === current && run) {
+          void f.offsetWidth;
+          f.style.transition = 'transform ' + DUR + 'ms linear';
+          f.style.transform = 'scaleX(1)';
+        }
+      });
+    }
+    function schedule() {
+      clearTimeout(timer);
+      if (userStopped || !visible || reduced || mqStrip.matches) { fill(false); return; }
+      fill(true);
+      timer = setTimeout(function () { go(current + 1); schedule(); }, DUR);
+    }
+    function go(i) {
+      var n = slides.length;
+      i = ((i % n) + n) % n;
+      if (i === current) return;
+      var prev = current;
+      current = i;
+      lockUntil = Date.now() + (reduced ? 300 : 1750);
+      slides.forEach(function (el, k) {
+        var on = k === i;
+        clearTimeout(leaveT[k]);
+        if (k === prev && !on) {
+          el.classList.add('is-leaving');
+          leaveT[k] = setTimeout(function () { snap(el); el.classList.remove('is-leaving'); unsnap(el); }, 1250);
+        } else if (on) {
+          // reset to the start pose instantly so the entrance always plays
+          snap(el);
+          el.classList.remove('is-leaving', 'is-active');
+          unsnap(el);
+        } else {
+          el.classList.remove('is-leaving');
+        }
+        el.classList.toggle('is-active', on);
+        var strip = mqStrip && mqStrip.matches;
+        el.setAttribute('aria-hidden', on || strip ? 'false' : 'true');
+        if ('inert' in el) el.inert = !on && !strip;
+      });
+      tabs.forEach(function (t, k) {
+        t.classList.toggle('is-active', k === i);
+        t.setAttribute('aria-selected', k === i ? 'true' : 'false');
+      });
+    }
+    function snap(el) { el.classList.add('iv-reset'); }
+    function unsnap(el) { void el.offsetWidth; el.classList.remove('iv-reset'); }
+    var mqStrip = { matches: false }; // mobile now uses the same slider as desktop
+    var lockUntil = 0;
+    function manual(i) {
+      // ignore input until the current transition has finished
+      if (Date.now() < lockUntil) return;
+      userStopped = true; go(i); schedule();
+    }
+
+    // decode slide photos up front so the first switch has no decode hitch
+    slides.forEach(function (s) { var im = s.querySelector('img'); if (im) { im.loading = 'eager'; if (im.decode) im.decode().catch(function () {}); } });
+    goSlide = manual;
+    tabs.forEach(function (t, k) { t.addEventListener('click', function () { manual(k); }); });
+    document.querySelectorAll('[data-slide-arrow]').forEach(function (b) {
+      b.addEventListener('click', function () { manual(current + (b.getAttribute('data-slide-arrow') === 'prev' ? -1 : 1)); });
+    });
 
     if (section) {
       var sx = 0, sy = 0, sAxis = null;
-      section.style.touchAction = 'pan-y';
       section.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; sAxis = null; }, { passive: true });
+      var stage = section.querySelector('.iv-stage');
       section.addEventListener('touchmove', function (e) {
-        if (sAxis) return;
-        var dx = Math.abs(e.touches[0].clientX - sx), dy = Math.abs(e.touches[0].clientY - sy);
-        if (dx > 10 || dy > 10) sAxis = dx > dy ? 'x' : 'y';
+        if (mqStrip.matches) return; // mobile uses native horizontal scroll
+        var mx = e.touches[0].clientX - sx, my = e.touches[0].clientY - sy;
+        if (!sAxis && (Math.abs(mx) > 8 || Math.abs(my) > 8)) sAxis = Math.abs(mx) > Math.abs(my) ? 'x' : 'y';
+        if (sAxis !== 'x' || !stage) return;
+        // the card follows the finger
+        stage.style.transition = 'none';
+        stage.style.transform = 'translate3d(' + (mx * 0.55) + 'px,0,0)';
       }, { passive: true });
       section.addEventListener('touchend', function (e) {
-        if (sAxis !== 'x') return;
+        if (mqStrip.matches || sAxis !== 'x') return;
         var dx = e.changedTouches[0].clientX - sx;
+        if (stage) { stage.style.transition = 'transform 420ms cubic-bezier(.22,.61,.36,1)'; stage.style.transform = ''; }
         if (Math.abs(dx) < 40) return;
-        userStopped = true; if (timer) clearInterval(timer);
-        if (dx < 0) go(current + 1, 1); else go(current - 1, -1);
+        // a deliberate swipe only waits 0.4s, not the full animation
+        if (Date.now() < lockUntil - 1350) return;
+        lockUntil = 0;
+        manual(dx < 0 ? current + 1 : current - 1);
       }, { passive: true });
+      section.addEventListener('touchcancel', function () { if (stage) { stage.style.transition = 'transform 300ms ease'; stage.style.transform = ''; } }, { passive: true });
+    }
+
+    if (section && 'IntersectionObserver' in window && !reduced) {
+      // play the entrance when the block scrolls into view
+      slides.forEach(function (el) { el.classList.remove('is-active'); });
+      tabs.forEach(function (t) { t.classList.remove('is-active'); });
+      var first = true;
+      new IntersectionObserver(function (ents) {
+        ents.forEach(function (en) { visible = en.isIntersecting; });
+        if (visible && first) { first = false; go(0); }
+        schedule();
+      }, { threshold: 0.05 }).observe(section);
+    } else {
+      visible = true;
+      go(0);
+      schedule();
     }
   })();
 
@@ -539,6 +490,8 @@
         nameEl.style.whiteSpace = 'nowrap';
         nameEl.style.overflow = 'hidden';
         nameEl.style.textAlign = 'center';
+        nameEl.style.paddingBottom = '0.08em';
+        nameEl.style.maxWidth = '100%';
       }
       function measure() {
         if (!nameRow || !nameEl) return null;
@@ -552,6 +505,15 @@
         return w;
       }
       if (nameRow && nameEl && !nameEl.style.width) nameEl.style.width = measure() + 'px';
+      // font-size is fluid (vw), so the locked width must follow window resizes
+      if (nameRow && nameEl && !nameEl.__rsz) {
+        nameEl.__rsz = true;
+        var rszT;
+        window.addEventListener('resize', function () {
+          clearTimeout(rszT);
+          rszT = setTimeout(function () { var w = measure(); if (w) nameEl.style.width = w + 'px'; }, 80);
+        });
+      }
 
       function apply() {
         if (roleEl) roleEl.textContent = el.getAttribute('data-role');
@@ -947,7 +909,7 @@
       'Privacy policy': 'Privaatsuspoliitika', 'Back to top ↑': 'Üles ↑',
       'Sculptor — bronze and stone': 'Skulptor — pronks ja kivi',
       'Painter': 'Maalikunstnik',
-      'Industrial painter — on view now': 'Industriaalmaalija — praegu väljas',
+      'Industrial painter — on view now': 'Industriaalmaalija — praegu väljas',
       'Painter and graphic artist': 'Maali- ja graafikakunstnik',
       'Architect, artist and scenographer': 'Arhitekt, kunstnik ja stsenograaf',
       'Painter, lecturer and art writer': 'Maalikunstnik, õppejõud ja kunstikirjanik',
@@ -1052,7 +1014,7 @@
       'Privacy policy': 'Политика конфиденциальности', 'Back to top ↑': 'Наверх ↑',
       'Sculptor — bronze and stone': 'Скульптор — бронза и камень',
       'Painter': 'Живописец',
-      'Industrial painter — on view now': 'Индустриальный живописец — сейчас в галерее',
+      'Industrial painter — on view now': 'Индустриальный живописец — сейчас в галерее',
       'Painter and graphic artist': 'Живописец и график',
       'Architect, artist and scenographer': 'Архитектор, художник и сценограф',
       'Painter, lecturer and art writer': 'Живописец, преподаватель и автор текстов об искусстве',
