@@ -141,6 +141,8 @@
 
     imgs.forEach(function (img) { var box = img.parentNode || img; (box.__rv = box.__rv || []).push(img); io.observe(box); });
     texts.forEach(function (el) { io.observe(el); });
+    var ivs = document.querySelector('section.intro .iv-stage');
+    if (ivs) io.observe(ivs);
   })();
 
   /* ---------------------------------------------------------------------
@@ -282,7 +284,17 @@
       var first = true;
       new IntersectionObserver(function (ents) {
         ents.forEach(function (en) { visible = en.isIntersecting; });
-        if (visible && first) { first = false; go(0); }
+        if (visible && first) {
+          first = false;
+          section.classList.add('iv-first');
+          void section.offsetWidth; // paint the hidden start state first
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              go(0);
+              setTimeout(function () { section.classList.remove('iv-first'); }, 1400);
+            });
+          });
+        }
         schedule();
       }, { threshold: 0.05 }).observe(section);
     } else {
