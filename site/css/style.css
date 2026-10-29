@@ -489,6 +489,10 @@ img { max-width: none; }
 .iv-slide.is-active .iv-pan, .iv-slide.is-active .iv-pan-in,
 .iv-slide.is-leaving .iv-pan, .iv-slide.is-leaving .iv-pan-in { transform: translate3d(0, 0, 0); }
 .iv-slide.is-leaving .iv-pan, .iv-slide.is-leaving .iv-pan-in { transition: none; }
+/* first entrance only: same bottom-up curtain as every other photo on the site */
+.iv-first .iv-pan, .iv-first .iv-pan-in { transform: none !important; transition: none !important; }
+/* photo starts hidden from page load (html.rv), like every other photo; scroll reveal adds .rv-in to .iv-stage */
+.rv section.intro .iv-frame { opacity: var(--rv-o, 0); scale: var(--rv-scale, 1.05); transition: opacity 700ms ease, scale 1200ms cubic-bezier(.22,.61,.36,1); }
 .iv-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.08); transition: transform 1600ms cubic-bezier(.22,.61,.36,1); will-change: transform; backface-visibility: hidden; }
 .iv-slide.is-active .iv-frame img, .iv-slide.is-leaving .iv-frame img { transform: scale(1); }
 .iv-slide.is-leaving .iv-frame img { transition: none; }
