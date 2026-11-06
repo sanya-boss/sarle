@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = path.join(ROOT, 'site');
 const OUT = path.join(ROOT, '_site');
-const SITE = 'https://sarle.ee';
+const SITE = 'https://www.sarle.ee';
 
 // Only these from site/ are published; everything else stays in the repo.
 const COPY = ['css', 'js', 'assets', '404.html', 'favicon.ico', 'site.webmanifest',
