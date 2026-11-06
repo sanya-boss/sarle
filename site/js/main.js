@@ -646,7 +646,13 @@
       wrap.addEventListener('click', function (e) {
         if (moved > 6) return;
         var cur = items[index];
-        if (cur && cur.contains(e.target) && !userStop) { userStop = true; setIndex(index); }
+        if (cur && cur.contains(e.target)) {
+          if (!userStop) { userStop = true; setIndex(index); }
+          return;
+        }
+        if (!isTouch && e.target.closest('.ar-item')) return;
+        var r = wrap.getBoundingClientRect();
+        if (e.clientX > r.left + r.width / 2) goNext(); else goPrev();
       });
     }
 
