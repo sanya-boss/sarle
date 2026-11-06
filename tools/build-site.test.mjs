@@ -24,12 +24,12 @@ for (const [file, slug] of PAGES) {
     test(`${dir}${file}: language, canonical and alternates`, () => {
       const html = read(dir + file);
       assert.match(html, new RegExp(`<html lang="${iso}" data-lang="${code}"`));
-      assert.ok(html.includes(`<link rel="canonical" href="https://sarle.ee/${dir}${slug}">`));
+      assert.ok(html.includes(`<link rel="canonical" href="https://www.sarle.ee/${dir}${slug}">`));
       for (const [d, i] of LANGS) {
-        assert.ok(html.includes(`<link rel="alternate" hreflang="${i}" href="https://sarle.ee/${d}${slug}">`), 'hreflang ' + i);
+        assert.ok(html.includes(`<link rel="alternate" hreflang="${i}" href="https://www.sarle.ee/${d}${slug}">`), 'hreflang ' + i);
       }
-      assert.ok(html.includes(`<link rel="alternate" hreflang="x-default" href="https://sarle.ee/${slug}">`));
-      assert.ok(html.includes(`<meta property="og:url" content="https://sarle.ee/${dir}${slug}">`));
+      assert.ok(html.includes(`<link rel="alternate" hreflang="x-default" href="https://www.sarle.ee/${slug}">`));
+      assert.ok(html.includes(`<meta property="og:url" content="https://www.sarle.ee/${dir}${slug}">`));
     });
   }
 }
@@ -59,6 +59,6 @@ test('language pages use root paths and keep links in their language', () => {
 test('sitemap lists every page in every language', () => {
   const xml = read('sitemap.xml');
   for (const [, slug] of PAGES) for (const [dir] of LANGS) {
-    assert.ok(xml.includes(`<loc>https://sarle.ee/${dir}${slug}</loc>`), dir + slug);
+    assert.ok(xml.includes(`<loc>https://www.sarle.ee/${dir}${slug}</loc>`), dir + slug);
   }
 });
