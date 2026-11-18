@@ -161,6 +161,13 @@ function renderPage(page, lang, i18n) {
         }
       }
     }
+    // srcset holds several URLs ("a.webp 600w, b.webp 1200w"); each needs the same fix
+    for (const el of doc.querySelectorAll('[srcset]')) {
+      el.setAttribute('srcset', el.getAttribute('srcset').split(',').map(part => {
+        const [url, ...rest] = part.trim().split(/\s+/);
+        return [isLocal(url) ? '/' + url.replace(/^\.\//, '') : url, ...rest].join(' ');
+      }).join(', '));
+    }
     const tileConfig = doc.querySelector('meta[name="msapplication-config"]');
     if (tileConfig && isLocal(tileConfig.getAttribute('content'))) {
       tileConfig.setAttribute('content', '/' + tileConfig.getAttribute('content'));
