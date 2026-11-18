@@ -492,7 +492,7 @@ img { max-width: none; }
 /* first entrance only: same bottom-up curtain as every other photo on the site */
 .iv-first .iv-pan, .iv-first .iv-pan-in { transform: none !important; transition: none !important; }
 /* photo starts hidden from page load (html.rv), like every other photo; scroll reveal adds .rv-in to .iv-stage */
-.rv section.intro .iv-frame { opacity: var(--rv-o, 0); scale: var(--rv-scale, 1.05); transition: opacity 700ms ease, scale 1200ms cubic-bezier(.22,.61,.36,1); }
+.rv section.intro .iv-frame { opacity: var(--rvi-o, 0); scale: var(--rvi-s, 1.1); clip-path: inset(var(--rvi-w, 100%) 0 0 0); transition: opacity 700ms ease, clip-path 1400ms cubic-bezier(.7,0,.2,1), scale 1900ms cubic-bezier(.16,1,.3,1); }
 .iv-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.08); transition: transform 1600ms cubic-bezier(.22,.61,.36,1); will-change: transform; backface-visibility: hidden; }
 .iv-slide.is-active .iv-frame img, .iv-slide.is-leaving .iv-frame img { transform: scale(1); }
 .iv-slide.is-leaving .iv-frame img { transition: none; }
@@ -912,18 +912,112 @@ img { max-width: none; }
 .pp-body a { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
 
 /* Scroll reveal ------------------------------------------------------------
-   Initial state is set in CSS (html.rv is added in <head>), so nothing is
-   painted visible and then hidden — no flash. JS only adds .rv-in. */
-.rv main img:not([src$=".svg"]):not(:is(section.hero, section.intro, section#artists:not(.g-section), [data-slide], .lightbox, .hp-gallery-3d, .hp-gallery-3d__lightbox, [data-no-reveal]) img) {
+   Initial states live here under html.rv (added in <head>), so nothing is
+   painted visible and then hidden — no flash. JS only adds .rv-in (and an
+   inline --rv-d delay). Text uses the --rv-* variables, photos the --rvi-*
+   ones, so a revealed text block never un-hides a photo inside it.
+   Individual translate/scale properties are used, never `transform`, so the
+   reveal stacks with transforms set elsewhere (parallax, tilt, hero hint).
+
+   [data-reveal]               one child  → the block rises, unblurs, fades in
+   [data-reveal] with 2+ kids  → each child rises in turn (stagger)
+   [data-reveal="card"]        → the whole block rises, photos inside included
+   h1/h2 targets               → also unmask top-to-bottom                    */
+:root {
+  --rv-ease: cubic-bezier(.16, 1, .3, 1);
+  --rv-step: 110ms;
+}
+
+/* text: single block, or each child of a multi-child block, or a card */
+.rv [data-reveal]:not([data-reveal="card"]):not(:has(> * + *)):not(:has(img)):not(:is(section.hero, section.intro, [data-slide], .lightbox, .hp-gallery-3d, .hp-gallery-3d__lightbox, [data-no-reveal]) *),
+.rv [data-reveal]:not([data-reveal="card"]):has(> * + *) > :not(img):not(:has(img)):not(:is(section.hero, section.intro, [data-slide], .lightbox, .hp-gallery-3d, .hp-gallery-3d__lightbox, [data-no-reveal]) *),
+.rv [data-reveal="card"]:not(:is(section.hero, section.intro, [data-slide], .lightbox, .hp-gallery-3d, .hp-gallery-3d__lightbox, [data-no-reveal]) *) {
   opacity: var(--rv-o, 0);
-  transform: scale(var(--rv-scale, 1.05));
-  transition: opacity 700ms ease, transform 1200ms cubic-bezier(.22,.61,.36,1);
+  translate: 0 var(--rv-y, 46px);
+  filter: var(--rv-f, blur(7px));
+  transition:
+    opacity 900ms cubic-bezier(.33, 0, .2, 1),
+    translate 1300ms var(--rv-ease),
+    filter 1000ms var(--rv-ease),
+    color 300ms ease, background-color 300ms ease, border-color 300ms ease;
+  transition-delay:
+    calc(var(--rv-d, 0ms) + var(--rv-i, 0) * var(--rv-step)),
+    calc(var(--rv-d, 0ms) + var(--rv-i, 0) * var(--rv-step)),
+    calc(var(--rv-d, 0ms) + var(--rv-i, 0) * var(--rv-step)),
+    0s, 0s, 0s;
+}
+/* the 3D ring must never be filtered (it would flatten); it only rises */
+.rv .artist-ring-block.artist-ring-block[data-reveal="card"] { filter: none; }
+
+/* stagger order inside a multi-child block */
+.rv [data-reveal]:has(> * + *) > :nth-child(2) { --rv-i: 1; }
+.rv [data-reveal]:has(> * + *) > :nth-child(3) { --rv-i: 2; }
+.rv [data-reveal]:has(> * + *) > :nth-child(4) { --rv-i: 3; }
+.rv [data-reveal]:has(> * + *) > :nth-child(5) { --rv-i: 4; }
+.rv [data-reveal]:has(> * + *) > :nth-child(6) { --rv-i: 5; }
+.rv [data-reveal]:has(> * + *) > :nth-child(n+7) { --rv-i: 6; }
+
+/* headings additionally unmask from the top, like a line being drawn */
+.rv h1[data-reveal]:not(:has(> * + *)):not(:is(section.intro, [data-no-reveal]) *),
+.rv h2[data-reveal]:not(:has(> * + *)):not(:is(section.intro, [data-no-reveal]) *),
+.rv [data-reveal]:has(> * + *) > :is(h1, h2):not(:is(section.intro, [data-no-reveal]) *) {
+  clip-path: inset(-0.3em -0.3em var(--rv-mask, 100%) -0.3em);
+  transition-property: opacity, translate, filter, color, background-color, border-color, clip-path;
+  transition-duration: 900ms, 1300ms, 1000ms, 300ms, 300ms, 300ms, 1400ms;
+  transition-timing-function: cubic-bezier(.33, 0, .2, 1), var(--rv-ease), var(--rv-ease), ease, ease, ease, cubic-bezier(.65, 0, .2, 1);
+  transition-delay:
+    calc(var(--rv-d, 0ms) + var(--rv-i, 0) * var(--rv-step)),
+    calc(var(--rv-d, 0ms) + var(--rv-i, 0) * var(--rv-step)),
+    calc(var(--rv-d, 0ms) + var(--rv-i, 0) * var(--rv-step)),
+    0s, 0s, 0s,
+    calc(var(--rv-d, 0ms) + var(--rv-i, 0) * var(--rv-step));
+}
+
+/* photos: curtain rises from the bottom while the frame settles from a zoom */
+.rv main img:not([src*=".svg"]):not(:is(section.hero, section.intro, .art-ring-wrap, [data-reveal="card"], [data-slide], .lightbox, .hp-gallery-3d, .hp-gallery-3d__lightbox, [data-no-reveal]) img) {
+  opacity: var(--rvi-o, 0);
+  scale: var(--rvi-s, 1.16);
+  clip-path: inset(var(--rvi-w, 100%) 0 0 0);
+  transition:
+    opacity 700ms ease,
+    clip-path 1400ms cubic-bezier(.7, 0, .2, 1),
+    scale 1900ms var(--rv-ease);
+  transition-delay: var(--rv-d, 0ms);
   backface-visibility: hidden;
 }
-.rv [data-reveal]:not(:has(img)):not(:is(section.hero, section.intro, section#artists:not(.g-section), [data-slide], .lightbox, .hp-gallery-3d, .hp-gallery-3d__lightbox, [data-no-reveal]) [data-reveal]) {
-  opacity: var(--rv-o, 0);
-  transform: translate3d(0, var(--rv-y, 22px), 0);
-  transition: opacity 650ms cubic-bezier(.22,.61,.36,1), transform 750ms cubic-bezier(.22,.61,.36,1);
+
+.rv-in { --rv-o: 1; --rv-y: 0px; --rv-f: none; --rv-mask: -0.3em; }
+img.rv-in, .iv-stage.rv-in { --rvi-o: 1; --rvi-s: 1; --rvi-w: 0%; }
+.rv.rv-done { --rv-o: 1; --rv-y: 0px; --rv-f: none; --rv-mask: -0.3em; --rvi-o: 1; --rvi-s: 1; --rvi-w: 0%; }
+
+/* Page-load entrances (only under html.rv, i.e. never with reduced motion) */
+@keyframes rv-drop { from { opacity: 0; translate: 0 -100%; } to { opacity: 1; translate: 0 0; } }
+@keyframes rv-rise { from { opacity: 0; translate: 0 16px; } to { opacity: 1; translate: 0 0; } }
+.rv .site-header { animation: rv-drop 1100ms var(--rv-ease) 150ms both; }
+.rv .hero-hint { animation: rv-rise 1200ms var(--rv-ease) 1400ms both; }
+
+/* Overlays and menus ---------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .lightbox-img { scale: 0.94; transition: scale 700ms var(--rv-ease); }
+  .lightbox.is-open .lightbox-img { scale: 1; }
+
+  .mobile-nav-link, .mobile-foot > * {
+    opacity: 0;
+    translate: 0 22px;
+    transition: opacity 500ms ease, translate 800ms var(--rv-ease);
+  }
+  .mobile-menu.is-open .mobile-nav-link, .mobile-menu.is-open .mobile-foot > * { opacity: 1; translate: 0 0; }
+  .mobile-menu.is-open .mobile-nav-link:nth-child(1) { transition-delay: 120ms; }
+  .mobile-menu.is-open .mobile-nav-link:nth-child(2) { transition-delay: 180ms; }
+  .mobile-menu.is-open .mobile-nav-link:nth-child(3) { transition-delay: 240ms; }
+  .mobile-menu.is-open .mobile-nav-link:nth-child(4) { transition-delay: 300ms; }
+  .mobile-menu.is-open .mobile-nav-link:nth-child(5) { transition-delay: 360ms; }
+  .mobile-menu.is-open .mobile-foot > :nth-child(1) { transition-delay: 440ms; }
+  .mobile-menu.is-open .mobile-foot > :nth-child(2) { transition-delay: 500ms; }
+  .mobile-menu.is-open .mobile-foot > :nth-child(3) { transition-delay: 560ms; }
+
+  /* artist caption: each line rises back in, one after another */
+  .artist-role, .artist-name, .artist-bio { transition: opacity 320ms ease, translate 700ms var(--rv-ease); }
+  .artist-name { transition-delay: 70ms; }
+  .artist-bio { transition-delay: 140ms; }
 }
-.rv-in { --rv-scale: 1; --rv-o: 1; --rv-y: 0px; }
-.rv.rv-done { --rv-scale: 1; --rv-o: 1; --rv-y: 0px; }

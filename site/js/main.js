@@ -88,18 +88,21 @@
 
   /* ---------------------------------------------------------------------
    * Scroll reveal — initial states live in CSS under html.rv (set in <head>).
-   * Photos: curtain wipe once decoded. Text: fade + rise. Adds .rv-in only.
+   * Photos: curtain rises once decoded. Text: rise + unblur, children of a
+   * multi-child block one after another. JS only adds .rv-in and --rv-d.
    * ------------------------------------------------------------------- */
   (function setupReveal() {
     var root = document.documentElement;
     if (!root.classList.contains('rv')) return;
     window.__rv = true;
-    var SKIP = 'section.hero, section.intro, section#artists:not(.g-section), [data-slide], .lightbox, .hp-gallery-3d, .hp-gallery-3d__lightbox, [data-no-reveal]';
+    var SKIP = 'section.hero, section.intro, [data-slide], .lightbox, .hp-gallery-3d, .hp-gallery-3d__lightbox, [data-no-reveal]';
+    var IMG_SKIP = SKIP + ', .art-ring-wrap, [data-reveal="card"]';
+    var STEP = 120;
     var imgs = Array.prototype.filter.call(document.querySelectorAll('main img'), function (i) {
-      return !i.closest(SKIP) && !/\.svg(\?|$)/.test(i.getAttribute('src') || '');
+      return !i.closest(IMG_SKIP) && !/\.svg(\?|$)/.test(i.getAttribute('src') || '');
     });
     var texts = Array.prototype.filter.call(document.querySelectorAll('[data-reveal]'), function (el) {
-      return !el.closest(SKIP) && !el.querySelector('img');
+      return !el.closest(SKIP);
     });
     imgs.forEach(function (img) {
       var box = img.parentNode;
@@ -120,9 +123,8 @@
       });
     }
     function show(el, delay) {
-      el.style.transitionDelay = delay ? delay + 'ms' : '';
+      if (delay) el.style.setProperty('--rv-d', delay + 'ms');
       requestAnimationFrame(function () { el.classList.add('rv-in'); });
-      setTimeout(function () { el.style.transitionDelay = ''; }, delay + 1500);
     }
 
     var io = new IntersectionObserver(function (entries) {
@@ -130,14 +132,16 @@
       entries.forEach(function (en) {
         if (!en.isIntersecting) return;
         io.unobserve(en.target);
-        // a box may hold several photos; all of them reveal together
+        // a box may hold several photos; they rise in turn
         (en.target.__rv || [en.target]).forEach(function (el) {
-          var d = Math.min(n++, 3) * 90;
+          var own = el.getAttribute && el.getAttribute('data-reveal-delay');
+          var d = own != null ? Math.max(+own || 0, Math.min(n, 4) * STEP) : Math.min(n, 4) * STEP;
+          n++;
           if (el.tagName === 'IMG') ready(el).then(function () { show(el, d); });
           else show(el, d);
         });
       });
-    }, { rootMargin: '0px 0px 8% 0px', threshold: 0 });
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0 });
 
     imgs.forEach(function (img) { var box = img.parentNode || img; (box.__rv = box.__rv || []).push(img); io.observe(box); });
     texts.forEach(function (el) { io.observe(el); });
@@ -497,8 +501,9 @@
       if (!el) return;
       var texts = [roleEl, nameEl, bioEl].filter(Boolean);
 
+      var NAME_TR = 'width 620ms cubic-bezier(.22,.61,.36,1), opacity 320ms ease 70ms, translate 700ms cubic-bezier(.16,1,.3,1) 70ms';
       if (nameRow && nameEl && !nameEl.style.transition) {
-        nameEl.style.transition = 'width 620ms cubic-bezier(.22,.61,.36,1)';
+        nameEl.style.transition = NAME_TR;
         nameEl.style.whiteSpace = 'nowrap';
         nameEl.style.overflow = 'hidden';
         nameEl.style.textAlign = 'center';
@@ -513,7 +518,7 @@
         var w = nameEl.getBoundingClientRect().width;
         nameEl.style.width = prevW;
         void nameEl.offsetWidth;
-        nameEl.style.transition = 'width 620ms cubic-bezier(.22,.61,.36,1)';
+        nameEl.style.transition = NAME_TR;
         return w;
       }
       if (nameRow && nameEl && !nameEl.style.width) nameEl.style.width = measure() + 'px';
@@ -532,12 +537,12 @@
         if (nameEl) nameEl.textContent = el.getAttribute('data-name');
         if (bioEl) bioEl.textContent = el.getAttribute('data-bio');
         if (nameRow && nameEl) { var w = measure(); if (w) nameEl.style.width = w + 'px'; }
-        texts.forEach(function (t) { t.style.opacity = '1'; });
+        texts.forEach(function (t) { t.style.opacity = '1'; t.style.translate = ''; });
       }
 
       if (captionEl && !reduced) {
         captionEl.style.opacity = '1';
-        texts.forEach(function (t) { t.style.opacity = '0'; });
+        texts.forEach(function (t) { t.style.opacity = '0'; t.style.translate = '0 -10px'; });
         clearTimeout(capT);
         capT = setTimeout(apply, 300);
       } else apply();
