@@ -48,9 +48,12 @@ test('language pages use root paths and keep links in their language', () => {
     for (const [file] of PAGES) {
       const html = read(dir + file);
       const refs = [...html.matchAll(/\s(?:src|href)="([^"]*)"/g)].map(m => m[1]);
+      for (const m of html.matchAll(/\ssrcset="([^"]*)"/g)) {
+        for (const part of m[1].split(',')) refs.push(part.trim().split(/\s+/)[0]);
+      }
       const relative = refs.filter(u => u && !/^(?:[a-z][a-z0-9+.-]*:|\/|#)/i.test(u));
       assert.deepEqual(relative, [], `${dir}${file} has relative URLs`);
-      assert.ok(!/href="\/(?:gallery|shop)"/.test(html), `${dir}${file} links to English pages`);
+      assert.ok(!/href="\/(?:gallery|shop|index\.html)?"/.test(html), `${dir}${file} links to English pages`);
       assert.ok(!refs.includes('//gallery') && !refs.includes('//shop'));
     }
   }
