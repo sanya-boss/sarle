@@ -88,7 +88,8 @@
 
   /* ---------------------------------------------------------------------
    * Scroll reveal — initial states live in CSS under html.rv (set in <head>).
-   * Photos: curtain rises once decoded. Text: rise + unblur, children of a
+   * Photos: preloaded ahead, curtain rises as soon as they enter the screen.
+   * Text: rise + unblur, children of a
    * multi-child block one after another. JS only adds .rv-in and --rv-d.
    * ------------------------------------------------------------------- */
   (function setupReveal() {
@@ -127,23 +128,47 @@
       requestAnimationFrame(function () { el.classList.add('rv-in'); });
     }
 
+    // Photos: start loading well before they scroll in, so the curtain can
+    // open the moment a photo's edge appears at the bottom of the screen.
+    var pre = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        pre.unobserve(en.target);
+        (en.target.__rv || []).forEach(function (img) {
+          img.loading = 'eager';
+          if (img.complete && img.naturalWidth && img.decode) img.decode().catch(function () {});
+        });
+      });
+    }, { rootMargin: '0px 0px 150% 0px', threshold: 0 });
+
+    var ioImg = new IntersectionObserver(function (entries) {
+      var n = 0;
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        ioImg.unobserve(en.target);
+        en.target.__rv.forEach(function (img) {
+          var d = Math.min(n++, 3) * 80;
+          ready(img).then(function () { show(img, d); });
+        });
+      });
+    }, { rootMargin: '0px 0px 4% 0px', threshold: 0 });
+
     var io = new IntersectionObserver(function (entries) {
       var n = 0;
       entries.forEach(function (en) {
         if (!en.isIntersecting) return;
         io.unobserve(en.target);
-        // a box may hold several photos; they rise in turn
-        (en.target.__rv || [en.target]).forEach(function (el) {
-          var own = el.getAttribute && el.getAttribute('data-reveal-delay');
-          var d = own != null ? Math.max(+own || 0, Math.min(n, 4) * STEP) : Math.min(n, 4) * STEP;
-          n++;
-          if (el.tagName === 'IMG') ready(el).then(function () { show(el, d); });
-          else show(el, d);
-        });
+        var own = en.target.getAttribute('data-reveal-delay');
+        var d = Math.max(+own || 0, Math.min(n++, 4) * STEP);
+        show(en.target, d);
       });
     }, { rootMargin: '0px 0px -6% 0px', threshold: 0 });
 
-    imgs.forEach(function (img) { var box = img.parentNode || img; (box.__rv = box.__rv || []).push(img); io.observe(box); });
+    imgs.forEach(function (img) {
+      var box = img.parentNode || img;
+      if (!box.__rv) { box.__rv = []; ioImg.observe(box); pre.observe(box); }
+      box.__rv.push(img);
+    });
     texts.forEach(function (el) { io.observe(el); });
     var ivs = document.querySelector('section.intro .iv-stage');
     if (ivs) io.observe(ivs);
