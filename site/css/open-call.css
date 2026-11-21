@@ -172,6 +172,15 @@
 .oc-input:focus-visible { border-color: var(--fg); outline: none; }
 .oc-textarea { height: auto; min-height: 132px; padding: 14px 16px; line-height: 1.65; resize: vertical; }
 .oc-input[aria-invalid="true"] { border-color: var(--oc-error); }
+/* country list: native select (works with keyboard, phones show their own picker) */
+.oc-select-wrap { position: relative; }
+.oc-select-wrap::after {
+  content: ''; position: absolute; right: 18px; top: 50%; width: 7px; height: 7px; margin-top: -6px;
+  border-right: 1px solid var(--muted); border-bottom: 1px solid var(--muted); transform: rotate(45deg); pointer-events: none;
+}
+.oc-select { -webkit-appearance: none; appearance: none; padding-right: 44px; cursor: pointer; text-overflow: ellipsis; }
+.oc-select:invalid { color: var(--dim); }
+.oc-select option { background: var(--bg); color: var(--fg); }
 
 /* Choice pills (radio / checkbox) ------------------------------------------ */
 .oc-choices { display: flex; flex-wrap: wrap; gap: 10px; }

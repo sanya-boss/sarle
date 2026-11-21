@@ -145,6 +145,28 @@
   // preview the error window: open the page with #apply-fail
   if (location.hash === '#apply-fail' && failModal) { lastFocus = document.activeElement; show(modal); setTimeout(showFail, 700); }
 
+  /* Country list: names in the page language, sorted for that language, the
+     gallery's own country first. Values stay ISO codes (EE, LV, …). */
+  var countrySel = document.getElementById('oc-country');
+  function labelCountries() {
+    if (!countrySel || !window.Intl || !Intl.DisplayNames) return;
+    var lang = document.documentElement.lang || 'en';
+    var names;
+    try { names = new Intl.DisplayNames([lang, 'en'], { type: 'region' }); } catch (err) { return; }
+    var chosen = countrySel.value;
+    var opts = Array.prototype.filter.call(countrySel.options, function (o) { return o.value; });
+    opts.forEach(function (o) { try { o.textContent = names.of(o.value); } catch (err) {} });
+    opts.sort(function (a, b) {
+      if (a.value === 'EE') return -1;
+      if (b.value === 'EE') return 1;
+      return a.textContent.localeCompare(b.textContent, lang);
+    });
+    opts.forEach(function (o) { countrySel.appendChild(o); });
+    countrySel.value = chosen;
+  }
+  labelCountries();
+  document.addEventListener('sarle:langchange', labelCountries);
+
   /* "All of the above" ticks every interest; unticking one clears it. */
   var allBox = form.querySelector('[data-oc-all]');
   var interestBoxes = form.querySelectorAll('input[name="Interests"]:not([data-oc-all])');
@@ -178,7 +200,7 @@
   function validate() {
     clearMarks();
     var bad = [];
-    form.querySelectorAll('input[required], textarea[required]').forEach(function (el) {
+    form.querySelectorAll('input[required], textarea[required], select[required]').forEach(function (el) {
       var ok = el.type === 'checkbox' ? el.checked : el.value.trim() !== '';
       if (ok && el.type === 'email') ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(el.value.trim());
       if (ok && el.type === 'url') ok = /^(https?:\/\/)?[^\s.]+\.[^\s]{2,}/i.test(el.value.trim());
@@ -204,6 +226,7 @@
     var map = {}, order = [];
     data.forEach(function (v, k) {
       if (k === '_hp') return;
+      if (k === 'Country' && countrySel && countrySel.selectedIndex > 0) v = countrySel.options[countrySel.selectedIndex].textContent;
       if (!(k in map)) { map[k] = []; order.push(k); }
       if (String(v).trim()) map[k].push(String(v).trim());
     });

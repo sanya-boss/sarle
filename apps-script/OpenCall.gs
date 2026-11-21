@@ -35,7 +35,7 @@ var OC_LAYOUT = [
   ['О ХУДОЖНИКЕ', 'sec'],
   ['Имя / имя художника', 'field', 'Full name / Artist name', true, OC_MAX_SHORT],
   ['Email', 'field', 'Email', true, 254],
-  ['Страна / город', 'field', 'Country / City', true, OC_MAX_SHORT],
+  ['Страна / город', 'field', '__location'],   // Country (from the list) + City, see ocLocation_
   ['Instagram / соцсети', 'field', 'Instagram / Social media', false, OC_MAX_SHORT],
   ['Сайт / портфолио', 'field', 'Website / Portfolio', false, 1000],
   ['ТВОРЧЕСТВО', 'sec'],
@@ -85,6 +85,52 @@ var OC_CHOICES = {
   'Confirm: rights to artworks': ['Yes'],
   'Confirm: may be contacted': ['Yes'],
   'Confirm: privacy policy': ['Yes']
+};
+
+// Countries in the site's list (ISO 3166-1 codes) and their names in the sheet.
+var OC_COUNTRIES = {
+  AD: 'Андорра', AE: 'ОАЭ', AF: 'Афганистан', AG: 'Антигуа и Барбуда', AI: 'Ангилья', AL: 'Албания',
+  AM: 'Армения', AO: 'Ангола', AQ: 'Антарктида', AR: 'Аргентина', AS: 'Американское Самоа', AT: 'Австрия',
+  AU: 'Австралия', AW: 'Аруба', AX: 'Аландские о-ва', AZ: 'Азербайджан', BA: 'Босния и Герцеговина', BB: 'Барбадос',
+  BD: 'Бангладеш', BE: 'Бельгия', BF: 'Буркина-Фасо', BG: 'Болгария', BH: 'Бахрейн', BI: 'Бурунди',
+  BJ: 'Бенин', BL: 'Сен-Бартелеми', BM: 'Бермудские о-ва', BN: 'Бруней', BO: 'Боливия', BQ: 'Бонэйр, Синт-Эстатиус и Саба',
+  BR: 'Бразилия', BS: 'Багамы', BT: 'Бутан', BV: 'о-в Буве', BW: 'Ботсвана', BY: 'Беларусь',
+  BZ: 'Белиз', CA: 'Канада', CC: 'Кокосовые о-ва', CD: 'Конго - Киншаса', CF: 'Центрально-Африканская Республика', CG: 'Конго - Браззавиль',
+  CH: 'Швейцария', CI: 'Кот-д’Ивуар', CK: 'о-ва Кука', CL: 'Чили', CM: 'Камерун', CN: 'Китай',
+  CO: 'Колумбия', CR: 'Коста-Рика', CU: 'Куба', CV: 'Кабо-Верде', CW: 'Кюрасао', CX: 'о-в Рождества',
+  CY: 'Кипр', CZ: 'Чехия', DE: 'Германия', DJ: 'Джибути', DK: 'Дания', DM: 'Доминика',
+  DO: 'Доминиканская Республика', DZ: 'Алжир', EC: 'Эквадор', EE: 'Эстония', EG: 'Египет', EH: 'Западная Сахара',
+  ER: 'Эритрея', ES: 'Испания', ET: 'Эфиопия', FI: 'Финляндия', FJ: 'Фиджи', FK: 'Фолклендские о-ва',
+  FM: 'Федеративные Штаты Микронезии', FO: 'Фарерские о-ва', FR: 'Франция', GA: 'Габон', GB: 'Великобритания', GD: 'Гренада',
+  GE: 'Грузия', GF: 'Французская Гвиана', GG: 'Гернси', GH: 'Гана', GI: 'Гибралтар', GL: 'Гренландия',
+  GM: 'Гамбия', GN: 'Гвинея', GP: 'Гваделупа', GQ: 'Экваториальная Гвинея', GR: 'Греция', GS: 'Южная Георгия и Южные Сандвичевы о-ва',
+  GT: 'Гватемала', GU: 'Гуам', GW: 'Гвинея-Бисау', GY: 'Гайана', HK: 'Гонконг (САР)', HM: 'о-ва Херд и Макдональд',
+  HN: 'Гондурас', HR: 'Хорватия', HT: 'Гаити', HU: 'Венгрия', ID: 'Индонезия', IE: 'Ирландия',
+  IL: 'Израиль', IM: 'о-в Мэн', IN: 'Индия', IO: 'Британская территория в Индийском океане', IQ: 'Ирак', IR: 'Иран',
+  IS: 'Исландия', IT: 'Италия', JE: 'Джерси', JM: 'Ямайка', JO: 'Иордания', JP: 'Япония',
+  KE: 'Кения', KG: 'Киргизия', KH: 'Камбоджа', KI: 'Кирибати', KM: 'Коморы', KN: 'Сент-Китс и Невис',
+  KP: 'КНДР', KR: 'Республика Корея', KW: 'Кувейт', KY: 'о-ва Кайман', KZ: 'Казахстан', LA: 'Лаос',
+  LB: 'Ливан', LC: 'Сент-Люсия', LI: 'Лихтенштейн', LK: 'Шри-Ланка', LR: 'Либерия', LS: 'Лесото',
+  LT: 'Литва', LU: 'Люксембург', LV: 'Латвия', LY: 'Ливия', MA: 'Марокко', MC: 'Монако',
+  MD: 'Молдова', ME: 'Черногория', MF: 'Сен-Мартен', MG: 'Мадагаскар', MH: 'Маршалловы о-ва', MK: 'Северная Македония',
+  ML: 'Мали', MM: 'Мьянма (Бирма)', MN: 'Монголия', MO: 'Макао (САР)', MP: 'Северные Марианские о-ва', MQ: 'Мартиника',
+  MR: 'Мавритания', MS: 'Монтсеррат', MT: 'Мальта', MU: 'Маврикий', MV: 'Мальдивы', MW: 'Малави',
+  MX: 'Мексика', MY: 'Малайзия', MZ: 'Мозамбик', NA: 'Намибия', NC: 'Новая Каледония', NE: 'Нигер',
+  NF: 'о-в Норфолк', NG: 'Нигерия', NI: 'Никарагуа', NL: 'Нидерланды', NO: 'Норвегия', NP: 'Непал',
+  NR: 'Науру', NU: 'Ниуэ', NZ: 'Новая Зеландия', OM: 'Оман', PA: 'Панама', PE: 'Перу',
+  PF: 'Французская Полинезия', PG: 'Папуа — Новая Гвинея', PH: 'Филиппины', PK: 'Пакистан', PL: 'Польша', PM: 'Сен-Пьер и Микелон',
+  PN: 'о-ва Питкэрн', PR: 'Пуэрто-Рико', PS: 'Палестинские территории', PT: 'Португалия', PW: 'Палау', PY: 'Парагвай',
+  QA: 'Катар', RE: 'Реюньон', RO: 'Румыния', RS: 'Сербия', RU: 'Россия', RW: 'Руанда',
+  SA: 'Саудовская Аравия', SB: 'Соломоновы о-ва', SC: 'Сейшельские о-ва', SD: 'Судан', SE: 'Швеция', SG: 'Сингапур',
+  SH: 'о-в Св. Елены', SI: 'Словения', SJ: 'Шпицберген и Ян-Майен', SK: 'Словакия', SL: 'Сьерра-Леоне', SM: 'Сан-Марино',
+  SN: 'Сенегал', SO: 'Сомали', SR: 'Суринам', SS: 'Южный Судан', ST: 'Сан-Томе и Принсипи', SV: 'Сальвадор',
+  SX: 'Синт-Мартен', SY: 'Сирия', SZ: 'Эсватини', TC: 'Тёркс и Кайкос', TD: 'Чад', TF: 'Французские Южные территории',
+  TG: 'Того', TH: 'Таиланд', TJ: 'Таджикистан', TK: 'Токелау', TL: 'Восточный Тимор', TM: 'Туркменистан',
+  TN: 'Тунис', TO: 'Тонга', TR: 'Турция', TT: 'Тринидад и Тобаго', TV: 'Тувалу', TW: 'Тайвань',
+  TZ: 'Танзания', UA: 'Украина', UG: 'Уганда', UM: 'Внешние малые о-ва (США)', US: 'Соединенные Штаты', UY: 'Уругвай',
+  UZ: 'Узбекистан', VA: 'Ватикан', VC: 'Сент-Винсент и Гренадины', VE: 'Венесуэла', VG: 'Виргинские о-ва (Великобритания)', VI: 'Виргинские о-ва (США)',
+  VN: 'Вьетнам', VU: 'Вануату', WF: 'Уоллис и Футуна', WS: 'Самоа', XK: 'Косово', YE: 'Йемен',
+  YT: 'Майотта', ZA: 'Южно-Африканская Республика', ZM: 'Замбия', ZW: 'Зимбабве'
 };
 
 var OC_STATUSES = ['Новая', 'На рассмотрении', 'В шорт-листе', 'Отобрана', 'Не отобрана'];
@@ -157,7 +203,23 @@ function ocValidate_(params) {
     if (out[key].length > max) return null;
   }
   if (!isValidEmail_(out['Email'])) return null;
+  out.__location = ocLocation_(params);
+  if (!out.__location) return null;
   return out;
+}
+
+/* "Эстония, Таллинн": the country is an ISO code from the site's list, the city
+   is typed. The older form sent one free field "Country / City"; still accepted. */
+function ocLocation_(params) {
+  var code = ocFirst_(params, 'Country').toUpperCase();
+  var city = ocFirst_(params, 'City');
+  if (code || city) {
+    if (!Object.prototype.hasOwnProperty.call(OC_COUNTRIES, code)) return '';
+    if (!city || city.length > 120) return '';
+    return OC_COUNTRIES[code] + ', ' + city;
+  }
+  var old = ocFirst_(params, 'Country / City');
+  return old && old.length <= OC_MAX_SHORT ? old : '';
 }
 
 /* Text that starts with = + - @ would become a formula in the sheet. */
@@ -177,6 +239,7 @@ function ocWrite_(sheet, answers) {
     if (!from || from === '__empty') return [''];
     if (from === '__time') return [new Date()];
     if (from === '__status') return [OC_STATUSES[0]];
+    if (from === '__location') return [ocText_(answers.__location)];
     return [ocText_(answers[from])];
   });
 
@@ -327,7 +390,8 @@ function ocTestSubmit() {
   var res = handleOpenCall_({
     'Full name / Artist name': ['TEST: проверка скрипта'],
     'Email': ['script.test@example.com'],
-    'Country / City': ['Estonia / Tallinn'],
+    'Country': ['EE'],
+    'City': ['Tallinn'],
     'Primary medium': ['Photography'],
     'Artistic practice': ['Тестовая запись из ocTestSubmit() в Apps Script. Длинный текст нужен, чтобы проверить, что строка раздвигается и текст читается целиком.'],
     'Previous exhibitions': ['Not yet'],
