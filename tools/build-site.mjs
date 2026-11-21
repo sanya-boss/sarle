@@ -66,7 +66,9 @@ function i18nSource() {
   const endMarker = "if (lang !== 'EN') applyLang();\n  })();";
   const end = src.indexOf(endMarker, start);
   if (start < 0 || end < 0) throw new Error('setupI18n block not found in js/main.js');
-  return src.slice(start, end + endMarker.length);
+  // Extra dictionaries (Open Call) are merged by setupI18n, so they load first.
+  const extra = fs.readFileSync(path.join(SRC, 'js/open-call-i18n.js'), 'utf8');
+  return extra + '\n' + src.slice(start, end + endMarker.length);
 }
 
 const pageUrl = (lang, slug) => `${SITE}${lang.prefix}/${slug}`;
