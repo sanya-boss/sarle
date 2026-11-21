@@ -13,6 +13,11 @@ html { overflow-x: clip; }
   --dim: #57554F;
   --card-bg: #1B1B19;
   --input-border: #3A3936;
+  --paper: #FFFFFF;                 /* the white of the Open Call slide */
+  /* fonts (used by css/open-call.css) */
+  --font-display: 'Cormorant Garamond', serif;
+  --font-label: 'Space Grotesk', sans-serif;
+  --font-body: Inter, system-ui, sans-serif;
 }
 
 html { scroll-behavior: smooth; }
@@ -163,6 +168,8 @@ img { max-width: none; }
 }
 .btn-outline { background: none; border: 1px solid var(--muted); color: var(--muted); }
 .btn-outline:hover { border-color: var(--fg); color: var(--fg); }
+/* pressed: a short dim so a tap is felt */
+.btn:active, .btn-outline:active, .lang-btn:active, .nav-link:active, .footer-nav-link:active { opacity: 0.7; }
 
 /* Skip link --------------------------------------------------------------- */
 .skip-link {
@@ -260,8 +267,9 @@ img { max-width: none; }
 .burger.is-open .burger-bar:nth-child(2) { transform: translateY(-3.5px) rotate(-45deg); }
 
 @media (max-width: 939px) {
-  .brand-logo { display: none; }
-  .brand-logo-text { display: block; }
+  /* phones: the Sarle wordmark stays, so every page says whose site it is */
+  .brand-logo { display: block; height: 22px; }
+  .brand-logo-text { display: none; }
   .desk-nav, .desk-lang { display: none; }
   .burger { display: flex; }
 }

@@ -1,0 +1,492 @@
+/* ==========================================================================
+   Open Call 2027 — section copy + application pop-up
+   Uses the tokens from style.css (--bg, --fg, --muted, --hairline, …)
+   ========================================================================== */
+
+/* Section copy ------------------------------------------------------------- */
+.oc-copy .body-copy + .body-copy { margin-top: 18px; }
+.oc-copy .oc-copy-lead { color: var(--fg); }
+.oc-cta-primary { border-color: var(--fg); color: var(--fg); }
+.oc-cta-primary:hover { background: var(--fg); color: var(--bg); }
+
+/* Modal shell -------------------------------------------------------------- */
+.oc-modal {
+  --oc-error: #E9A48F;
+  position: fixed;
+  inset: 0;
+  z-index: 990; /* privacy modal (1000) opens on top of it */
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0px, 3vw, 40px);
+  background: rgba(10, 10, 9, 0.86);
+}
+.oc-modal.is-open { display: flex; animation: oc-backdrop-in 320ms ease both; }
+.oc-modal.is-open .oc-panel { animation: oc-panel-in 620ms cubic-bezier(.16, 1, .3, 1) 60ms both; }
+.oc-modal.is-closing { animation: oc-backdrop-out 260ms ease both; }
+.oc-modal.is-closing .oc-panel { animation: oc-panel-out 260ms ease both; }
+/* form window -> confirmation window (backdrop stays put) */
+.oc-modal.is-swapping .oc-panel { animation: oc-panel-swap-out 300ms cubic-bezier(.4, 0, .2, 1) both; }
+.oc-modal.is-swapped-in.is-open { animation: none; }
+.oc-modal.is-swapped-in.is-open .oc-panel { animation: oc-panel-swap-in 560ms cubic-bezier(.16, 1, .3, 1) both; }
+@keyframes oc-panel-swap-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(-24px) scale(0.98); } }
+@keyframes oc-panel-swap-in { from { opacity: 0; transform: translateY(28px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes oc-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes oc-backdrop-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes oc-panel-in { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: none; } }
+@keyframes oc-panel-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(16px); } }
+@media (prefers-reduced-motion: reduce) {
+  .oc-modal.is-open .oc-panel, .oc-modal.is-closing .oc-panel { animation-name: oc-backdrop-in; animation-duration: 200ms; }
+  .oc-modal.is-closing .oc-panel { animation-name: oc-backdrop-out; }
+}
+.oc-panel {
+  position: relative;
+  width: 100%;
+  max-width: 880px;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--hairline);
+  padding: clamp(28px, 5vw, 64px) clamp(18px, 5vw, 64px) clamp(36px, 5vw, 64px);
+  outline: none;
+}
+@media (max-width: 640px) {
+  .oc-modal { padding: 0; }
+  .oc-panel { height: 100%; border: 0; }
+}
+.oc-close {
+  position: sticky;
+  top: 0;
+  float: right;
+  margin: -14px -14px 0 12px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--hairline); /* same outline as the form panel */
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+  transition: border-color 250ms ease, color 250ms ease;
+}
+.oc-close:hover { border-color: var(--muted); color: var(--fg); }
+
+/* Head --------------------------------------------------------------------- */
+.oc-eyebrow {
+  margin: 0 0 18px;
+  font-family: var(--font-label);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+  max-width: 34em;
+}
+.oc-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(48px, 8vw, 92px);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+}
+.oc-title--thanks { font-size: clamp(40px, 6vw, 68px); line-height: 0.98; }
+.oc-dates {
+  margin: 22px 0 0;
+  font-family: var(--font-label);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.oc-tagline {
+  margin: 14px 0 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(24px, 2.6vw, 32px);
+  line-height: 1.15;
+}
+
+/* Sections ----------------------------------------------------------------- */
+.oc-form { margin-top: clamp(36px, 5vw, 56px); }
+.oc-section, .oc-group { margin: 0; padding: 0; border: 0; min-width: 0; }
+.oc-section {
+  border-top: 1px solid var(--hairline);
+  padding-top: 30px;
+  margin-top: 44px;
+}
+.oc-section > :not(legend) + :not(legend) { margin-top: 32px; }
+.oc-section:first-child { margin-top: 0; }
+.oc-num {
+  float: left; /* lets the legend sit inside the flex column */
+  width: 100%;
+  padding: 0;
+  margin: 0 0 26px;
+  font-family: var(--font-label);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.oc-num + * { clear: both; }
+.oc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 28px; }
+.oc-field--wide { grid-column: 1 / -1; }
+@media (max-width: 640px) { .oc-grid { grid-template-columns: minmax(0, 1fr); } }
+.oc-field { display: flex; flex-direction: column; min-width: 0; }
+
+.oc-q {
+  display: block;
+  padding: 0;
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(22px, 2.2vw, 27px);
+  line-height: 1.2;
+  color: var(--fg);
+}
+.oc-hint { margin: -4px 0 14px; font-size: 13.5px; line-height: 1.6; color: var(--muted); }
+
+.oc-input {
+  width: 100%;
+  min-width: 0;
+  height: 54px;
+  padding: 0 16px;
+  background: transparent;
+  border: 1px solid var(--input-border);
+  border-radius: 0;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--fg);
+  transition: border-color 250ms ease;
+  box-sizing: border-box;
+}
+.oc-input::placeholder { color: var(--dim); }
+.oc-input:focus-visible { border-color: var(--fg); outline: none; }
+.oc-textarea { height: auto; min-height: 132px; padding: 14px 16px; line-height: 1.65; resize: vertical; }
+.oc-input[aria-invalid="true"] { border-color: var(--oc-error); }
+
+/* Choice pills (radio / checkbox) ------------------------------------------ */
+.oc-choices { display: flex; flex-wrap: wrap; gap: 10px; }
+.oc-choices--stack { flex-direction: column; align-items: flex-start; }
+.oc-choice {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 20px 8px 16px;
+  border: 1px solid var(--input-border);
+  border-radius: 999px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color 250ms ease, color 250ms ease;
+}
+.oc-choice:hover { border-color: var(--muted); color: var(--fg); }
+.oc-choice:has(input:checked) { border-color: var(--fg); color: var(--fg); }
+.oc-choice:has(input:focus-visible) { outline: 1px solid var(--fg); outline-offset: 3px; }
+.oc-choice input, .oc-check input {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 0 0 auto;
+  margin: 0;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--muted);
+  background: transparent;
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+}
+.oc-choice input { border-radius: 50%; } /* round markers for single and multiple choice alike */
+.oc-choice input:focus-visible { outline: none; }
+.oc-choice input::before, .oc-check input::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: var(--fg);
+  transform: scale(0);
+  transition: transform 160ms ease;
+}
+.oc-choice input::before { border-radius: 50%; }
+.oc-choice input:checked, .oc-check input:checked { border-color: var(--fg); }
+.oc-choice input:checked::before, .oc-check input:checked::before { transform: scale(1); }
+.oc-group[aria-invalid="true"] .oc-choice { border-color: var(--oc-error); }
+
+/* How it works + confirmations -------------------------------------------- */
+.oc-how { padding: clamp(22px, 3vw, 32px); border: 1px solid var(--hairline); background: var(--card-bg); }
+.oc-how-title {
+  margin: 0 0 14px;
+  font-family: var(--font-label);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+.oc-how p:not(.oc-how-title) { margin: 0 0 12px; font-size: 14.5px; line-height: 1.75; color: var(--muted); text-wrap: pretty; }
+.oc-how p:last-child { margin-bottom: 0; }
+
+.oc-confirm { display: flex; flex-direction: column; gap: 14px; }
+.oc-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-height: 44px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+  cursor: pointer;
+}
+.oc-check input { width: 18px; height: 18px; margin-top: 2px; }
+.oc-check input::before { width: 8px; height: 8px; }
+.oc-check input:focus-visible { outline: 1px solid var(--fg); outline-offset: 3px; }
+.oc-check:has(input:checked) { color: var(--fg); }
+.oc-check input[aria-invalid="true"] { border-color: var(--oc-error); }
+.oc-check a { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
+
+/* Submit + messages -------------------------------------------------------- */
+.oc-error { margin: 32px 0 0; display: flex; align-items: flex-start; gap: 9px; font-size: 13.5px; line-height: 1.6; color: var(--oc-error); }
+.oc-error[hidden] { display: none; }
+.oc-submit-row { margin-top: 32px; display: flex; align-items: center; flex-wrap: wrap; gap: 14px 24px; }
+.oc-submit { border-color: var(--fg); color: var(--fg); padding: 0 34px; }
+.oc-submit:hover { background: var(--fg); color: var(--bg); }
+.oc-submit[disabled] { opacity: 0.5; cursor: not-allowed; border-color: var(--dim); color: var(--muted); background: none; }
+.oc-note { margin: 0; font-size: 12.5px; color: var(--muted); }
+@media (max-width: 640px) { .oc-submit { width: 100%; } }
+
+.oc-thanks { margin-top: clamp(36px, 5vw, 56px); padding-top: 30px; border-top: 1px solid var(--hairline); outline: none; }
+.oc-thanks[hidden] { display: none; }
+.oc-thanks-body { margin: 20px 0 0; font-size: clamp(15px, 1.2vw, 17px); line-height: 1.8; color: var(--muted); max-width: 52ch; }
+.oc-thanks-mail { margin: 20px 0 0; padding: 14px 18px; border: 1px solid var(--hairline); font-size: 14px; line-height: 1.6; color: var(--fg); }
+.oc-thanks-mail[hidden] { display: none; }
+.oc-thanks-mail a, .oc-sign a { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
+.oc-thanks .oc-tagline { margin-top: 32px; }
+.oc-sign {
+  margin: 22px 0 32px;
+  font-family: var(--font-label);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  line-height: 2;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Intro slide 02 — light Open Call banner (white ground, planet on the right).
+   Same frame size as slide 01 (21:9 on desktop, 4:5 on phones); text sizes follow
+   the frame width (cqw) so the content always fits inside it. */
+.iv-slide--light { container-type: inline-size; }
+.iv-slide--light .iv-pan { background: var(--paper); }
+.iv-slide--light .iv-pan-in::before,
+.iv-slide--light .iv-pan-in::after { display: none; }
+
+/* The planet: size and horizontal place come from the left / width on its <img> tag;
+   it is always centred vertically. */
+.iv-slide--light .iv-frame .oc-planet {
+  position: absolute;
+  display: block;
+  inset: auto;
+  top: 50%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  translate: 0 -50%;
+}
+
+.iv-slide--light .iv-side {
+  color: #131312;
+  max-width: 50%;
+  padding: clamp(12px, 3cqw, 48px) 0;
+  gap: clamp(8px, 1.5cqw, 24px);
+}
+.iv-slide--light .iv-body { gap: clamp(8px, 1.5cqw, 24px); }
+.iv-slide--light .iv-title {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: clamp(30px, 7.2cqw, 98px);
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+  color: #131312;
+}
+.iv-slide--light .oc-slide-kicker {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: clamp(10px, 1.05cqw, 13px);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #5F5E5A;
+}
+.iv-slide--light .iv-dates {
+  font-family: var(--font-body);
+  font-size: clamp(16px, 2.4cqw, 34px);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 1.2;
+  color: #131312;
+}
+.iv-slide--light .lead {
+  color: #5F5E5A;
+  text-shadow: none;
+  max-width: 34ch;
+  font-size: clamp(12px, 1.3cqw, 18px);
+  line-height: 1.5;
+}
+.iv-slide--light .slide-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.iv-slide--light .btn {
+  height: clamp(36px, 3.8cqw, 50px);
+  min-height: 0;
+  padding: 0 clamp(16px, 2cqw, 28px);
+  font-size: clamp(12px, 1.05cqw, 13.5px);
+}
+.iv-slide--light .iv-eyebrow, .iv-slide--light .iv-count { color: #5F5E5A; }
+.iv-slide--light .iv-big { color: #131312; }
+.iv-slide--light .btn-outline { border-color: #131312; color: #131312; font-family: var(--font-body); }
+.iv-slide--light .btn-outline:hover { background: var(--bg); color: var(--paper); }
+.iv-slide--light .btn-outline:focus-visible { outline-color: #131312; }
+
+@media (max-width: 899px) {
+  /* Phone (4:5 frame): everything centred — title on top, planet in the middle,
+     dates, description and buttons at the bottom. */
+  .iv-slide--light .iv-frame .oc-planet {
+    left: 50% !important;
+    /* open-call.js measures the gap between the title and the text below it and
+       puts the planet's centre exactly in the middle of that gap */
+    top: var(--oc-planet-top, 41%) !important;
+    width: var(--oc-planet-size, 38%) !important;
+    translate: -50% -50%;
+  }
+  .iv-slide--light .iv-side {
+    align-self: stretch;
+    justify-self: stretch;
+    max-width: none;
+    margin: 0 18px;
+    padding: 8cqw 0 7cqw;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    gap: 0;
+  }
+  .iv-slide--light .iv-title { font-size: clamp(28px, 10.5cqw, 72px); text-align: center; }
+  .iv-slide--light .iv-body { align-items: center; gap: clamp(6px, 2cqw, 14px); }
+  .iv-slide--light .oc-slide-kicker { font-size: 11px; }
+  .iv-slide--light .iv-dates { font-size: clamp(18px, 6cqw, 36px); line-height: 1.1; }
+  .iv-slide--light .iv-side .lead { font-size: 13px; line-height: 1.5; max-width: 40ch; text-shadow: none; }
+  .iv-slide--light .slide-actions { justify-content: center; }
+  .iv-slide--light .btn { height: 44px; font-size: 13px; }
+}
+
+/* Planet entrance: each time slide 02 comes in, the planet rises from below,
+   fading in and sharpening (after the frame has slid in). No rotation. */
+.iv-slide--light .iv-frame .oc-planet { transform: none; transition: none; opacity: 0; }
+.iv-slide--light.is-active .iv-frame .oc-planet,
+.iv-slide--light.is-leaving .iv-frame .oc-planet { opacity: 1; }
+.iv-slide--light.is-active .iv-frame .oc-planet {
+  animation: oc-planet-in 1600ms cubic-bezier(.16, 1, .3, 1) 650ms both;
+}
+@keyframes oc-planet-in {
+  from { opacity: 0; transform: translateY(28%); filter: blur(8px); }
+  60%  { filter: blur(0); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .iv-slide--light.is-active .iv-frame .oc-planet { animation: oc-planet-fade 400ms ease both; }
+  @keyframes oc-planet-fade { from { opacity: 0; } to { opacity: 1; } }
+}
+
+/* Confirmation window shown after the form closes ------------------------- */
+.oc-confirm-modal { z-index: 995; }
+.oc-confirm-panel { max-width: 600px; text-align: left; }
+.oc-confirm-title {
+  margin: 8px 56px 0 0;
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(32px, 5vw, 52px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.oc-confirm-body { margin: 18px 0 0; font-size: clamp(15px, 1.2vw, 17px); line-height: 1.75; color: var(--muted); max-width: 46ch; }
+.oc-confirm-body + .oc-confirm-body { margin-top: 10px; }
+.oc-confirm-tagline {
+  margin: 34px 0 0;
+  font-family: var(--font-label);
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  color: var(--fg);
+}
+.oc-confirm-sign {
+  margin: 18px 0 30px;
+  padding-top: 18px;
+  border-top: 1px solid var(--hairline);
+  font-family: var(--font-label);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  line-height: 1.9;
+  color: var(--muted);
+}
+.oc-confirm-sign strong { color: var(--fg); font-weight: 400; letter-spacing: 0.16em; }
+
+/* spam-trap field: off screen, never shown to visitors */
+.oc-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* Error window (sending failed) — same look as the confirmation window ---- */
+.oc-fail-mark {
+  margin: 0 0 18px;
+  width: 44px; height: 44px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--oc-error);
+  border-radius: 50%;
+  color: var(--oc-error);
+  font-family: var(--font-label);
+  font-size: 18px;
+}
+.oc-fail-modal .oc-confirm-title { margin-top: 0; }
+.oc-fail-modal .oc-confirm-body a { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
+.oc-fail-actions { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 12px; }
+.oc-fail-retry { border-color: var(--fg); color: var(--fg); }
+.oc-fail-retry:hover { background: var(--fg); color: var(--bg); }
+@media (max-width: 640px) { .oc-fail-actions .btn { width: 100%; } }
+
+/* 3D globe on slide 02: grab and turn it */
+.iv-slide--light .oc-globe { cursor: grab; touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+.iv-slide--light .oc-globe.is-dragging { cursor: grabbing; }
+
+/* Pin on Tallinn (placed by js/globe.js) */
+.iv-slide--light .oc-pin {
+  position: absolute; left: 0; top: 0; width: 0; height: 0; z-index: 2;
+  pointer-events: none; opacity: 0;
+}
+.iv-slide--light.is-active .oc-pin { animation: oc-pin-in 700ms ease 2000ms both; }
+@keyframes oc-pin-in { from { opacity: 0; } to { opacity: 1; } }
+.oc-pin-dot {
+  position: absolute; left: -2.5px; top: -2.5px; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--paper); box-shadow: 0 0 3px rgba(255, 255, 255, .9), 0 0 1px rgba(0, 0, 0, .5);
+  opacity: var(--pin-vis, 1);
+}
+.oc-pin-dot::after {                       /* soft breathing glow */
+  content: ''; position: absolute; inset: -6px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, .6) 0 25%, rgba(255, 255, 255, 0) 70%);
+  animation: oc-pin-glow 3.6s ease-in-out infinite;
+}
+/* other cities: a little smaller and softer than Tallinn */
+.oc-pin--city .oc-pin-dot { transform: scale(.8); }
+.oc-pin-dot::after { animation-delay: var(--glow-delay, 0s); }
+@keyframes oc-pin-glow { 0%, 100% { opacity: .2; transform: scale(.7); } 50% { opacity: .85; transform: scale(1.1); } }
+@media (prefers-reduced-motion: reduce) {
+  .oc-pin-dot::after { animation: none; opacity: .5; }
+  .iv-slide--light.is-active .oc-pin { animation-duration: 1ms; }
+}
+/* on phones the text block covers the whole slide: let touches through to the globe,
+   but keep the title, text and buttons clickable */
+@media (max-width: 899px) {
+  .iv-slide--light .iv-side { pointer-events: none; }
+  .iv-slide--light .iv-side > * { pointer-events: auto; }
+}

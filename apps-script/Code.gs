@@ -10,6 +10,9 @@
  * Sheet "Подписчики", row 1 must be exactly:
  *   A1: Дата подписки | B1: RU | C1: EN | D1: ET
  * Every sign-up is one new row: [date, email in its language column, the other two empty].
+ *
+ * Requests with form=open-call are Open Call 2027 applications: they go to
+ * handleOpenCall_ in OpenCall.gs (same project, same web app URL).
  */
 
 var SHEET_NAME = 'Подписчики';
@@ -27,12 +30,14 @@ var EMAIL_RE = /^[A-Za-z0-9][A-Za-z0-9._%+'-]{0,63}@(?:[A-Za-z0-9](?:[A-Za-z0-9-
 
 function doPost(e) {
   var params = (e && e.parameter) || {};
+  var openCall = String(params.form || '') === 'open-call';
   var result;
   try {
-    result = handleSubscription_(params);
+    // Open Call applications (OpenCall.gs) share this web app and its URL.
+    result = openCall ? handleOpenCall_((e && e.parameters) || {}) : handleSubscription_(params);
   } catch (err) {
     // Details go to the Executions log only, never to the visitor.
-    console.error('Subscription failed: ' + (err && err.stack ? err.stack : err));
+    console.error((openCall ? 'Open Call application' : 'Subscription') + ' failed: ' + (err && err.stack ? err.stack : err));
     result = { ok: false, code: 'server_error' };
   }
   result.requestId = cleanRequestId_(params.requestId);

@@ -32,6 +32,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/open-call.css">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -81,7 +82,7 @@
 
   <nav class="desk-nav" aria-label="Main" data-desknav>
     <a href="/gallery" class="nav-link">Gallery</a>
-    <a href="#exhibition" class="nav-link">Exhibition</a>
+    <a href="#exhibition" class="nav-link">Open Call</a>
     <a href="#artists" class="nav-link">Artists</a>
     <a href="/shop" class="nav-link">Shop</a>
     <a href="#contact" class="nav-link">Contact</a>
@@ -106,7 +107,7 @@
 <div id="mobile-menu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
   <nav class="mobile-nav" aria-label="Mobile">
     <a href="/gallery" class="mobile-nav-link">Gallery</a>
-    <a href="#exhibition" class="mobile-nav-link" data-close-menu>Exhibition</a>
+    <a href="#exhibition" class="mobile-nav-link" data-close-menu>Open Call</a>
     <a href="#artists" class="mobile-nav-link" data-close-menu>Artists</a>
     <a href="/shop" class="mobile-nav-link">Shop</a>
     <a href="#contact" class="mobile-nav-link" data-close-menu>Contact</a>
@@ -156,18 +157,18 @@
   <p class="hero-hint"><span>Scroll down</span><span class="hero-hint-arrow" aria-hidden="true"></span></p>
 </section>
 
-<section class="intro" aria-label="Intro" aria-roledescription="carousel">
+<section class="intro" aria-label="Intro" aria-roledescription="carousel" data-start-slide="2">
   <div class="wrap">
     <div class="iv-stage">
 
-      <article class="iv-slide is-active" data-slide aria-label="1 / 2">
+      <article class="iv-slide" data-slide aria-label="1 / 2">
                 <div class="iv-side">
           <p class="iv-big" aria-hidden="true">17<span>Aia tn</span></p>
           <p class="eyebrow iv-eyebrow">Sarle Art Gallery &amp; Studio</p>
           <h2 class="display-xl iv-title"><span class="iv-line"><span>WHERE ART</span></span><span class="iv-line"><span>MEETS SOUL</span></span></h2>
           <div class="iv-body">
             <p class="lead">A contemporary art and cultural space in the very heart of Old Tallinn.</p>
-            <div class="slide-actions iv-m-only"><a class="btn btn-outline" href="#about">Learn more</a></div>
+            <div class="slide-actions iv-m-only"><a class="btn btn-outline" href="#about">About us</a></div>
             <span class="iv-count" aria-hidden="true">01 / 02</span>
           </div>
         </div>
@@ -179,32 +180,33 @@
         </figure>
       </article>
 
-      <article class="iv-slide iv-slide--kos" data-slide aria-label="2 / 2">
+      <article class="iv-slide iv-slide--kos iv-slide--light is-active" data-slide data-duration="18000" aria-label="2 / 2">
                 <div class="iv-side">
-          <p class="iv-big" aria-hidden="true">19<span>.09</span></p>
-          <p class="eyebrow iv-eyebrow">Current exhibition</p>
-          <h1 class="display-xl iv-title"><span class="iv-line"><span>CONTINUATION</span></span><span class="iv-line"><span>OF THE BEGINNING</span></span></h1>
+          <p class="iv-big" aria-hidden="true">20<span>27</span></p>
+          <p class="eyebrow iv-eyebrow">Artists worldwide</p>
+          <h1 class="display-xl iv-title"><span class="iv-line"><span>OPEN CALL</span></span><span class="iv-line"><span>2027*</span></span></h1>
           <div class="iv-body">
-            <p class="iv-dates">19.09 &mdash; 03.10.2026</p>
-            <p class="lead">Every continuation carries a beginning within it. Every beginning already contains the path ahead.</p>
+            <p class="oc-slide-kicker">Artists worldwide</p>
+            <p class="iv-dates">17 NOV &rsquo;26 &ndash; 15 JAN &rsquo;27</p>
+            <p class="lead">Your art deserves to be seen. Artists from around the world are invited to apply.</p>
             <div class="slide-actions">
-              <a class="btn btn-outline" href="#exhibition">Learn more</a>
+              <a class="btn btn-outline" href="#apply" data-open-call>*Apply now</a>
+              <a class="btn btn-outline" href="#exhibition">About Open Call</a>
             </div>
             <span class="iv-count" aria-hidden="true">02 / 02</span>
           </div>
         </div>
         <figure class="iv-frame">
           <div class="iv-pan"><div class="iv-pan-in">
-            <img width="1672" height="941" src="assets/intro/intro-kos.webp" alt="Continuation of the Beginning">
-            <figcaption class="iv-cap">Jevgeni Kos</figcaption>
+            <img class="oc-planet" width="900" height="900" src="assets/intro/planet.webp" alt="Planet Earth" style="left: 56.5%; width: 31.9%;">
           </div></div>
         </figure>
       </article>
 
     </div>
     <div class="iv-index" role="tablist" aria-label="Intro slides">
-      <button type="button" class="iv-tab is-active" role="tab" aria-selected="true" data-slide-tab><span class="iv-tab-fill" data-tab-fill aria-hidden="true"></span><span class="iv-tab-num">01</span><span class="iv-tab-label">Sarle Art Gallery &amp; Studio</span></button>
-      <button type="button" class="iv-tab" role="tab" aria-selected="false" data-slide-tab><span class="iv-tab-fill" data-tab-fill aria-hidden="true"></span><span class="iv-tab-num">02</span><span class="iv-tab-label">Current exhibition</span></button>
+      <button type="button" class="iv-tab" role="tab" aria-selected="false" data-slide-tab><span class="iv-tab-fill" data-tab-fill aria-hidden="true"></span><span class="iv-tab-num">01</span><span class="iv-tab-label">Sarle Art Gallery &amp; Studio</span></button>
+      <button type="button" class="iv-tab is-active" role="tab" aria-selected="true" data-slide-tab><span class="iv-tab-fill" data-tab-fill aria-hidden="true"></span><span class="iv-tab-num">02</span><span class="iv-tab-label">Open Call 2027</span></button>
       <div class="iv-arrows">
         <button type="button" class="iv-arrow btn-outline" data-slide-arrow="prev" aria-label="Previous slide"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 5 8 12 15 19"></polyline></svg></button>
         <button type="button" class="iv-arrow btn-outline" data-slide-arrow="next" aria-label="Next slide"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 5 16 12 9 19"></polyline></svg></button>
@@ -228,38 +230,43 @@
         <span class="map-link-cta">View map</span>
       </a>
       <div class="about-cta">
-        <a class="btn btn-outline" href="/gallery">Learn more</a>
+        <a class="btn btn-outline" href="/gallery">Our story</a>
       </div>
     </div>
   </div>
 </section>
 
-<section id="exhibition" class="exhibition" aria-label="Current exhibition">
+<section id="exhibition" class="exhibition" aria-label="Open Call 2027">
   <div class="wrap">
     <div class="exhibition-head" data-reveal>
-      <p class="live-tag"><span class="pulse-dot" data-pulse aria-hidden="true"></span>On view, right now</p>
-      <p class="kicker">CURRENT EXHIBITION</p>
+      <p class="live-tag"><span class="pulse-dot" data-pulse aria-hidden="true"></span>Applications are open</p>
+      <p class="kicker">OPEN CALL 2027: INTERNATIONAL ARTIST SELECTION</p>
     </div>
 
-    <h2 class="display-huge" data-reveal>CONTINUATION <br>OF THE BEGINNING</h2>
+    <h2 class="display-huge" data-reveal>YOUR ART <br>DESERVES TO BE SEEN.</h2>
 
     <div class="exhibition-hero" data-reveal data-reveal-delay="80">
-      <img width="1680" height="1119" src="assets/exhibition/exh-main.webp" alt="Visitor with a painting at the exhibition" loading="lazy">
+      <img width="1920" height="1280" src="assets/exhibition/open-call-main.webp" alt="Visitors at the entrance of Sarle Art Gallery, paintings seen through the open doors" loading="lazy">
     </div>
 
     <div class="exhibition-grid two-col">
-      <div data-reveal>
-        <p class="body-copy">Jevgeni Kos solo exhibition continues an artistic journey begun earlier. Nature, dreamlike imagery and the mechanical world meet in surreal works. The railway becomes a symbol of movement, inner searching and change. Each canvas creates a space for sincere dialogue with the viewer. The exhibition invites us to pause, look closer and feel life&rsquo;s movement.</p>
+      <div class="oc-copy" data-reveal>
+        <p class="body-copy oc-copy-lead">Sarle Art Gallery &amp; Studio, a contemporary art gallery located in the historic heart of Tallinn, Estonia, invites artists from around the world to apply for OPEN CALL 2027.</p>
+        <p class="body-copy">We are seeking emerging and established artists with unique perspectives, distinctive artistic practices, and a passion for contemporary art. Our mission is to discover new artistic voices, create meaningful connections, and develop international opportunities for artists.</p>
+        <p class="body-copy">This is more than an open call for an exhibition. Selected artists will be considered for participation in upcoming exhibitions, international art projects, and potential long-term collaboration with Sarle Art Gallery.</p>
         <div class="exhibition-cta">
-          <a class="btn btn-outline" href="https://www.facebook.com/events/1061333763282184?active_tab=about" target="_blank" rel="noopener">Learn more</a>
+          <a class="btn btn-outline oc-cta-primary" href="#apply" data-open-call>Apply now</a>
         </div>
       </div>
       <dl class="fact-list" data-reveal data-reveal-delay="100">
         <div class="fact-row">
-          <dt>DATES</dt><dd>19.09 &mdash; 03.10.2026</dd>
+          <dt>APPLICATIONS</dt><dd>17.11.2026 &mdash; 15.01.2027</dd>
         </div>
         <div class="fact-row">
-          <dt>ARTIST</dt><dd>Jevgeni Kos</dd>
+          <dt>FORMAT</dt><dd>International artist selection</dd>
+        </div>
+        <div class="fact-row">
+          <dt>APPLICATION FEE</dt><dd>Free to apply</dd>
         </div>
         <div class="fact-row">
           <dt>VENUE</dt><dd>Sarle Art Gallery &amp; Studio</dd>
@@ -271,9 +278,9 @@
     </div>
 
     <div class="exhibition-grid3" data-reveal data-grid3>
-      <div class="grid3-item"><img width="1680" height="1119" src="assets/exhibition/exh-1.webp" alt="Exhibition view" loading="lazy"></div>
-      <div class="grid3-item"><img width="1680" height="1119" src="assets/exhibition/exh-2b.webp" alt="Exhibition view" loading="lazy"></div>
-      <div class="grid3-item"><img width="1680" height="1119" src="assets/exhibition/exh-3.webp" alt="Exhibition view" loading="lazy"></div>
+      <div class="grid3-item"><img width="1066" height="1600" src="assets/exhibition/open-call-1.webp" alt="Golden painting of a figure on the stone wall of Sarle Art Gallery" loading="lazy"></div>
+      <div class="grid3-item"><img width="1600" height="1066" src="assets/exhibition/open-call-2.webp" alt="Guests dancing to live violin and piano at an exhibition opening" loading="lazy" style="object-position: 52% 50%;"></div>
+      <div class="grid3-item"><img width="1600" height="1067" src="assets/exhibition/open-call-3.webp" alt="Artists speaking at an exhibition opening in front of blue paintings" loading="lazy" style="object-position: 90% 50%;"></div>
     </div>
   </div>
 </section>
@@ -388,6 +395,174 @@
   <button type="button" id="lightbox-close" class="lightbox-close btn-outline" aria-label="Close">&#10005;</button>
 </div>
 
+<div id="open-call" class="oc-modal" role="dialog" aria-modal="true" aria-labelledby="oc-title" aria-hidden="true" data-no-translate>
+  <div class="oc-panel" tabindex="-1">
+    <button type="button" class="oc-close" data-oc-close aria-label="Close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" style="display: block;"><line x1="1" y1="1" x2="13" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></line><line x1="13" y1="1" x2="1" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></line></svg></button>
+
+    <header class="oc-head">
+      <p class="oc-eyebrow">Sarle Art Gallery &amp; Studio: international artist selection</p>
+      <h2 id="oc-title" class="oc-title">Open Call 2027</h2>
+      <p class="oc-dates">17 November 2026 &mdash; 15 January 2027</p>
+      <p class="oc-tagline">Your art deserves to be seen.</p>
+    </header>
+
+    <form id="oc-form" class="oc-form" novalidate data-mailto="gallery@sarle.ee">
+
+      <fieldset class="oc-section">
+        <legend class="oc-num">01 &mdash; About you</legend>
+        <div class="oc-grid">
+          <div class="oc-field">
+            <label class="field-label" for="oc-name">Full name / Artist name *</label>
+            <input class="oc-input" id="oc-name" name="Full name / Artist name" type="text" autocomplete="name" required>
+          </div>
+          <div class="oc-field">
+            <label class="field-label" for="oc-email">Email address *</label>
+            <input class="oc-input" id="oc-email" name="Email" type="email" autocomplete="email" required>
+          </div>
+          <div class="oc-field">
+            <label class="field-label" for="oc-location">Country / City *</label>
+            <input class="oc-input" id="oc-location" name="Country / City" type="text" autocomplete="country-name" required>
+          </div>
+          <div class="oc-field">
+            <label class="field-label" for="oc-social">Instagram / Social media</label>
+            <input class="oc-input" id="oc-social" name="Instagram / Social media" type="text" placeholder="@yourname">
+          </div>
+          <div class="oc-field oc-field--wide">
+            <label class="field-label" for="oc-website">Website / Portfolio link</label>
+            <input class="oc-input" id="oc-website" name="Website / Portfolio" type="url" inputmode="url" placeholder="https://">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="oc-section">
+        <legend class="oc-num">02 &mdash; Your art</legend>
+
+        <fieldset class="oc-group" data-oc-required>
+          <legend class="oc-q">What is your primary artistic medium? *</legend>
+          <div class="oc-choices">
+            <label class="oc-choice"><input type="radio" name="Primary medium" value="Painting"><span>Painting</span></label>
+            <label class="oc-choice"><input type="radio" name="Primary medium" value="Sculpture"><span>Sculpture</span></label>
+            <label class="oc-choice"><input type="radio" name="Primary medium" value="Photography"><span>Photography</span></label>
+            <label class="oc-choice"><input type="radio" name="Primary medium" value="Digital Art"><span>Digital Art</span></label>
+            <label class="oc-choice"><input type="radio" name="Primary medium" value="Mixed Media"><span>Mixed Media</span></label>
+            <label class="oc-choice"><input type="radio" name="Primary medium" value="Installation"><span>Installation</span></label>
+            <label class="oc-choice"><input type="radio" name="Primary medium" value="Textile Art"><span>Textile Art</span></label>
+            <label class="oc-choice"><input type="radio" name="Primary medium" value="Other"><span>Other</span></label>
+          </div>
+        </fieldset>
+
+        <div class="oc-field">
+          <label class="oc-q" for="oc-practice">Tell us about your artistic practice. *</label>
+          <p class="oc-hint" id="oc-practice-hint">Briefly describe your artistic vision, inspirations, and creative approach.</p>
+          <textarea class="oc-input oc-textarea" id="oc-practice" name="Artistic practice" rows="5" aria-describedby="oc-practice-hint" required></textarea>
+        </div>
+
+        <fieldset class="oc-group">
+          <legend class="oc-q">Have you participated in exhibitions before?</legend>
+          <div class="oc-choices">
+            <label class="oc-choice"><input type="radio" name="Previous exhibitions" value="Yes, internationally"><span>Yes, internationally</span></label>
+            <label class="oc-choice"><input type="radio" name="Previous exhibitions" value="Yes, locally"><span>Yes, locally</span></label>
+            <label class="oc-choice"><input type="radio" name="Previous exhibitions" value="Not yet"><span>Not yet</span></label>
+          </div>
+        </fieldset>
+      </fieldset>
+
+      <fieldset class="oc-section">
+        <legend class="oc-num">03 &mdash; Your portfolio</legend>
+        <div class="oc-field">
+          <label class="oc-q" for="oc-portfolio">Portfolio submission *</label>
+          <p class="oc-hint" id="oc-portfolio-hint">Please share a link to 5&ndash;10 artworks that best represent your artistic practice.</p>
+          <input class="oc-input" id="oc-portfolio" name="Portfolio link" type="url" inputmode="url" placeholder="https://" aria-describedby="oc-portfolio-hint" required>
+        </div>
+        <div class="oc-field">
+          <label class="oc-q" for="oc-statement">Artist statement</label>
+          <p class="oc-hint" id="oc-statement-hint">Tell us about the ideas, emotions, or concepts behind your work.</p>
+          <textarea class="oc-input oc-textarea" id="oc-statement" name="Artist statement" rows="5" aria-describedby="oc-statement-hint"></textarea>
+        </div>
+      </fieldset>
+
+      <fieldset class="oc-section">
+        <legend class="oc-num">04 &mdash; Your opportunities</legend>
+        <fieldset class="oc-group" data-oc-required>
+          <legend class="oc-q">What interests you most about collaborating with Sarle Art Gallery? *</legend>
+          <p class="oc-hint">Select all that apply.</p>
+          <div class="oc-choices oc-choices--stack">
+            <label class="oc-choice"><input type="checkbox" name="Interests" value="Participating in international exhibitions"><span>Participating in international exhibitions</span></label>
+            <label class="oc-choice"><input type="checkbox" name="Interests" value="Presenting my work to new audiences"><span>Presenting my work to new audiences</span></label>
+            <label class="oc-choice"><input type="checkbox" name="Interests" value="Building professional relationships"><span>Building professional relationships</span></label>
+            <label class="oc-choice"><input type="checkbox" name="Interests" value="Exploring long-term gallery collaboration"><span>Exploring long-term gallery collaboration</span></label>
+            <label class="oc-choice"><input type="checkbox" name="Interests" value="Developing my international artistic career"><span>Developing my international artistic career</span></label>
+            <label class="oc-choice"><input type="checkbox" name="Interests" value="All of the above" data-oc-all><span>All of the above</span></label>
+          </div>
+        </fieldset>
+        <div class="oc-field">
+          <label class="oc-q" for="oc-why">Why would you like to become part of Sarle Art Gallery&rsquo;s artistic community?</label>
+          <textarea class="oc-input oc-textarea" id="oc-why" name="Why Sarle" rows="4"></textarea>
+        </div>
+      </fieldset>
+
+      <fieldset class="oc-section">
+        <legend class="oc-num">05 &mdash; Selection &amp; participation</legend>
+        <div class="oc-how">
+          <p class="oc-how-title">How it works</p>
+          <p>All applications will be carefully reviewed by the Sarle Art Gallery team. Artists will be selected based on the quality of their work, artistic vision, originality, and relevance to upcoming gallery projects.</p>
+          <p>Selected artists may be invited to participate in exhibitions and other gallery initiatives. A limited number of artists may receive fully supported participation opportunities. Additional selected artists may be offered individual participation arrangements, depending on the exhibition format and available opportunities.</p>
+          <p>Applications are free to submit. Participation conditions will be communicated individually to selected applicants before any commitment is made.</p>
+          <p>Submitting an application does not guarantee exhibition participation or gallery representation. Artists whose work resonates with our curatorial vision may also be considered for future exhibitions and long-term collaboration.</p>
+        </div>
+
+        <fieldset class="oc-group oc-confirm">
+          <legend class="oc-q">Application confirmation *</legend>
+          <label class="oc-check"><input type="checkbox" name="Confirm: selection process" value="Yes" required><span>I understand that applications are reviewed through a selection process and that exhibition participation may be subject to individual conditions, which will be communicated before confirmation.</span></label>
+          <label class="oc-check"><input type="checkbox" name="Confirm: rights to artworks" value="Yes" required><span>I confirm that I own the rights to the submitted artworks.</span></label>
+          <label class="oc-check"><input type="checkbox" name="Confirm: may be contacted" value="Yes" required><span>I agree to be contacted by Sarle Art Gallery regarding my application.</span></label>
+          <label class="oc-check"><input type="checkbox" name="Confirm: privacy policy" value="Yes" required><span>I have read and agree to the <a href="#privacy" data-privacy>Privacy Policy</a>.</span></label>
+        </fieldset>
+      </fieldset>
+
+      <!-- spam trap: hidden from people, bots fill it and get ignored by the sheet script -->
+      <div class="oc-hp" aria-hidden="true"><label for="oc-hp">Leave this field empty</label><input id="oc-hp" type="text" name="_hp" tabindex="-1" autocomplete="off"></div>
+
+      <p class="oc-error" id="oc-error" role="alert" hidden><span aria-hidden="true">!</span><span id="oc-error-text"></span></p>
+
+      <div class="oc-submit-row">
+        <button type="submit" class="btn btn-outline oc-submit">Submit application</button>
+        <p class="oc-note">Applications are free to submit.</p>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<div id="oc-confirm" class="oc-modal oc-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="oc-confirm-title" aria-hidden="true" data-no-translate>
+  <div class="oc-panel oc-confirm-panel" tabindex="-1">
+    <button type="button" class="oc-close" data-oc-confirm-close aria-label="Close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" style="display: block;"><line x1="1" y1="1" x2="13" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></line><line x1="13" y1="1" x2="1" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></line></svg></button>
+    <h2 id="oc-confirm-title" class="oc-confirm-title">THANK YOU FOR YOUR APPLICATION!</h2>
+    <p class="oc-confirm-body">Thank you for your interest in joining the artistic community of Sarle Art Gallery &amp; Studio.</p>
+    <p class="oc-confirm-body">Our team looks forward to discovering your work.</p>
+    <p class="oc-confirm-body">Selected applicants will be contacted directly regarding the next steps.</p>
+    <p class="oc-thanks-mail" id="oc-thanks-mail" hidden>Your email app has opened with your application to <a href="mailto:gallery@sarle.ee">gallery@sarle.ee</a>. Please press Send to complete it.</p>
+    <p class="oc-confirm-tagline">YOUR ART. OUR SPACE. NEW POSSIBILITIES.</p>
+    <p class="oc-confirm-sign"><strong>SARLE ART GALLERY &amp; STUDIO</strong><br>Tallinn, Estonia<br>Aia 17, Old Town</p>
+    <button type="button" class="btn btn-outline oc-confirm-ok" data-oc-confirm-close>Close</button>
+  </div>
+</div>
+
+<div id="oc-fail" class="oc-modal oc-confirm-modal oc-fail-modal" role="alertdialog" aria-modal="true" aria-labelledby="oc-fail-title" aria-describedby="oc-fail-body" aria-hidden="true" data-no-translate>
+  <div class="oc-panel oc-confirm-panel" tabindex="-1">
+    <button type="button" class="oc-close" data-oc-fail-close aria-label="Close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" style="display: block;"><line x1="1" y1="1" x2="13" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></line><line x1="13" y1="1" x2="1" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></line></svg></button>
+    <p class="oc-fail-mark" aria-hidden="true">!</p>
+    <h2 id="oc-fail-title" class="oc-confirm-title">THE APPLICATION WAS NOT SENT</h2>
+    <p id="oc-fail-body" class="oc-confirm-body">Something went wrong while sending your application. Please check your internet connection and try again.</p>
+    <p class="oc-confirm-body">Your answers are kept — you do not need to fill in the form again.</p>
+    <p class="oc-confirm-body">If it still does not work, send your application by email to <a href="mailto:gallery@sarle.ee">gallery@sarle.ee</a>.</p>
+    <div class="oc-fail-actions">
+      <button type="button" class="btn btn-outline oc-fail-retry" data-oc-fail-retry>Try again</button>
+      <button type="button" class="btn btn-outline" data-oc-fail-mail>Send by email</button>
+    </div>
+  </div>
+</div>
+
 <footer id="footer" class="site-footer" aria-label="Footer">
   <div class="wrap">
     <div class="footer-grid">
@@ -406,7 +581,7 @@
       <nav class="footer-col" aria-label="Footer" data-reveal="card">
         <p class="footer-heading">Navigate</p>
         <a href="/gallery" class="footer-nav-link">Gallery</a>
-        <a href="#exhibition" class="footer-nav-link">Current Exhibition</a>
+        <a href="#exhibition" class="footer-nav-link">Open Call 2027</a>
         <a href="#artists" class="footer-nav-link">Artists</a>
         <a href="/shop" class="footer-nav-link">Shop</a>
         <a href="#contact" class="footer-nav-link">Contact</a>
@@ -445,7 +620,10 @@
 </div>
 <script src="js/newsletter-config.js"></script>
 <script src="js/hero-gallery.js"></script>
+<script src="js/open-call-i18n.js"></script>
 <script src="js/main.js"></script>
 <script src="js/privacy.js"></script>
+<script src="js/open-call.js"></script>
+<script src="js/globe.js"></script>
 </body>
 </html>

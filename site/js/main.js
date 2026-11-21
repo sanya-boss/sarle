@@ -209,7 +209,10 @@
     if (slides.length < 2) return;
     var section = slides[0].closest('section');
     var tabs = Array.prototype.slice.call(document.querySelectorAll('[data-slide-tab]'));
-    var DUR = 9000;
+    var DUR = 9000; // default time per slide, ms; a slide can set its own with data-duration="…"
+    function durOf(k) { var d = slides[k] && parseInt(slides[k].getAttribute('data-duration'), 10); return d > 0 ? d : DUR; }
+    // which slide shows first: data-start-slide="2" on the section (1-based)
+    var START = section ? Math.max(0, Math.min(slides.length - 1, (parseInt(section.getAttribute('data-start-slide'), 10) || 1) - 1)) : 0;
     var current = -1, timer = null, userStopped = false, visible = false, leaveT = [];
 
     function fill(run) {
@@ -220,7 +223,7 @@
         f.style.transform = k === current && !run ? 'scaleX(1)' : 'scaleX(0)';
         if (k === current && run) {
           void f.offsetWidth;
-          f.style.transition = 'transform ' + DUR + 'ms linear';
+          f.style.transition = 'transform ' + durOf(current) + 'ms linear';
           f.style.transform = 'scaleX(1)';
         }
       });
@@ -229,7 +232,7 @@
       clearTimeout(timer);
       if (userStopped || !visible || reduced || mqStrip.matches) { fill(false); return; }
       fill(true);
-      timer = setTimeout(function () { go(current + 1); schedule(); }, DUR);
+      timer = setTimeout(function () { go(current + 1); schedule(); }, durOf(current));
     }
     function go(i) {
       var n = slides.length;
@@ -319,7 +322,8 @@
           void section.offsetWidth; // paint the hidden start state first
           requestAnimationFrame(function () {
             requestAnimationFrame(function () {
-              go(0);
+              go(START);
+              schedule(); // start the tab timer for the first slide shown
               setTimeout(function () { section.classList.remove('iv-first'); }, 1400);
             });
           });
@@ -328,7 +332,7 @@
       }, { threshold: 0.05 }).observe(section);
     } else {
       visible = true;
-      go(0);
+      go(START);
       schedule();
     }
   })();
@@ -904,7 +908,7 @@
       'Current exhibition': 'Praegune näitus',
       'CONTINUATION': 'ALGUSE', 'OF THE BEGINNING': 'JÄTKUMINE',
       'Every continuation carries a beginning within it. Every beginning already contains the path ahead.': 'Iga jätk kannab endas algust. Iga algus sisaldab juba teed, mis on ees.',
-      'Learn more': 'Loe lähemalt',
+      'Learn more': 'Loe lähemalt', 'About Open Call': 'Open Callist lähemalt', 'Our story': 'Meie lugu',
       'About us': 'Meist',
       'Located at Aia tn 17, amid the historic architecture of the Old Town, the gallery creates a space where art and people meet.': 'Aia tn 17 asuv galerii loob vanalinna ajaloolise arhitektuuri keskel ruumi, kus kunst ja inimesed kohtuvad.',
       'Exhibitions, concerts, auctions, lectures, meetings with artists, educational and charitable projects take place here. It is a place where art does not exist separately from life — it becomes a part of it.': 'Siin toimuvad näitused, kontserdid, oksjonid, loengud, kohtumised kunstnikega ning hariduslikud ja heategevuslikud projektid. See on koht, kus kunst ei eksisteeri elust eraldi — see saab elu osaks.',
@@ -995,7 +999,7 @@
       "Her character unites an inner core with a warm and open attitude toward people. Despite disappointments and life’s challenges, she has preserved her ability to believe in others, to remain honest, decent, and deeply compassionate.": "Tema iseloomus ühinevad sisemine tugevus ning soe ja avatud suhtumine inimestesse. Vaatamata pettumustele ja elu katsumustele on ta säilitanud oskuse uskuda teistesse, jääda ausaks, korralikuks ja sügavalt kaastundlikuks.",
       "Svetlana is a trained dramatic theatre actress. She worked in theatre and as a television announcer. Later, she led a clinic and, after completing that chapter of her life, returned once again to creativity.": "Svetlana on hariduselt draamanäitleja. Ta töötas teatris ja telediktorina. Hiljem juhtis ta kliinikut ning pärast selle eluetapi lõppu pöördus taas loomingu juurde.",
       "Sarle Art Gallery & Studio was born from the desire to create a space where art remains genuine, and where a person can remain themselves.": "Sarle Art Gallery & Studio sündis soovist luua ruum, kus kunst jääb ehtsaks ja kus inimene saab jääda iseendaks.",
-      "FIVE WORKS · PRIVATE COLLECTION": "VIIS TÖÖD · ERAKOGU",
+      "FIVE WORKS FROM A PRIVATE COLLECTION": "VIIS TÖÖD ERAKOGUST",
     };
     const RUS = {
       'Gallery': 'Галерея', 'Exhibition': 'Выставка', 'Artists': 'Художники', 'Contact': 'Контакты',
@@ -1009,7 +1013,7 @@
       'Current exhibition': 'Текущая выставка',
       'CONTINUATION': 'ПРОДОЛЖЕНИЕ', 'OF THE BEGINNING': 'НАЧАЛА',
       'Every continuation carries a beginning within it. Every beginning already contains the path ahead.': 'Каждое продолжение несёт в себе начало. Каждое начало уже содержит путь вперёд.',
-      'Learn more': 'Подробнее',
+      'Learn more': 'Подробнее', 'About Open Call': 'Подробнее об Open Call', 'Our story': 'Наша история',
       'About us': 'О нас',
       'Located at Aia tn 17, amid the historic architecture of the Old Town, the gallery creates a space where art and people meet.': 'Расположенная на Aia tn 17, среди исторической архитектуры Старого города, галерея создаёт пространство, где встречаются искусство и люди.',
       'Exhibitions, concerts, auctions, lectures, meetings with artists, educational and charitable projects take place here. It is a place where art does not exist separately from life — it becomes a part of it.': 'Здесь проходят выставки, концерты, аукционы, лекции, встречи с художниками, образовательные и благотворительные проекты. Это место, где искусство не существует отдельно от жизни — оно становится её частью.',
@@ -1100,10 +1104,16 @@
       "Her character unites an inner core with a warm and open attitude toward people. Despite disappointments and life’s challenges, she has preserved her ability to believe in others, to remain honest, decent, and deeply compassionate.": "В её характере соединяются внутренний стержень и тёплое, открытое отношение к людям. Несмотря на разочарования и жизненные испытания, она сохранила способность верить в людей, оставаться честной, порядочной и глубоко сострадающей.",
       "Svetlana is a trained dramatic theatre actress. She worked in theatre and as a television announcer. Later, she led a clinic and, after completing that chapter of her life, returned once again to creativity.": "Светлана — профессиональная драматическая актриса. Она работала в театре и диктором на телевидении. Позже руководила клиникой, а завершив этот этап жизни, вновь вернулась к творчеству.",
       "Sarle Art Gallery & Studio was born from the desire to create a space where art remains genuine, and where a person can remain themselves.": "Sarle Art Gallery & Studio родилась из желания создать пространство, где искусство остаётся подлинным, а человек может оставаться собой.",
-      "FIVE WORKS · PRIVATE COLLECTION": "ПЯТЬ РАБОТ · ЧАСТНАЯ КОЛЛЕКЦИЯ",
+      "FIVE WORKS FROM A PRIVATE COLLECTION": "ПЯТЬ РАБОТ ИЗ ЧАСТНОЙ КОЛЛЕКЦИИ",
     };
 
     var DICT = { EN: null, EST: EST, RUS: RUS };
+    // extra strings from other scripts (js/open-call-i18n.js); existing keys win
+    var EXTRA = window.SARLE_I18N_EXTRA || {};
+    [['EST', EST], ['RUS', RUS]].forEach(function (p) {
+      var x = EXTRA[p[0]] || {};
+      Object.keys(x).forEach(function (k) { if (!Object.prototype.hasOwnProperty.call(p[1], k)) p[1][k] = x[k]; });
+    });
     var HTML_DICT = {"EST":{"g.intro1":"Eesti, Tallinn, vanalinn — oma inimeste süda, ja just siin, Aia tn 17, asub <strong>Sarle Art Gallery &amp; Studio</strong>.","g.intro2":"Samal aadressil asub ka tuntud Eesti skulptori <strong>Tauno Kangro</strong> galerii. Erinevate kunstisuundade kooseksisteerimine loob ainulaadse õhkkonna — dialoogiruumi traditsiooni ja kaasaegse kunsti vahel.","g.story1":"<strong>Svetlana Sarle</strong> asutas Sarle Art Gallery &amp; Studio oma lähedase sõbra <strong>Vilnis Strazdinši</strong> mälestuseks — tema oli see, kes esimesena mõtles galerii avamisele.","g.sky":"Ta lahkus 63-aastaselt, jättes endast maha helged, soojad ja südamlikud mälestused. Tal oli veel üks soov: aidata vanemaid laste kasvatamisel. Ta oli siiralt õnnelik, kui rääkis oma väikesest sõbrast, kelle ebatavaline nimi oli <strong>Sky</strong>.","g.values":"Svetlana jaoks sai galerii loomine mitte ainult oma lähedase sõbra Vilnis Strazdinši unistuse täitumiseks, vaid ka tema enda väärtuste jätkuks — <strong>armastus inimeste ja ilu vastu, austus mälestuse vastu, tänulikkus ja soov luua.</strong>","shop.bio1":"<strong>Sarle Art Gallery &amp; Studio</strong> erakogus on läti kunstniku <strong>Juris Jurjānsi (1944–2023)</strong> teosed. Valitud töid kogust on võimalik omandada."},"RUS":{"g.intro1":"Эстония, Таллинн, Старый город — сердце его жителей, и именно здесь, на Aia tn 17, находится <strong>Sarle Art Gallery &amp; Studio</strong>.","g.intro2":"По этому же адресу находится галерея известного эстонского скульптора <strong>Тауно Кангро</strong>. Сосуществование разных художественных направлений создаёт особую атмосферу — пространство диалога между традицией и современным искусством.","g.story1":"Sarle Art Gallery &amp; Studio основала <strong>Светлана Шарле</strong> в память о своём близком друге <strong>Вилнисе Страздиньше</strong>, который первым задумал открыть галерею.","g.sky":"Он ушёл из жизни в 63 года, оставив после себя светлые, тёплые и искренние воспоминания. У него было ещё одно желание — помогать родителям в воспитании детей. Он был по-настоящему счастлив, рассказывая о своём маленьком друге с необычным именем <strong>Sky</strong>.","g.values":"Для Светланы создание галереи стало не только исполнением мечты её близкого друга Вилниса Страздиньша, но и продолжением её собственных ценностей — <strong>любви к людям и красоте, уважения к памяти, благодарности и стремления созидать.</strong>","shop.bio1":"В частной коллекции <strong>Sarle Art Gallery &amp; Studio</strong> находятся работы латвийского художника <strong>Юриса Юрьянса (1944–2023)</strong>. Избранные работы из коллекции доступны для приобретения."}};
     // Published pages (/, /et/, /ru/) are pre-translated at build time and
     // carry their language in <html data-lang>. Source pages without it
