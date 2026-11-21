@@ -172,6 +172,15 @@
 .oc-input:focus-visible { border-color: var(--fg); outline: none; }
 .oc-textarea { height: auto; min-height: 132px; padding: 14px 16px; line-height: 1.65; resize: vertical; }
 .oc-input[aria-invalid="true"] { border-color: var(--oc-error); }
+/* country list: native select (works with keyboard, phones show their own picker) */
+.oc-select-wrap { position: relative; }
+.oc-select-wrap::after {
+  content: ''; position: absolute; right: 18px; top: 50%; width: 7px; height: 7px; margin-top: -6px;
+  border-right: 1px solid var(--muted); border-bottom: 1px solid var(--muted); transform: rotate(45deg); pointer-events: none;
+}
+.oc-select { -webkit-appearance: none; appearance: none; padding-right: 44px; cursor: pointer; text-overflow: ellipsis; }
+.oc-select:invalid { color: var(--dim); }
+.oc-select option { background: var(--bg); color: var(--fg); }
 
 /* Choice pills (radio / checkbox) ------------------------------------------ */
 .oc-choices { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -262,6 +271,20 @@
 .oc-submit[disabled] { opacity: 0.5; cursor: not-allowed; border-color: var(--dim); color: var(--muted); background: none; }
 .oc-note { margin: 0; font-size: 12.5px; color: var(--muted); }
 @media (max-width: 640px) { .oc-submit { width: 100%; } }
+/* while the application is being sent: a spinning ring and "Sending…" */
+.oc-submit { display: inline-flex; align-items: center; justify-content: center; gap: 12px; }
+.oc-spinner, .oc-submit-sending { display: none; }
+.oc-spinner {
+  width: 16px; height: 16px; flex: 0 0 auto; border-radius: 50%;
+  border: 1.5px solid currentColor; border-right-color: transparent;
+  animation: oc-spin 800ms linear infinite;
+}
+@keyframes oc-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .oc-spinner { animation-duration: 2400ms; } }
+.oc-submit.is-sending, .oc-submit.is-sending[disabled] { opacity: 1; cursor: progress; border-color: var(--fg); color: var(--fg); background: none; }
+.oc-submit.is-sending .oc-spinner { display: block; }
+.oc-submit.is-sending .oc-submit-sending { display: inline; }
+.oc-submit.is-sending .oc-submit-label { display: none; }
 
 .oc-thanks { margin-top: clamp(36px, 5vw, 56px); padding-top: 30px; border-top: 1px solid var(--hairline); outline: none; }
 .oc-thanks[hidden] { display: none; }

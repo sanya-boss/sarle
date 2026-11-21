@@ -8,7 +8,7 @@ const { createSandbox, XLSX_LAYOUT } = require('./oc-sandbox');
 function application(extra, drop) {
   const f = [
     ['form', 'open-call'], ['requestId', 'req-12345678'],
-    ['Full name / Artist name', 'Anna Tamm'], ['Email', 'anna@example.com'], ['Country / City', 'Estonia / Tallinn'],
+    ['Full name / Artist name', 'Anna Tamm'], ['Email', 'anna@example.com'], ['Country', 'EE'], ['City', 'Tallinn'],
     ['Instagram / Social media', '@anna'], ['Website / Portfolio', ''],
     ['Primary medium', 'Painting'], ['Artistic practice', 'Oil on canvas, northern light.'],
     ['Previous exhibitions', 'Yes, locally'], ['Portfolio link', 'https://anna.example.com'], ['Artist statement', ''],
@@ -29,6 +29,7 @@ test('application goes to column B of «Заявки», in Russian, under the lo
   assert.equal(col['Статус'], 'Новая');
   assert.equal(col['Имя / имя художника'], 'Anna Tamm');
   assert.equal(col['Email'], 'anna@example.com');
+  assert.equal(col['Страна / город'], 'Эстония, Tallinn');
   assert.equal(col['Основная техника'], 'Живопись');
   assert.equal(col['Опыт выставок'], 'Да, местные');
   assert.equal(col['Что интересует в сотрудничестве'], '• Показ работ новой аудитории\n• Профессиональные связи');
@@ -56,6 +57,9 @@ for (const [why, extra, drop] of [
   ['a confirmation missing', [], ['Confirm: privacy policy']],
   ['invalid email', [['Email', 'not-an-email']], ['Email']],
   ['email starting with =', [['Email', '=x@example.com']], ['Email']],
+  ['unknown country', [['Country', 'XX']], ['Country']],
+  ['no city', [], ['City']],
+  ['no country', [], ['Country']],
   ['unknown medium', [['Primary medium', 'Hacking']], ['Primary medium']],
   ['two media', [['Primary medium', 'Sculpture']], []],
   ['far too long text', [['Artistic practice', 'x'.repeat(7000)]], ['Artistic practice']],
@@ -126,4 +130,11 @@ test('newsletter requests still go to the newsletter handler', () => {
   assert.equal(called, true);
   assert.equal(r.ok, true);
   assert.equal(s.tab('Заявки').writes, 0);
+});
+
+test('the older form (one free "Country / City" field) is still accepted', () => {
+  const s = createSandbox();
+  const r = s.post(application([['Country / City', 'Latvia / Riga']], ['Country', 'City']));
+  assert.equal(r.ok, true);
+  assert.equal(s.column('Заявки', 2)['Страна / город'], 'Latvia / Riga');
 });
