@@ -271,6 +271,20 @@
 .oc-submit[disabled] { opacity: 0.5; cursor: not-allowed; border-color: var(--dim); color: var(--muted); background: none; }
 .oc-note { margin: 0; font-size: 12.5px; color: var(--muted); }
 @media (max-width: 640px) { .oc-submit { width: 100%; } }
+/* while the application is being sent: a spinning ring and "Sending…" */
+.oc-submit { display: inline-flex; align-items: center; justify-content: center; gap: 12px; }
+.oc-spinner, .oc-submit-sending { display: none; }
+.oc-spinner {
+  width: 16px; height: 16px; flex: 0 0 auto; border-radius: 50%;
+  border: 1.5px solid currentColor; border-right-color: transparent;
+  animation: oc-spin 800ms linear infinite;
+}
+@keyframes oc-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .oc-spinner { animation-duration: 2400ms; } }
+.oc-submit.is-sending, .oc-submit.is-sending[disabled] { opacity: 1; cursor: progress; border-color: var(--fg); color: var(--fg); background: none; }
+.oc-submit.is-sending .oc-spinner { display: block; }
+.oc-submit.is-sending .oc-submit-sending { display: inline; }
+.oc-submit.is-sending .oc-submit-label { display: none; }
 
 .oc-thanks { margin-top: clamp(36px, 5vw, 56px); padding-top: 30px; border-top: 1px solid var(--hairline); outline: none; }
 .oc-thanks[hidden] { display: none; }

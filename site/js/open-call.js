@@ -272,6 +272,7 @@
 
     sending = true;
     submitBtn.disabled = true;
+    submitBtn.classList.add('is-sending');
     form.setAttribute('aria-busy', 'true');
     var ctrl = window.AbortController ? new AbortController() : null;
     var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, TIMEOUT_MS);
@@ -287,6 +288,7 @@
         clearTimeout(timer);
         sending = false;
         submitBtn.disabled = false;
+        submitBtn.classList.remove('is-sending');
         form.setAttribute('aria-busy', 'false');
       });
   });
