@@ -23,6 +23,8 @@ var DATE_FORMAT = 'dd.MM.yyyy HH:mm';
 var MAX_EMAIL_LENGTH = 254;
 var LOCK_WAIT_MS = 10000;
 var GLOBAL_LIMIT_PER_MINUTE = 30;
+// Email notice for every NEW subscriber (not for repeats). Address: see notifyEmail_.
+var NEWSLETTER_NOTIFY_DEFAULT = 'gallery@sarle.ee';
 
 // First character must be a letter or digit, so a stored address can never
 // start with = + - @ (spreadsheet formula injection).
@@ -63,33 +65,68 @@ function handleSubscription_(p) {
 
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(LOCK_WAIT_MS)) return { ok: false, code: 'busy' };
+  var added = false;
   try {
-    if (!takeRateSlot_()) return { ok: false, code: 'rate_limited' };
-
-    var sheet = getSheet_();
-    assertHeaders_(sheet);
-
-    var col = LANG_COLUMN[lang];
-    var needle = normalizeEmail_(email);
-    var lastRow = sheet.getLastRow();
-    if (lastRow > 1) {
-      var existing = sheet.getRange(2, col, lastRow - 1, 1).getDisplayValues();
-      for (var i = 0; i < existing.length; i++) {
-        // Same address in the same language column: no new row, neutral success.
-        if (normalizeEmail_(existing[i][0]) === needle) return { ok: true, code: 'ok' };
-      }
-    }
-
-    var row = [new Date(), '', '', ''];
-    row[col - 1] = email;
-    var target = sheet.getRange(lastRow + 1, 1, 1, HEADERS.length);
-    // Emails are stored as plain text ('@'), the date as a real Date value.
-    target.setNumberFormats([[DATE_FORMAT, '@', '@', '@']]);
-    target.setValues([row]);
-    SpreadsheetApp.flush();
-    return { ok: true, code: 'ok' };
+    return addSubscriber_(email, lang, function () { added = true; });
   } finally {
     lock.releaseLock();
+    if (added) notifySubscriber_(email, lang);
+  }
+}
+
+// Runs under the script lock. Calls onAdd() once a new row has been written.
+function addSubscriber_(email, lang, onAdd) {
+  if (!takeRateSlot_()) return { ok: false, code: 'rate_limited' };
+
+  var sheet = getSheet_();
+  assertHeaders_(sheet);
+
+  var col = LANG_COLUMN[lang];
+  var needle = normalizeEmail_(email);
+  var lastRow = sheet.getLastRow();
+  if (lastRow > 1) {
+    var existing = sheet.getRange(2, col, lastRow - 1, 1).getDisplayValues();
+    for (var i = 0; i < existing.length; i++) {
+      // Same address in the same language column: no new row, neutral success.
+      if (normalizeEmail_(existing[i][0]) === needle) return { ok: true, code: 'ok' };
+    }
+  }
+
+  var row = [new Date(), '', '', ''];
+  row[col - 1] = email;
+  var target = sheet.getRange(lastRow + 1, 1, 1, HEADERS.length);
+  // Emails are stored as plain text ('@'), the date as a real Date value.
+  target.setNumberFormats([[DATE_FORMAT, '@', '@', '@']]);
+  target.setValues([row]);
+  SpreadsheetApp.flush();
+  onAdd();
+  return { ok: true, code: 'ok' };
+}
+
+/* Where email notices go: the Script Property NOTIFY_EMAIL (Project Settings →
+   Script Properties), so no personal address sits in this public code.
+   Several addresses: comma-separated. "off" switches notices off. Without the
+   property, notices go to `fallback`. Shared with OpenCall.gs. */
+function notifyEmail_(fallback) {
+  var p = PropertiesService.getScriptProperties().getProperty('NOTIFY_EMAIL');
+  if (p == null || String(p).trim() === '') return fallback;
+  p = String(p).trim();
+  return p.toLowerCase() === 'off' ? '' : p;
+}
+
+// A short notice about a new subscriber. Runs after the row is saved; a failed
+// notice never turns the sign-up into an error.
+function notifySubscriber_(email, lang) {
+  var to = notifyEmail_(NEWSLETTER_NOTIFY_DEFAULT);
+  if (!to) return;
+  try {
+    MailApp.sendEmail({
+      to: to,
+      subject: 'Sarle: новый подписчик рассылки (' + lang + ')',
+      body: 'Новый подписчик рассылки: ' + email + '\nЯзык сайта: ' + lang + '\n\nЛист «' + SHEET_NAME + '» в таблице подписчиков.'
+    });
+  } catch (err) {
+    console.error('Newsletter notice not sent: ' + err);
   }
 }
 

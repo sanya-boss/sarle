@@ -19,7 +19,8 @@
 var OC_SHEET_NAME = 'Заявки';
 var OC_SUMMARY_SHEET = 'Сводка';
 
-// A short notice for every new application ('' switches notices off).
+// Email notices: the address comes from the Script Property NOTIFY_EMAIL
+// (see notifyEmail_ in Code.gs); without it, notices go to this address.
 var OC_NOTIFY_EMAIL = 'gallery@sarle.ee';
 
 var OC_MAX_SHORT = 300;    // one-line answers
@@ -162,10 +163,11 @@ function handleOpenCall_(params) {
   }
 
   // The application is saved; a failed notice must not turn it into an error.
-  if (OC_NOTIFY_EMAIL) {
+  var notify = notifyEmail_(OC_NOTIFY_EMAIL);
+  if (notify) {
     try {
       MailApp.sendEmail({
-        to: OC_NOTIFY_EMAIL,
+        to: notify,
         subject: 'Open Call 2027: новая заявка от ' + (answers['Full name / Artist name'] || 'без имени'),
         body: 'Новая заявка от ' + answers['Full name / Artist name'] + ' (' + answers['Email'] + ').\n\n' +
               'Таблица: ' + ocBook_().getUrl()

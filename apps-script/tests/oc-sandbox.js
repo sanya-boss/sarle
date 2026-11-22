@@ -89,7 +89,7 @@ function createSandbox(opts) {
       newConditionalFormatRule: () => chain({}),
       getUi: () => chain({}),
     },
-    PropertiesService: { getScriptProperties: () => ({ getProperty: k => (k === 'SPREADSHEET_ID' ? 'TEST_ID' : null) }) },
+    PropertiesService: { getScriptProperties: () => ({ getProperty: k => (k === 'SPREADSHEET_ID' ? 'TEST_ID' : (opts.props && k in opts.props ? opts.props[k] : null)) }) },
     LockService: {
       getScriptLock: () => ({
         tryLock() { if (opts.lockBusy || state.lockHeld) return false; state.lockHeld = true; return true; },

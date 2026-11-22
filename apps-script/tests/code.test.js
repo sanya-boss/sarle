@@ -155,3 +155,39 @@ test('checkSetup reports wrong time zones and headers, writes nothing', () => {
   assert.equal(problems.length, 3);
   assert.equal(bad.state.rows.length, 0);
 });
+
+test('a new subscriber sends one notice, after the lock is released', () => {
+  const s = createSandbox();
+  s.post(req('anna@example.com', 'RU'));
+  assert.equal(s.state.mails.length, 1);
+  const m = s.state.mails[0];
+  assert.equal(m.to, 'gallery@sarle.ee');
+  assert.match(m.subject, /RU/);
+  assert.match(m.body, /anna@example\.com/);
+  assert.equal(m.lockHeldWhileSending, false);
+});
+
+test('repeat sign-up and honeypot send no notice', () => {
+  const s = createSandbox();
+  s.post(req('anna@example.com', 'EN'));
+  s.post(req('ANNA@example.com ', 'EN'));
+  s.post(req('bot@example.com', 'EN', { website: 'x' }));
+  assert.equal(s.state.mails.length, 1);
+});
+
+test('NOTIFY_EMAIL property sets the notice address; "off" switches notices off', () => {
+  const s1 = createSandbox({ props: { NOTIFY_EMAIL: 'team@example.org' } });
+  s1.post(req('a@example.com', 'EN'));
+  assert.equal(s1.state.mails[0].to, 'team@example.org');
+  const s2 = createSandbox({ props: { NOTIFY_EMAIL: 'off' } });
+  s2.post(req('a@example.com', 'EN'));
+  assert.equal(s2.state.mails.length, 0);
+  assert.equal(s2.state.rows.length, 1);
+});
+
+test('a failed notice does not fail the sign-up', () => {
+  const s = createSandbox({ mailFails: true });
+  const r = s.post(req('a@example.com', 'ET'));
+  assert.equal(r.body.ok, true);
+  assert.equal(s.state.rows.length, 1);
+});

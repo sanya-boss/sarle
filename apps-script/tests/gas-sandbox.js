@@ -17,7 +17,8 @@ function createSandbox(opts) {
     lockHeld: false,
     lockAvailable: opts.lockAvailable !== false,
     cache: {},
-    props: { SPREADSHEET_ID: opts.spreadsheetId === undefined ? 'TEST_ID' : opts.spreadsheetId },
+    props: Object.assign({ SPREADSHEET_ID: opts.spreadsheetId === undefined ? 'TEST_ID' : opts.spreadsheetId }, opts.props || {}),
+    mails: [],
     logs: [],
     flushes: 0,
   };
@@ -98,6 +99,12 @@ function createSandbox(opts) {
       },
     },
     Session: { getScriptTimeZone: () => opts.scriptTimeZone || 'Europe/Tallinn' },
+    MailApp: {
+      sendEmail(m) {
+        if (opts.mailFails) throw new Error('quota');
+        state.mails.push(Object.assign({ lockHeldWhileSending: state.lockHeld }, m));
+      },
+    },
   };
   vm.createContext(ctx);
   vm.runInContext(CODE, ctx, { filename: 'Code.gs' });
