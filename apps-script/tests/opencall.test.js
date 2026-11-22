@@ -138,3 +138,24 @@ test('the older form (one free "Country / City" field) is still accepted', () =>
   assert.equal(r.ok, true);
   assert.equal(s.column('Заявки', 2)['Страна / город'], 'Latvia / Riga');
 });
+
+test('notice goes to the NOTIFY_EMAIL script property when set', () => {
+  const s = createSandbox({ props: { NOTIFY_EMAIL: ' team@example.org ' } });
+  s.post(application());
+  assert.equal(s.state.mails.length, 1);
+  assert.equal(s.state.mails[0].to, 'team@example.org');
+});
+
+test('NOTIFY_EMAIL "off" switches notices off; the application is still saved', () => {
+  const s = createSandbox({ props: { NOTIFY_EMAIL: 'off' } });
+  const r = s.post(application());
+  assert.equal(r.ok, true);
+  assert.equal(s.state.mails.length, 0);
+  assert.equal(s.column('Заявки', 2)['Имя / имя художника'], 'Anna Tamm');
+});
+
+test('without NOTIFY_EMAIL the notice goes to the gallery address', () => {
+  const s = createSandbox();
+  s.post(application());
+  assert.equal(s.state.mails[0].to, 'gallery@sarle.ee');
+});
