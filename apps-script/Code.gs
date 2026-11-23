@@ -25,6 +25,10 @@ var LOCK_WAIT_MS = 10000;
 var GLOBAL_LIMIT_PER_MINUTE = 30;
 // Email notice for every NEW subscriber (not for repeats). Address: see notifyEmail_.
 var NEWSLETTER_NOTIFY_DEFAULT = 'gallery@sarle.ee';
+// At most this many notice emails per day (subscribers and applications
+// together), so a flood of fake sign-ups cannot use up the Google mail quota
+// (about 100 a day on a free account). Saving is never limited by this.
+var MAIL_LIMIT_PER_DAY = 60;
 
 // First character must be a letter or digit, so a stored address can never
 // start with = + - @ (spreadsheet formula injection).
@@ -65,12 +69,14 @@ function handleSubscription_(p) {
 
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(LOCK_WAIT_MS)) return { ok: false, code: 'busy' };
-  var added = false;
+  var added = false, mayMail = false;
   try {
-    return addSubscriber_(email, lang, function () { added = true; });
+    var result = addSubscriber_(email, lang, function () { added = true; });
+    if (added) mayMail = takeMailSlot_();
+    return result;
   } finally {
     lock.releaseLock();
-    if (added) notifySubscriber_(email, lang);
+    if (mayMail) notifySubscriber_(email, lang);
   }
 }
 
@@ -166,6 +172,18 @@ function takeRateSlot_() {
   var count = Number(cache.get(key) || 0);
   if (count >= GLOBAL_LIMIT_PER_MINUTE) return false;
   cache.put(key, String(count + 1), 120);
+  return true;
+}
+
+// One of MAIL_LIMIT_PER_DAY notice emails for today (Tallinn date). Called
+// under the script lock, so the count is exact.
+function takeMailSlot_() {
+  var props = PropertiesService.getScriptProperties();
+  var today = Utilities.formatDate(new Date(), TIME_ZONE, 'yyyy-MM-dd');
+  var saved = String(props.getProperty('MAIL_COUNT') || '').split(' ');
+  var count = saved[0] === today ? Number(saved[1]) || 0 : 0;
+  if (count >= MAIL_LIMIT_PER_DAY) return false;
+  props.setProperty('MAIL_COUNT', today + ' ' + (count + 1));
   return true;
 }
 
