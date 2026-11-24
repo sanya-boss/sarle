@@ -45,7 +45,7 @@ test('application goes to column B of «Заявки», in Russian, under the lo
 test('the next application goes to the next column', () => {
   const s = createSandbox();
   s.post(application());
-  s.post(application([], ['Full name / Artist name']).concat([['Full name / Artist name', 'Second Artist']]));
+  s.post(application([], ['Full name / Artist name', 'Email']).concat([['Full name / Artist name', 'Second Artist'], ['Email', 'second@example.com']]));
   assert.equal(s.column('Заявки', 2)['Имя / имя художника'], 'Anna Tamm');
   assert.equal(s.column('Заявки', 3)['Имя / имя художника'], 'Second Artist');
 });
@@ -158,4 +158,30 @@ test('without NOTIFY_EMAIL the notice goes to the gallery address', () => {
   const s = createSandbox();
   s.post(application());
   assert.equal(s.state.mails[0].to, 'gallery@sarle.ee');
+});
+
+test('same email again within minutes: neutral ok, no second column, no second notice', () => {
+  const s = createSandbox();
+  s.post(application());
+  const r = s.post(application([['Email', 'ANNA@example.com']], ['Email']));
+  assert.equal(r.ok, true);
+  assert.equal(s.column('Заявки', 3)['Имя / имя художника'], undefined);
+  assert.equal(s.state.mails.length, 1);
+});
+
+test('notices stop at the daily limit, applications are still saved', () => {
+  const s = createSandbox({ props: { MAIL_COUNT: new Date().toISOString().slice(0, 10) + ' 60' } });
+  const r = s.post(application());
+  assert.equal(r.ok, true);
+  assert.equal(s.column('Заявки', 2)['Имя / имя художника'], 'Anna Tamm');
+  assert.equal(s.state.mails.length, 0);
+});
+
+test('control characters and line breaks are removed from one-line answers', () => {
+  const s = createSandbox();
+  s.post(application([['Full name / Artist name', 'Anna\r\nBcc: x@evil.test\u0007'], ['City', 'Tal\nlinn']], ['Full name / Artist name', 'City']));
+  const col = s.column('Заявки', 2);
+  assert.equal(col['Имя / имя художника'], 'Anna Bcc: x@evil.test');
+  assert.equal(col['Страна / город'], 'Эстония, Tal linn');
+  assert.doesNotMatch(s.state.mails[0].subject, /[\r\n]/);
 });

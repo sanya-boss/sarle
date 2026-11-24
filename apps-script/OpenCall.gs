@@ -24,6 +24,7 @@ var OC_SUMMARY_SHEET = 'Сводка';
 var OC_NOTIFY_EMAIL = 'gallery@sarle.ee';
 
 var OC_MAX_SHORT = 300;    // one-line answers
+var OC_REPEAT_MINUTES = 10; // a second application from the same email within this time is not added
 var OC_MAX_LONG = 6000;    // free texts
 
 // Column A, top to bottom: [label, kind, form field, required?, max length]
@@ -154,21 +155,29 @@ function handleOpenCall_(params) {
 
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(LOCK_WAIT_MS)) return { ok: false, code: 'busy' };
+  var mayMail = false;
   try {
     if (!takeRateSlot_()) return { ok: false, code: 'rate_limited' };
+    // The same address again within OC_REPEAT_MINUTES (a double click, a
+    // script hammering the form): neutral success, nothing new is written.
+    var cache = CacheService.getScriptCache();
+    var key = 'oc:' + normalizeEmail_(answers['Email']);
+    if (cache.get(key)) return { ok: true, code: 'ok' };
     ocWrite_(ocSheet_(), answers);
     SpreadsheetApp.flush();
+    cache.put(key, '1', OC_REPEAT_MINUTES * 60);
+    mayMail = takeMailSlot_();
   } finally {
     lock.releaseLock();
   }
 
   // The application is saved; a failed notice must not turn it into an error.
-  var notify = notifyEmail_(OC_NOTIFY_EMAIL);
+  var notify = mayMail ? notifyEmail_(OC_NOTIFY_EMAIL) : '';
   if (notify) {
     try {
       MailApp.sendEmail({
         to: notify,
-        subject: 'Open Call 2027: новая заявка от ' + (answers['Full name / Artist name'] || 'без имени'),
+        subject: 'Open Call 2027: новая заявка от ' + (answers['Full name / Artist name'] || 'без имени').slice(0, 80),
         body: 'Новая заявка от ' + answers['Full name / Artist name'] + ' (' + answers['Email'] + ').\n\n' +
               'Таблица: ' + ocBook_().getUrl()
       });
@@ -186,7 +195,8 @@ function ocValidate_(params) {
     var row = OC_LAYOUT[i];
     if (row[1] !== 'field' || row[2].indexOf('__') === 0) continue;
     var key = row[2], required = row[3], max = row[4];
-    var list = (params[key] || []).map(function (x) { return String(x).trim(); })
+    var oneLine = max <= 1000;
+    var list = (params[key] || []).map(function (x) { return ocClean_(x, oneLine); })
       .filter(function (x) { return x !== ''; });
     if (!list.length) {
       if (required) return null;
@@ -214,7 +224,7 @@ function ocValidate_(params) {
    is typed. The older form sent one free field "Country / City"; still accepted. */
 function ocLocation_(params) {
   var code = ocFirst_(params, 'Country').toUpperCase();
-  var city = ocFirst_(params, 'City');
+  var city = ocClean_(ocFirst_(params, 'City'), true);
   if (code || city) {
     if (!Object.prototype.hasOwnProperty.call(OC_COUNTRIES, code)) return '';
     if (!city || city.length > 120) return '';
@@ -222,6 +232,13 @@ function ocLocation_(params) {
   }
   var old = ocFirst_(params, 'Country / City');
   return old && old.length <= OC_MAX_SHORT ? old : '';
+}
+
+/* Control characters out; one-line answers also lose line breaks. */
+function ocClean_(value, oneLine) {
+  var s = String(value == null ? '' : value);
+  s = oneLine ? s.replace(/[\u0000-\u001F\u007F]+/g, ' ') : s.replace(/\r\n?/g, '\n').replace(/[\u0000-\u0009\u000B-\u001F\u007F]+/g, ' ');
+  return s.trim();
 }
 
 /* Text that starts with = + - @ would become a formula in the sheet. */

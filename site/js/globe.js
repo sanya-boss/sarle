@@ -279,6 +279,11 @@
     // turn the globe's way: same maths as the shader, backwards
     var cl = Math.cos(curLon), sl = Math.sin(curLon), c = Math.cos(curTilt), s = Math.sin(curTilt);
     var cr = canvas.getBoundingClientRect(), pr = parent.getBoundingClientRect();
+    // rects are on-screen pixels; pins are placed in the parent's own pixels,
+    // which differ when the section is scaled down (laptop zoom)
+    var k = pr.width ? parent.offsetWidth / pr.width : 1;
+    cr = { left: cr.left * k, top: cr.top * k, width: cr.width * k, height: cr.height * k };
+    pr = { left: pr.left * k, top: pr.top * k };
     for (var i = 0; i < pins.length; i++) {
       var v = pins[i].v;
       var wx = v[0] * cl - v[2] * sl, wz = v[2] * cl + v[0] * sl, wy = v[1];
@@ -335,7 +340,11 @@
   });
 
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(canvas);
+    new IntersectionObserver(function (es) {
+      visible = es[0].isIntersecting;
+      // the pins' breathing glow repaints every frame: stop it off screen
+      if (slide) slide.classList.toggle('oc-offscreen', !visible);
+    }).observe(canvas);
   }
   document.addEventListener('visibilitychange', function () { visible = !document.hidden; });
 })();

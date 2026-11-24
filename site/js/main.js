@@ -105,9 +105,15 @@
     var texts = Array.prototype.filter.call(document.querySelectorAll('[data-reveal]'), function (el) {
       return !el.closest(SKIP);
     });
+    // Scroll-linked mode (html.rvs): CSS drives every reveal from the scroll
+    // position. JS only clips photo frames without making them scroll
+    // containers (that would detach the scroll timeline) and preloads photos.
+    var scrollLinked = root.classList.contains('rvs');
     imgs.forEach(function (img) {
       var box = img.parentNode;
-      if (box && box.tagName !== 'MAIN' && getComputedStyle(box).overflow === 'visible') box.style.overflow = 'hidden';
+      if (!box || box.tagName === 'MAIN') return;
+      var ov = getComputedStyle(box).overflow;
+      if (scrollLinked ? (ov === 'visible' || ov === 'hidden') : ov === 'visible') box.style.overflow = scrollLinked ? 'clip' : 'hidden';
     });
 
     function ready(img) {
@@ -140,6 +146,15 @@
         });
       });
     }, { rootMargin: '0px 0px 150% 0px', threshold: 0 });
+
+    if (scrollLinked) {
+      imgs.forEach(function (img) {
+        var box = img.parentNode || img;
+        if (!box.__rv) { box.__rv = []; pre.observe(box); }
+        box.__rv.push(img);
+      });
+      return;
+    }
 
     var ioImg = new IntersectionObserver(function (entries) {
       var n = 0;
@@ -577,9 +592,19 @@
       } else apply();
     }
 
+    var ringSize = null, painted = null, onScreen = true;
+    window.addEventListener('resize', function () { ringSize = null; painted = null; });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) { onScreen = es[0].isIntersecting; }, { rootMargin: '100px 0px' }).observe(wrap);
+    }
     function paint() {
-      var R = radius();
-      var h = wrap.clientHeight;
+      // nothing to do off screen, or when the ring has not moved since the last frame
+      if ((!onScreen || document.hidden) && painted !== null) return;
+      if (painted === angle) return;
+      if (!ringSize) ringSize = { R: radius(), h: wrap.clientHeight };
+      painted = angle;
+      var R = ringSize.R;
+      var h = ringSize.h;
       // The front card is magnified by the CSS perspective (1500px); size it
       // against that factor so it never overflows the ring container.
       var frontMag = 0.98 * (1500 / Math.max(300, 1500 - R));

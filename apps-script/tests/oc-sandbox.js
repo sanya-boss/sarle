@@ -65,7 +65,7 @@ function makeSheet(state, name, cells) {
 
 function createSandbox(opts) {
   opts = opts || {};
-  const state = { lockHeld: false, cache: {}, mails: [], logs: [], sheets: [], layingOut: false };
+  const state = { props: Object.assign({}, opts.props || {}), lockHeld: false, cache: {}, mails: [], logs: [], sheets: [], layingOut: false };
   const layoutCells = labels => new Map(labels.map((l, i) => [(i + 1) + ',1', l]));
   (opts.tabs || [['Подписчики', new Map([['1,1', 'Дата подписки'], ['1,2', 'RU'], ['1,3', 'EN'], ['1,4', 'ET']])],
                  ['Заявки', layoutCells(XLSX_LAYOUT)]])
@@ -89,7 +89,7 @@ function createSandbox(opts) {
       newConditionalFormatRule: () => chain({}),
       getUi: () => chain({}),
     },
-    PropertiesService: { getScriptProperties: () => ({ getProperty: k => (k === 'SPREADSHEET_ID' ? 'TEST_ID' : (opts.props && k in opts.props ? opts.props[k] : null)) }) },
+    PropertiesService: { getScriptProperties: () => ({ getProperty: k => (k === 'SPREADSHEET_ID' ? 'TEST_ID' : (k in state.props ? state.props[k] : null)), setProperty: (k, v) => { state.props[k] = String(v); } }) },
     LockService: {
       getScriptLock: () => ({
         tryLock() { if (opts.lockBusy || state.lockHeld) return false; state.lockHeld = true; return true; },
@@ -103,6 +103,7 @@ function createSandbox(opts) {
     },
     MailApp: { sendEmail(m) { if (opts.mailFails) throw new Error('quota'); state.mails.push(m); } },
     Session: { getScriptTimeZone: () => 'Europe/Tallinn' },
+    Utilities: { formatDate: d => d.toISOString().slice(0, 10) },
   };
   vm.createContext(ctx);
   SRC.forEach(([f, code]) => vm.runInContext(code, ctx, { filename: f }));

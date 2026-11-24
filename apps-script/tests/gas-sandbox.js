@@ -75,7 +75,8 @@ function createSandbox(opts) {
       },
       flush() { state.flushes++; },
     },
-    PropertiesService: { getScriptProperties: () => ({ getProperty: k => state.props[k] || null }) },
+    PropertiesService: { getScriptProperties: () => ({ getProperty: k => state.props[k] || null, setProperty: (k, v) => { state.props[k] = String(v); } }) },
+    Utilities: { formatDate: d => d.toISOString().slice(0, 10) },
     LockService: {
       getScriptLock: () => ({
         tryLock() {

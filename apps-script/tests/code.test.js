@@ -191,3 +191,11 @@ test('a failed notice does not fail the sign-up', () => {
   assert.equal(r.body.ok, true);
   assert.equal(s.state.rows.length, 1);
 });
+
+test('subscriber notices stop at the daily limit, sign-ups still saved', () => {
+  const s = createSandbox({ props: { MAIL_COUNT: new Date().toISOString().slice(0, 10) + ' 59' } });
+  s.post(req('a@example.com', 'EN'));
+  s.post(req('b@example.com', 'EN'));
+  assert.equal(s.state.rows.length, 2);
+  assert.equal(s.state.mails.length, 1);
+});
