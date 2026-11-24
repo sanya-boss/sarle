@@ -363,7 +363,9 @@
     <div class="contact-grid two-col">
       <div data-reveal>
         <div class="contact-map">
-          <iframe title="Map — Aia tn 17, Tallinn" src="https://www.google.com/maps?q=Aia%20tn%2017,%20Tallinn,%20Estonia&z=16&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <a class="map-placeholder" href="https://maps.google.com/?q=Aia+tn+17,+Tallinn,+Estonia" target="_blank" rel="noopener"><span class="map-placeholder-pin" aria-hidden="true"></span><span class="map-placeholder-title">Aia tn 17, Tallinn</span><span class="map-placeholder-cta">View map</span></a>
+          <!-- loaded by js/main.js once the visitor stops scrolling next to it (the Google map is heavy) -->
+          <iframe title="Map — Aia tn 17, Tallinn" data-src="https://www.google.com/maps?q=Aia%20tn%2017,%20Tallinn,%20Estonia&z=16&output=embed" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
       </div>
 
