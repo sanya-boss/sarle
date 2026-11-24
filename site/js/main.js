@@ -105,15 +105,9 @@
     var texts = Array.prototype.filter.call(document.querySelectorAll('[data-reveal]'), function (el) {
       return !el.closest(SKIP);
     });
-    // Scroll-linked mode (html.rvs): CSS drives every reveal from the scroll
-    // position. JS only clips photo frames without making them scroll
-    // containers (that would detach the scroll timeline) and preloads photos.
-    var scrollLinked = root.classList.contains('rvs');
     imgs.forEach(function (img) {
       var box = img.parentNode;
-      if (!box || box.tagName === 'MAIN') return;
-      var ov = getComputedStyle(box).overflow;
-      if (scrollLinked ? (ov === 'visible' || ov === 'hidden') : ov === 'visible') box.style.overflow = scrollLinked ? 'clip' : 'hidden';
+      if (box && box.tagName !== 'MAIN' && getComputedStyle(box).overflow === 'visible') box.style.overflow = 'hidden';
     });
 
     function ready(img) {
@@ -147,15 +141,6 @@
       });
     }, { rootMargin: '0px 0px 150% 0px', threshold: 0 });
 
-    if (scrollLinked) {
-      imgs.forEach(function (img) {
-        var box = img.parentNode || img;
-        if (!box.__rv) { box.__rv = []; pre.observe(box); }
-        box.__rv.push(img);
-      });
-      return;
-    }
-
     var ioImg = new IntersectionObserver(function (entries) {
       var n = 0;
       entries.forEach(function (en) {
@@ -177,7 +162,7 @@
         var d = Math.max(+own || 0, Math.min(n++, 4) * STEP);
         show(en.target, d);
       });
-    }, { rootMargin: '0px 0px -6% 0px', threshold: 0 });
+    }, { rootMargin: '0px 0px 0px 0px', threshold: 0 });
 
     imgs.forEach(function (img) {
       var box = img.parentNode || img;
