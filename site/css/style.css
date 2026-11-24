@@ -1032,66 +1032,6 @@ img.rv-in, .iv-stage.rv-in { --rvi-o: 1; --rvi-s: 1; --rvi-w: 0%; }
   .artist-bio { transition-delay: 140ms; }
 }
 
-/* Scroll-linked reveals ------------------------------------------------------
-   Browsers with scroll-driven animations (html.rvs, set in <head>): every
-   reveal is tied to the scroll position instead of a timer, so it can never
-   lag behind a fast scroll, and it runs off the main thread. Elements are
-   fully shown by the time their top passes ~68% of the screen height.
-   Other browsers keep the timed reveals above (html.rv without .rvs). */
-@keyframes rvs-rise { from { opacity: 0; translate: 0 56px; } to { opacity: 1; translate: 0 0; } }
-@keyframes rvs-mask {
-  from { opacity: 0; translate: 0 56px; clip-path: inset(-0.3em -0.3em 100% -0.3em); }
-  to   { opacity: 1; translate: 0 0;    clip-path: inset(-0.3em -0.3em -0.3em -0.3em); }
-}
-@keyframes rvs-photo {
-  from { opacity: 0; scale: 1.14; clip-path: inset(100% 0 0 0); }
-  30%  { opacity: 1; }
-  to   { opacity: 1; scale: 1;    clip-path: inset(0 0 0 0); }
-}
-
-/* a scroll container would hijack the timeline: image frames clip instead */
-.rvs main :is(.g-photo, .g-bleed, .g-tile, .shop-artist-photo, .about-media, .about-photo,
-  .exhibition-hero, .grid3-item, .philosophy-media, .iv-frame, .work-frame) { overflow: clip; }
-
-/* text, cards and children of multi-child blocks */
-.rvs [data-reveal]:not([data-reveal="card"]):not(:has(> * + *)):not(:has(img)):not(:is(section.hero, section.intro, [data-slide], .lightbox, .hp-gallery-3d, .hp-gallery-3d__lightbox, [data-no-reveal]) *),
-.rvs [data-reveal]:not([data-reveal="card"]):has(> * + *) > :not(img):not(:has(img)):not(:is(section.hero, section.intro, [data-slide], .lightbox, .hp-gallery-3d, .hp-gallery-3d__lightbox, [data-no-reveal]) *),
-.rvs [data-reveal="card"]:not(:is(section.hero, section.intro, [data-slide], .lightbox, .hp-gallery-3d, .hp-gallery-3d__lightbox, [data-no-reveal]) *) {
-  filter: none;
-  transition: color 300ms ease, background-color 300ms ease, border-color 300ms ease;
-  animation: rvs-rise linear both;
-  animation-timing-function: cubic-bezier(.25, .7, .35, 1);
-  animation-timeline: view();
-  animation-range: cover 0% cover 32vh;
-}
-/* the footer is at the very end: the page cannot scroll it up to 68 % of the
-   screen, so its reveals finish when they are fully on screen instead */
-.rvs .site-footer [data-reveal], .rvs .site-footer [data-reveal] > * { animation-range: entry 0% entry 100% !important; }
-/* headings also unmask from the top */
-.rvs h1[data-reveal]:not(:has(> * + *)):not(:is(section.intro, [data-no-reveal]) *),
-.rvs h2[data-reveal]:not(:has(> * + *)):not(:is(section.intro, [data-no-reveal]) *),
-.rvs [data-reveal]:has(> * + *) > :is(h1, h2):not(:is(section.intro, [data-no-reveal]) *) {
-  clip-path: none;
-  animation-name: rvs-mask;
-}
-/* photos: the curtain rises as the photo scrolls in */
-.rvs main img:not([src*=".svg"]):not(:is(section.hero, section.intro, .art-ring-wrap, [data-reveal="card"], [data-slide], .lightbox, .hp-gallery-3d, .hp-gallery-3d__lightbox, [data-no-reveal]) img),
-.rvs section.intro .iv-frame {
-  transition: none;
-  animation: rvs-photo linear both;
-  animation-timing-function: cubic-bezier(.3, .6, .35, 1);
-  animation-timeline: view();
-  animation-range: cover 0% cover 45vh;
-}
-/* the first screen of Gallery and Shop is on screen at load: a timed entrance */
-.rvs .shop-title [data-reveal] {
-  animation: rvs-rise 1200ms cubic-bezier(.16, 1, .3, 1) both;
-  animation-timeline: auto;
-  animation-range: normal;
-}
-.rvs .shop-title h1[data-reveal] { animation-name: rvs-mask; animation-delay: 80ms; }
-.rvs .shop-title [data-reveal]:last-child { animation-delay: 180ms; }
-
 /* Laptops: everything a little smaller --------------------------------------
    Short, not-so-wide screens (laptops, often with Windows scaling) show the
    site as if zoomed out, like the browser's own 85–90 %. The hero keeps the
