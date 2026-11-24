@@ -175,6 +175,37 @@
   })();
 
   /* ---------------------------------------------------------------------
+   * Google map: the embed is heavy (its scripts and tiles froze scrolling
+   * when the browser lazy-loaded it two screens early). It now loads only
+   * once the map is on screen and the visitor has stopped scrolling for a
+   * moment, or as soon as the pointer or keyboard focus reaches it.
+   * ------------------------------------------------------------------- */
+  (function setupMaps() {
+    Array.prototype.forEach.call(document.querySelectorAll('.contact-map iframe[data-src]'), function (frame) {
+      var box = frame.parentNode, loaded = false, near = false, idleT = null;
+      function load() {
+        if (loaded) return;
+        loaded = true;
+        frame.addEventListener('load', function () { frame.classList.add('is-loaded'); }, { once: true });
+        frame.src = frame.getAttribute('data-src');
+      }
+      function arm() {
+        clearTimeout(idleT);
+        if (!near || loaded) return;
+        idleT = setTimeout(function () {
+          (window.requestIdleCallback || function (cb) { return setTimeout(cb, 1); })(load, { timeout: 1000 });
+        }, 450);
+      }
+      window.addEventListener('scroll', arm, { passive: true });
+      box.addEventListener('pointerenter', load);
+      box.addEventListener('focusin', load);
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (es) { near = es[0].isIntersecting; arm(); }).observe(box);
+      } else load();
+    });
+  })();
+
+  /* ---------------------------------------------------------------------
    * Philosophy image: horizontal-only parallax
    * ------------------------------------------------------------------- */
   (function setupParallax() {
