@@ -502,6 +502,9 @@
 /* other cities: a little smaller and softer than Tallinn */
 .oc-pin--city .oc-pin-dot { transform: scale(.8); }
 .oc-pin-dot::after { animation-delay: var(--glow-delay, 0s); }
+/* off screen, or while slide 01 is shown, the glows do not run */
+.iv-slide--light.oc-offscreen .oc-pin, .iv-slide--light.oc-offscreen .oc-pin-dot::after,
+.iv-slide--light:not(.is-active):not(.is-leaving) .oc-pin-dot::after { animation-play-state: paused; }
 @keyframes oc-pin-glow { 0%, 100% { opacity: .2; transform: scale(.7); } 50% { opacity: .85; transform: scale(1.1); } }
 @media (prefers-reduced-motion: reduce) {
   .oc-pin-dot::after { animation: none; opacity: .5; }

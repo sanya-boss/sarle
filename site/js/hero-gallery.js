@@ -18,18 +18,34 @@
   var angle = ((-(360 / N) * START_INDEX) % 360 + 360) % 360, velocity = 0, isDragging = false, dragStartX = 0, dragStartY = 0;
   var dragAngle = 0, prevAngle = 0, dragMoved = false, axis = null, isTouch = false;
 
-  function getRadius() {
+  // Sizes are read once and on resize, never inside the animation frame:
+  // reading layout right after writing styles forces a full layout every frame.
+  var sizes = null;
+  function measure() {
     var w = window.innerWidth;
     var r = w > 960 ? RADIUS_LG : (w > 640 ? RADIUS_MD : RADIUS_SM);
     var itemW = items[0] ? items[0].offsetWidth : 0;
-    if (w <= 640) return itemW * 2.7;
-    return Math.max(60, Math.min(r, wrap.clientWidth / 2 - itemW * 0.15 - 8));
+    var radius = w <= 640 ? itemW * 2.7 : Math.max(60, Math.min(r, wrap.clientWidth / 2 - itemW * 0.15 - 8));
+    sizes = { radius: radius, iw: itemW, ih: items[0] ? items[0].offsetHeight : 0 };
+  }
+  window.addEventListener('resize', function () { sizes = null; });
+
+  // Only animate while the hero is on screen and the tab is visible.
+  var onScreen = true;
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es) {
+      onScreen = es[0].isIntersecting;
+      // CSS loops in the hero (logo glow, "Scroll down" arrow) pause off screen too
+      var hero = wrap.closest('.hero');
+      if (hero) hero.classList.toggle('is-offscreen', !onScreen);
+    }).observe(wrap);
   }
 
   function render() {
-    var radius = getRadius();
+    if (!sizes) measure();
+    var radius = sizes.radius;
     var step = 360 / N;
-    var iw = items[0].offsetWidth, ih = items[0].offsetHeight;
+    var iw = sizes.iw, ih = sizes.ih;
     for (var i = 0; i < N; i++) {
       var cardAngle = step * i + angle;
       var rad = cardAngle * Math.PI / 180;
@@ -52,6 +68,7 @@
   }
 
   function loop() {
+    if (!onScreen || document.hidden) { requestAnimationFrame(loop); return; }
     if (!isDragging) {
       if (Math.abs(velocity) > INERTIA_STOP) { angle += velocity; velocity *= INERTIA_DECAY; }
       else { velocity = 0; angle += AUTO_SPEED; }
