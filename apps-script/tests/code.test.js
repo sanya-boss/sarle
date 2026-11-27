@@ -199,3 +199,50 @@ test('subscriber notices stop at the daily limit, sign-ups still saved', () => {
   assert.equal(s.state.rows.length, 2);
   assert.equal(s.state.mails.length, 1);
 });
+
+test('captcha off (no TURNSTILE_SECRET): sign-up works without a token, Cloudflare not called', () => {
+  const s = createSandbox();
+  const r = s.post(req('a@example.com', 'EN'));
+  assert.equal(r.body.ok, true);
+  assert.equal(s.state.captchaCalls || 0, 0);
+});
+
+test('captcha on: no token -> captcha_failed, nothing written', () => {
+  const s = createSandbox({ props: { TURNSTILE_SECRET: 'sec' }, turnstile: 'pass' });
+  const r = s.post(req('a@example.com', 'EN'));
+  assert.equal(r.body.code, 'captcha_failed');
+  assert.equal(s.state.rows.length, 0);
+});
+
+test('captcha on: Cloudflare accepts -> saved; rejects -> captcha_failed', () => {
+  const ok = createSandbox({ props: { TURNSTILE_SECRET: 'sec' }, turnstile: p => p.secret === 'sec' && p.response === 'good' });
+  assert.equal(ok.post(req('a@example.com', 'EN', { 'cf-turnstile-response': 'good' })).body.ok, true);
+  assert.equal(ok.state.rows.length, 1);
+  assert.equal(ok.post(req('b@example.com', 'EN', { 'cf-turnstile-response': 'bad' })).body.code, 'captcha_failed');
+  assert.equal(ok.state.rows.length, 1);
+});
+
+test('captcha on but Cloudflare unreachable: let through (logged)', () => {
+  const s = createSandbox({ props: { TURNSTILE_SECRET: 'sec' }, turnstile: 'down' });
+  assert.equal(s.post(req('a@example.com', 'EN', { 'cf-turnstile-response': 'tok' })).body.ok, true);
+  assert.ok(s.state.logs.some(l => /Turnstile/.test(l[1])));
+});
+
+test('notice sender: NOTIFY_FROM that is a Gmail alias -> sent from it, replies to it, gallery name', () => {
+  const s = createSandbox({ props: { NOTIFY_FROM: 'gallery@sarle.ee' }, aliases: ['Gallery@Sarle.ee'] });
+  s.post(req('a@example.com', 'EN'));
+  const m = s.state.mails[0];
+  assert.equal(m.via, 'gmail');
+  assert.equal(m.from, 'gallery@sarle.ee');
+  assert.equal(m.replyTo, 'gallery@sarle.ee');
+  assert.equal(m.name, 'Sarle Art Gallery & Studio');
+});
+
+test('notice sender: NOTIFY_FROM not set up as an alias -> account address, logged, still sent', () => {
+  const s = createSandbox({ props: { NOTIFY_FROM: 'gallery@sarle.ee' }, aliases: [] });
+  s.post(req('a@example.com', 'EN'));
+  assert.equal(s.state.mails.length, 1);
+  assert.notEqual(s.state.mails[0].via, 'gmail');
+  assert.equal(s.state.mails[0].name, 'Sarle Art Gallery & Studio');
+  assert.ok(s.state.logs.some(l => /NOTIFY_FROM/.test(l[1])));
+});

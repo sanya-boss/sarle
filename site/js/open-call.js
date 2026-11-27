@@ -197,6 +197,25 @@
     if (e.target.hasAttribute('aria-invalid')) e.target.removeAttribute('aria-invalid');
   });
 
+  /* Captcha (js/captcha.js): appears above the submit button once the email
+     field holds a valid address. Off while no Turnstile site key is set. */
+  var captchaBox = document.getElementById('oc-captcha');
+  var captcha = window.SarleCaptcha && window.SarleCaptcha.enabled() ? window.SarleCaptcha : null;
+  var emailField = document.getElementById('oc-email');
+  function captchaError() {
+    errText.textContent = tr('Please confirm that you are not a robot.');
+    errBox.hidden = false;
+  }
+  if (captcha && captchaBox && emailField) {
+    var maybeShowCaptcha = function () {
+      if (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailField.value.trim())) {
+        captcha.show(captchaBox, function (t) { if (t && errText.textContent === tr('Please confirm that you are not a robot.')) errBox.hidden = true; });
+      }
+    };
+    emailField.addEventListener('input', maybeShowCaptcha);
+    emailField.addEventListener('change', maybeShowCaptcha);
+  }
+
   function validate() {
     clearMarks();
     var bad = [];
@@ -217,6 +236,14 @@
       bad[0].scrollIntoView({ block: 'center', behavior: 'smooth' });
       return false;
     }
+    if (captcha && captchaBox && endpointUrl()) {
+      captcha.show(captchaBox);
+      if (!captcha.token(captchaBox)) {
+        captchaError();
+        captchaBox.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        return false;
+      }
+    }
     return true;
   }
 
@@ -225,7 +252,7 @@
     var data = new FormData(form);
     var map = {}, order = [];
     data.forEach(function (v, k) {
-      if (k === '_hp') return;
+      if (k === '_hp' || k === 'cf-turnstile-response') return;
       if (k === 'Country' && countrySel && countrySel.selectedIndex > 0) v = countrySel.options[countrySel.selectedIndex].textContent;
       if (!(k in map)) { map[k] = []; order.push(k); }
       if (String(v).trim()) map[k].push(String(v).trim());
@@ -269,6 +296,7 @@
     body.set('Language', document.documentElement.lang || 'en');
     body.set('Source page', location.href.split('#')[0]);
     body.set('requestId', requestId);
+    if (captcha && captchaBox) body.set('cf-turnstile-response', captcha.token(captchaBox));
 
     sending = true;
     submitBtn.disabled = true;
@@ -281,6 +309,7 @@
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (data) {
         if (data && data.ok === true && data.requestId === requestId) showConfirm(false);
+        else if (data && data.code === 'captcha_failed') captchaError();   // the form stays open
         else showFail();
       })
       .catch(function () { showFail(); })
@@ -290,6 +319,7 @@
         submitBtn.disabled = false;
         submitBtn.classList.remove('is-sending');
         form.setAttribute('aria-busy', 'false');
+        if (captcha) captcha.reset(captchaBox);   // a token works only once
       });
   });
 })();

@@ -18,6 +18,7 @@
         '<p>Applications are reviewed by the gallery team; no decisions are made automatically. We only look at the works you link to; we do not copy or publish them without your separate permission.</p>' +
         '<h3>3. Technical data and third-party services</h3>' +
         '<p>The website uses GitHub Pages, Google Fonts and Google Maps. When the site loads, these services may receive your IP address, browser information and other technical data. Google Maps may also use cookies.</p>' +
+        '<p>To protect the newsletter and application forms from spam, they use Cloudflare Turnstile. It appears after you enter your email and checks technical data about your browser and device to tell people from bots.</p>' +
         '<p>Newsletter sign-ups and Open Call applications are sent through Google Apps Script and stored in a Google Sheets spreadsheet with restricted access in the gallery&rsquo;s Google account; the gallery is notified of new applications by email (Gmail). Google acts as our service provider.</p>' +
         '<p>Processing by these services is governed by their own privacy policies and may take place outside the European Economic Area. Where consent is required for optional cookies, it is requested separately.</p>' +
         '<h3>4. Sharing and retention</h3>' +
@@ -44,6 +45,7 @@
         '<p>Taotlused vaatab läbi galerii meeskond; automaatseid otsuseid ei tehta. Vaatame ainult teoseid, millele viitate; me ei kopeeri ega avalda neid ilma teie eraldi loata.</p>' +
         '<h3>3. Tehnilised andmed ja kolmandate osapoolte teenused</h3>' +
         '<p>Veebisaidi toimimiseks kasutatakse GitHub Pagesi, Google Fontsi ja Google Mapsi. Saidi laadimisel võivad need teenused saada teie IP-aadressi, brauseri andmed ja muud tehnilised andmed. Google Maps võib kasutada ka küpsiseid.</p>' +
+        '<p>Uudiskirja ja taotlusvormi kaitsmiseks rämpsposti eest kasutatakse Cloudflare Turnstile’i. See ilmub pärast e-posti aadressi sisestamist ja kontrollib teie brauseri ja seadme tehnilisi andmeid, et eristada inimesi robotitest.</p>' +
         '<p>Uudiskirja tellimused ja Open Calli taotlused saadetakse Google Apps Scripti kaudu ning salvestatakse piiratud juurdepääsuga Google Sheetsi tabelisse galerii Google\'i kontol; uutest taotlustest teavitatakse galeriid e-postiga (Gmail). Google tegutseb meie teenusepakkujana.</p>' +
         '<p>Nende teenuste poolset andmetöötlust reguleerivad nende endi privaatsuspoliitikad ning see võib toimuda väljaspool Euroopa Majanduspiirkonda. Kui valikuliste küpsiste kasutamiseks on vaja nõusolekut, küsitakse seda eraldi.</p>' +
         '<h3>4. Andmete edastamine ja säilitamine</h3>' +
@@ -70,6 +72,7 @@
         '<p>Заявки рассматривает команда галереи, автоматических решений не принимается. Мы только просматриваем работы по ссылкам, которые вы указали, и не копируем и не публикуем их без вашего отдельного разрешения.</p>' +
         '<h3>3. Технические данные и сторонние сервисы</h3>' +
         '<p>Для работы сайта используются GitHub Pages, Google Fonts и Google Maps. При загрузке сайта эти сервисы могут получать ваш IP-адрес, сведения о браузере и другие технические данные. Google Maps также может использовать файлы cookie.</p>' +
+        '<p>Чтобы защитить формы подписки и заявок от спама, используется Cloudflare Turnstile. Он появляется после ввода email и проверяет технические данные о браузере и устройстве, чтобы отличить человека от робота.</p>' +
         '<p>Подписки на рассылку и заявки Open Call передаются через Google Apps Script и хранятся в таблице Google Sheets с ограниченным доступом в аккаунте Google галереи; о новых заявках галерея получает уведомление по электронной почте (Gmail). Google выступает нашим поставщиком услуг.</p>' +
         '<p>Обработка данных такими сервисами регулируется их политиками конфиденциальности и может происходить за пределами Европейской экономической зоны. Если для использования необязательных файлов cookie требуется согласие, оно запрашивается отдельно.</p>' +
         '<h3>4. Передача и хранение данных</h3>' +

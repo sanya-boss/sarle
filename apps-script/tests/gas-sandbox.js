@@ -100,6 +100,21 @@ function createSandbox(opts) {
       },
     },
     Session: { getScriptTimeZone: () => opts.scriptTimeZone || 'Europe/Tallinn' },
+    GmailApp: {
+      getAliases: () => opts.aliases || [],
+      sendEmail(to, subject, body, o) {
+        if (opts.mailFails) throw new Error('quota');
+        state.mails.push({ to, subject, body, from: o.from, name: o.name, replyTo: o.replyTo, via: 'gmail', lockHeldWhileSending: state.lockHeld });
+      },
+    },
+    UrlFetchApp: {
+      fetch(url, o) {
+        state.captchaCalls = (state.captchaCalls || 0) + 1;
+        if (opts.turnstile === 'down') throw new Error('network');
+        const ok = opts.turnstile === 'pass' || (typeof opts.turnstile === 'function' && opts.turnstile(o.payload));
+        return { getResponseCode: () => 200, getContentText: () => JSON.stringify({ success: !!ok }) };
+      },
+    },
     MailApp: {
       sendEmail(m) {
         if (opts.mailFails) throw new Error('quota');

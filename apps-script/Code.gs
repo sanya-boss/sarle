@@ -5,7 +5,15 @@
  * only APPENDS rows; it never returns sheet contents to the visitor.
  *
  * Script Properties (Project Settings → Script Properties):
- *   SPREADSHEET_ID — ID of the Google Sheet (not the uploaded .xlsx file).
+ *   SPREADSHEET_ID   — ID of the Google Sheet (not the uploaded .xlsx file).
+ *   NOTIFY_EMAIL     — where notice emails go (optional).
+ *   NOTIFY_FROM      — the address notices are sent FROM, e.g. gallery@sarle.ee
+ *                      (optional). It must be a verified "Send mail as" alias
+ *                      in the Gmail of the account that runs the script.
+ *   TURNSTILE_SECRET — Cloudflare Turnstile secret key (optional). When set,
+ *                      every sign-up and application must carry a valid
+ *                      captcha token; the site key goes into
+ *                      site/js/newsletter-config.js.
  *
  * Sheet "Подписчики", row 1 must be exactly:
  *   A1: Дата подписки | B1: RU | C1: EN | D1: ET
@@ -29,6 +37,8 @@ var NEWSLETTER_NOTIFY_DEFAULT = 'gallery@sarle.ee';
 // together), so a flood of fake sign-ups cannot use up the Google mail quota
 // (about 100 a day on a free account). Saving is never limited by this.
 var MAIL_LIMIT_PER_DAY = 60;
+var NOTICE_SENDER_NAME = 'Sarle Art Gallery & Studio';
+var TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
 // First character must be a letter or digit, so a stored address can never
 // start with = + - @ (spreadsheet formula injection).
@@ -66,6 +76,8 @@ function handleSubscription_(p) {
 
   var email = String(p.email || '').trim();
   if (!isValidEmail_(email)) return { ok: false, code: 'invalid_email' };
+
+  if (!verifyCaptcha_(p['cf-turnstile-response'])) return { ok: false, code: 'captcha_failed' };
 
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(LOCK_WAIT_MS)) return { ok: false, code: 'busy' };
@@ -126,14 +138,70 @@ function notifySubscriber_(email, lang) {
   var to = notifyEmail_(NEWSLETTER_NOTIFY_DEFAULT);
   if (!to) return;
   try {
-    MailApp.sendEmail({
-      to: to,
-      subject: 'Sarle: новый подписчик рассылки (' + lang + ')',
-      body: 'Новый подписчик рассылки: ' + email + '\nЯзык сайта: ' + lang + '\n\nЛист «' + SHEET_NAME + '» в таблице подписчиков.'
-    });
+    sendNotice_(to, 'Sarle: новый подписчик рассылки (' + lang + ')',
+      'Новый подписчик рассылки: ' + email + '\nЯзык сайта: ' + lang + '\n\nЛист «' + SHEET_NAME + '» в таблице подписчиков.');
   } catch (err) {
     console.error('Newsletter notice not sent: ' + err);
   }
+}
+
+/* Cloudflare Turnstile: checks the token the visitor's browser got from the
+   captcha. Off (always true) while the Script Property TURNSTILE_SECRET is not
+   set. If Cloudflare itself cannot be reached, the request is let through and
+   logged, so an outage there never blocks real visitors. Shared with
+   OpenCall.gs. */
+function verifyCaptcha_(token) {
+  var secret = PropertiesService.getScriptProperties().getProperty('TURNSTILE_SECRET');
+  if (!secret || !String(secret).trim()) return true;
+  token = String(token == null ? '' : token).trim();
+  if (!token || token.length > 2048) return false;
+  var data;
+  try {
+    var res = UrlFetchApp.fetch(TURNSTILE_VERIFY_URL, {
+      method: 'post',
+      payload: { secret: String(secret).trim(), response: token },
+      muteHttpExceptions: true
+    });
+    if (res.getResponseCode() !== 200) throw new Error('HTTP ' + res.getResponseCode());
+    data = JSON.parse(res.getContentText());
+  } catch (err) {
+    console.error('Turnstile check unavailable, request let through: ' + err);
+    return true;
+  }
+  return data && data.success === true;
+}
+
+/* Sends a notice email. With the Script Property NOTIFY_FROM set to an address
+   that is a verified "Send mail as" alias of this Gmail account (for example
+   gallery@sarle.ee), the email goes out FROM that address through Gmail; the
+   recipient sees the company address and replies go there. Otherwise it is
+   sent from the script owner's address with the gallery's name. Shared with
+   OpenCall.gs. */
+function sendNotice_(to, subject, body) {
+  var from = String(PropertiesService.getScriptProperties().getProperty('NOTIFY_FROM') || '').trim();
+  if (from) {
+    var aliases = GmailApp.getAliases().map(function (a) { return String(a).toLowerCase(); });
+    if (aliases.indexOf(from.toLowerCase()) !== -1) {
+      GmailApp.sendEmail(to, subject, body, { from: from, name: NOTICE_SENDER_NAME, replyTo: from });
+      return 'alias';
+    }
+    console.error('NOTIFY_FROM "' + from + '" is not a "Send mail as" address of this Gmail; sending from the account address instead.');
+  }
+  MailApp.sendEmail({ to: to, subject: subject, body: body, name: NOTICE_SENDER_NAME, replyTo: from || undefined });
+  return 'account';
+}
+
+/* Run from the editor after setting NOTIFY_FROM: sends one test notice and
+   says in the log which address it went out from. */
+function checkNoticeSender() {
+  var to = notifyEmail_(NEWSLETTER_NOTIFY_DEFAULT);
+  var from = PropertiesService.getScriptProperties().getProperty('NOTIFY_FROM');
+  console.log('Gmail «Отправлять как»: ' + (GmailApp.getAliases().join(', ') || '(нет)'));
+  var how = sendNotice_(to, 'Sarle: проверка отправителя уведомлений', 'Проверка: письмо отправлено скриптом сайта Sarle.');
+  console.log(how === 'alias'
+    ? 'Письмо отправлено на ' + to + ' С АДРЕСА ' + from + '.'
+    : 'Письмо отправлено на ' + to + ' с адреса аккаунта Google (' + Session.getEffectiveUser().getEmail() + '). ' +
+      (from ? 'Адрес ' + from + ' не найден среди «Отправлять как» в Gmail.' : 'Свойство NOTIFY_FROM не задано.'));
 }
 
 function isValidEmail_(email) {
