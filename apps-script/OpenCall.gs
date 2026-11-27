@@ -176,12 +176,10 @@ function handleOpenCall_(params) {
   var notify = mayMail ? notifyEmail_(OC_NOTIFY_EMAIL) : '';
   if (notify) {
     try {
-      MailApp.sendEmail({
-        to: notify,
-        subject: 'Open Call 2027: новая заявка от ' + (answers['Full name / Artist name'] || 'без имени').slice(0, 80),
-        body: 'Новая заявка от ' + answers['Full name / Artist name'] + ' (' + answers['Email'] + ').\n\n' +
-              'Таблица: ' + ocBook_().getUrl()
-      });
+      sendNotice_(notify,
+        'Open Call 2027: новая заявка от ' + (answers['Full name / Artist name'] || 'без имени').slice(0, 80),
+        'Новая заявка от ' + answers['Full name / Artist name'] + ' (' + answers['Email'] + ').\n\n' +
+        'Таблица: ' + ocBook_().getUrl());
     } catch (err) {
       console.error('Open Call notice not sent: ' + err);
     }

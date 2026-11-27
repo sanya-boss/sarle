@@ -202,3 +202,10 @@ test('captcha on: valid token -> saved; rejected token -> captcha_failed', () =>
   assert.equal(r.code, 'captcha_failed');
   assert.equal(s.column('Заявки', 3)['Имя / имя художника'], undefined);
 });
+
+test('application notice goes out from the NOTIFY_FROM alias', () => {
+  const s = createSandbox({ props: { NOTIFY_FROM: 'gallery@sarle.ee' }, aliases: ['gallery@sarle.ee'] });
+  s.post(application());
+  assert.equal(s.state.mails[0].via, 'gmail');
+  assert.equal(s.state.mails[0].from, 'gallery@sarle.ee');
+});

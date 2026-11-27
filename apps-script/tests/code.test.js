@@ -227,3 +227,22 @@ test('captcha on but Cloudflare unreachable: let through (logged)', () => {
   assert.equal(s.post(req('a@example.com', 'EN', { 'cf-turnstile-response': 'tok' })).body.ok, true);
   assert.ok(s.state.logs.some(l => /Turnstile/.test(l[1])));
 });
+
+test('notice sender: NOTIFY_FROM that is a Gmail alias -> sent from it, replies to it, gallery name', () => {
+  const s = createSandbox({ props: { NOTIFY_FROM: 'gallery@sarle.ee' }, aliases: ['Gallery@Sarle.ee'] });
+  s.post(req('a@example.com', 'EN'));
+  const m = s.state.mails[0];
+  assert.equal(m.via, 'gmail');
+  assert.equal(m.from, 'gallery@sarle.ee');
+  assert.equal(m.replyTo, 'gallery@sarle.ee');
+  assert.equal(m.name, 'Sarle Art Gallery & Studio');
+});
+
+test('notice sender: NOTIFY_FROM not set up as an alias -> account address, logged, still sent', () => {
+  const s = createSandbox({ props: { NOTIFY_FROM: 'gallery@sarle.ee' }, aliases: [] });
+  s.post(req('a@example.com', 'EN'));
+  assert.equal(s.state.mails.length, 1);
+  assert.notEqual(s.state.mails[0].via, 'gmail');
+  assert.equal(s.state.mails[0].name, 'Sarle Art Gallery & Studio');
+  assert.ok(s.state.logs.some(l => /NOTIFY_FROM/.test(l[1])));
+});

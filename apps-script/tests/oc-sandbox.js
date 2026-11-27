@@ -101,6 +101,13 @@ function createSandbox(opts) {
       MimeType: { JSON: 'application/json' },
       createTextOutput(text) { return { text, setMimeType() { return this; } }; },
     },
+    GmailApp: {
+      getAliases: () => opts.aliases || [],
+      sendEmail(to, subject, body, o) {
+        if (opts.mailFails) throw new Error('quota');
+        state.mails.push({ to, subject, body, from: o.from, name: o.name, replyTo: o.replyTo, via: 'gmail', lockHeldWhileSending: state.lockHeld });
+      },
+    },
     UrlFetchApp: {
       fetch(url, o) {
         state.captchaCalls = (state.captchaCalls || 0) + 1;
