@@ -185,3 +185,20 @@ test('control characters and line breaks are removed from one-line answers', () 
   assert.equal(col['Страна / город'], 'Эстония, Tal linn');
   assert.doesNotMatch(s.state.mails[0].subject, /[\r\n]/);
 });
+
+test('captcha on: application without a token is refused, nothing written', () => {
+  const s = createSandbox({ props: { TURNSTILE_SECRET: 'sec' }, turnstile: 'pass' });
+  const r = s.post(application());
+  assert.equal(r.code, 'captcha_failed');
+  assert.equal(s.tab('Заявки').writes, 0);
+  assert.equal(s.state.mails.length, 0);
+});
+
+test('captcha on: valid token -> saved; rejected token -> captcha_failed', () => {
+  const s = createSandbox({ props: { TURNSTILE_SECRET: 'sec' }, turnstile: p => p.response === 'good' });
+  assert.equal(s.post(application([['cf-turnstile-response', 'good']])).ok, true);
+  assert.equal(s.column('Заявки', 2)['Имя / имя художника'], 'Anna Tamm');
+  const r = s.post(application([['cf-turnstile-response', 'bad'], ['Email', 'other@example.com']], ['Email']));
+  assert.equal(r.code, 'captcha_failed');
+  assert.equal(s.column('Заявки', 3)['Имя / имя художника'], undefined);
+});

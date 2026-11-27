@@ -3,5 +3,8 @@
  * This URL is public by design — never put API keys, tokens or passwords here.
  * While it is empty the form shows "temporarily unavailable" and saves nothing. */
 window.SARLE_NEWSLETTER = {
+  // Cloudflare Turnstile SITE key (public). Empty = no captcha on the forms.
+  // The SECRET key never goes here: it is a Script Property in Apps Script.
+  turnstileSiteKey: '',
   endpoint: 'https://script.google.com/macros/s/AKfycbwa_ieIpKpL5I364cB9ZgKXW6IY73kE2bbtbFJZqeWim5bWLP-xkq_XrhODY1LyCvvM/exec'
 };

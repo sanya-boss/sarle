@@ -152,6 +152,7 @@ function handleOpenCall_(params) {
 
   var answers = ocValidate_(params);
   if (!answers) return { ok: false, code: 'invalid_application' };
+  if (!verifyCaptcha_(ocFirst_(params, 'cf-turnstile-response'))) return { ok: false, code: 'captcha_failed' };
 
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(LOCK_WAIT_MS)) return { ok: false, code: 'busy' };

@@ -808,7 +808,9 @@
         server_error: 'Something went wrong on our side. Your email was not saved — please try again later.',
         network_error: 'Could not reach the server. Check your connection and try again.',
         timeout: 'The server is taking too long to respond. Please try again.',
-        not_configured: 'Subscription is temporarily unavailable. Please try again later.'
+        not_configured: 'Subscription is temporarily unavailable. Please try again later.',
+        captcha_required: 'Please confirm that you are not a robot.',
+        captcha_failed: 'The check that you are not a robot did not pass. Please try again.'
       },
       RU: {
         sending: 'Отправляем…',
@@ -822,7 +824,9 @@
         server_error: 'Что-то пошло не так на нашей стороне. Адрес не сохранён — попробуйте позже.',
         network_error: 'Не удалось связаться с сервером. Проверьте подключение и попробуйте снова.',
         timeout: 'Сервер отвечает слишком долго. Попробуйте снова.',
-        not_configured: 'Подписка временно недоступна. Попробуйте позже.'
+        not_configured: 'Подписка временно недоступна. Попробуйте позже.',
+        captcha_required: 'Подтвердите, что вы не робот.',
+        captcha_failed: 'Проверка «я не робот» не пройдена. Попробуйте ещё раз.'
       },
       ET: {
         sending: 'Saadame…',
@@ -836,7 +840,9 @@
         server_error: 'Midagi läks meie poolel valesti. Aadressi ei salvestatud — proovi hiljem uuesti.',
         network_error: 'Serveriga ei õnnestunud ühendust saada. Kontrolli ühendust ja proovi uuesti.',
         timeout: 'Server vastab liiga kaua. Proovi uuesti.',
-        not_configured: 'Tellimine pole praegu saadaval. Proovi hiljem uuesti.'
+        not_configured: 'Tellimine pole praegu saadaval. Proovi hiljem uuesti.',
+        captcha_required: 'Palun kinnita, et sa ei ole robot.',
+        captcha_failed: 'Kontroll „ma ei ole robot“ ei õnnestunud. Proovi uuesti.'
       }
     };
 
@@ -867,6 +873,19 @@
       return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 12);
     }
 
+    // Captcha (js/captcha.js): appears under the form once the email is valid.
+    var captchaBox = document.getElementById('nl-captcha');
+    var captcha = window.SarleCaptcha && window.SarleCaptcha.enabled() ? window.SarleCaptcha : null;
+    function emailLooksValid() {
+      var v = (input.value || '').trim();
+      return v.length <= 254 && v.indexOf('..') === -1 && EMAIL_RE.test(v);
+    }
+    if (captcha && captchaBox) {
+      var maybeShowCaptcha = function () { if (emailLooksValid()) captcha.show(captchaBox, function (t) { if (t && shown && shown.code === 'captcha_required') { shown = null; render(); } }); };
+      input.addEventListener('input', maybeShowCaptcha);
+      input.addEventListener('change', maybeShowCaptcha);
+    }
+
     var busy = false;
     var lastSentAt = 0;
     function setBusy(on) {
@@ -885,6 +904,12 @@
       var lang = pageLang();
       if (!lang) { show('error', 'invalid_language'); return; }
       if (!endpoint) { show('error', 'not_configured'); return; }
+      var captchaToken = '';
+      if (captcha && captchaBox) {
+        captcha.show(captchaBox);
+        captchaToken = captcha.token(captchaBox);
+        if (!captchaToken) { show('error', 'captcha_required'); return; }
+      }
       if (Date.now() - lastSentAt < MIN_INTERVAL_MS) { show('error', 'rate_limited'); return; }
 
       lastSentAt = Date.now();
@@ -895,6 +920,7 @@
       body.set('consent', 'yes');
       body.set('website', honeypot ? honeypot.value : '');
       body.set('requestId', requestId);
+      if (captchaToken) body.set('cf-turnstile-response', captchaToken);
 
       var controller = window.AbortController ? new AbortController() : null;
       var timedOut = false;
@@ -926,6 +952,7 @@
         .then(function () {
           clearTimeout(timer);
           setBusy(false);
+          if (captcha) captcha.reset(captchaBox);   // a token works only once
         });
     });
   })();

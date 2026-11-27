@@ -101,6 +101,14 @@ function createSandbox(opts) {
       MimeType: { JSON: 'application/json' },
       createTextOutput(text) { return { text, setMimeType() { return this; } }; },
     },
+    UrlFetchApp: {
+      fetch(url, o) {
+        state.captchaCalls = (state.captchaCalls || 0) + 1;
+        if (opts.turnstile === 'down') throw new Error('network');
+        const ok = opts.turnstile === 'pass' || (typeof opts.turnstile === 'function' && opts.turnstile(o.payload));
+        return { getResponseCode: () => 200, getContentText: () => JSON.stringify({ success: !!ok }) };
+      },
+    },
     MailApp: { sendEmail(m) { if (opts.mailFails) throw new Error('quota'); state.mails.push(m); } },
     Session: { getScriptTimeZone: () => 'Europe/Tallinn' },
     Utilities: { formatDate: d => d.toISOString().slice(0, 10) },

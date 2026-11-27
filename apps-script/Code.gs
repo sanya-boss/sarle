@@ -5,7 +5,12 @@
  * only APPENDS rows; it never returns sheet contents to the visitor.
  *
  * Script Properties (Project Settings → Script Properties):
- *   SPREADSHEET_ID — ID of the Google Sheet (not the uploaded .xlsx file).
+ *   SPREADSHEET_ID   — ID of the Google Sheet (not the uploaded .xlsx file).
+ *   NOTIFY_EMAIL     — where notice emails go (optional).
+ *   TURNSTILE_SECRET — Cloudflare Turnstile secret key (optional). When set,
+ *                      every sign-up and application must carry a valid
+ *                      captcha token; the site key goes into
+ *                      site/js/newsletter-config.js.
  *
  * Sheet "Подписчики", row 1 must be exactly:
  *   A1: Дата подписки | B1: RU | C1: EN | D1: ET
@@ -29,6 +34,7 @@ var NEWSLETTER_NOTIFY_DEFAULT = 'gallery@sarle.ee';
 // together), so a flood of fake sign-ups cannot use up the Google mail quota
 // (about 100 a day on a free account). Saving is never limited by this.
 var MAIL_LIMIT_PER_DAY = 60;
+var TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
 // First character must be a letter or digit, so a stored address can never
 // start with = + - @ (spreadsheet formula injection).
@@ -66,6 +72,8 @@ function handleSubscription_(p) {
 
   var email = String(p.email || '').trim();
   if (!isValidEmail_(email)) return { ok: false, code: 'invalid_email' };
+
+  if (!verifyCaptcha_(p['cf-turnstile-response'])) return { ok: false, code: 'captcha_failed' };
 
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(LOCK_WAIT_MS)) return { ok: false, code: 'busy' };
@@ -134,6 +142,32 @@ function notifySubscriber_(email, lang) {
   } catch (err) {
     console.error('Newsletter notice not sent: ' + err);
   }
+}
+
+/* Cloudflare Turnstile: checks the token the visitor's browser got from the
+   captcha. Off (always true) while the Script Property TURNSTILE_SECRET is not
+   set. If Cloudflare itself cannot be reached, the request is let through and
+   logged, so an outage there never blocks real visitors. Shared with
+   OpenCall.gs. */
+function verifyCaptcha_(token) {
+  var secret = PropertiesService.getScriptProperties().getProperty('TURNSTILE_SECRET');
+  if (!secret || !String(secret).trim()) return true;
+  token = String(token == null ? '' : token).trim();
+  if (!token || token.length > 2048) return false;
+  var data;
+  try {
+    var res = UrlFetchApp.fetch(TURNSTILE_VERIFY_URL, {
+      method: 'post',
+      payload: { secret: String(secret).trim(), response: token },
+      muteHttpExceptions: true
+    });
+    if (res.getResponseCode() !== 200) throw new Error('HTTP ' + res.getResponseCode());
+    data = JSON.parse(res.getContentText());
+  } catch (err) {
+    console.error('Turnstile check unavailable, request let through: ' + err);
+    return true;
+  }
+  return data && data.success === true;
 }
 
 function isValidEmail_(email) {

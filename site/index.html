@@ -345,6 +345,7 @@
         <input id="nl-consent" name="consent" type="checkbox" value="yes">
         <p><label for="nl-consent">I agree to receive the Sarle Art Gallery &amp; Studio newsletter by email.</label> <a href="#privacy" class="newsletter-privacy" data-privacy>Privacy policy</a></p>
       </div>
+      <div class="nl-captcha captcha-box" id="nl-captcha" data-captcha-action="newsletter" hidden></div>
       <div class="newsletter-hp" aria-hidden="true"><input id="nl-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
       <p id="nl-pending" role="status" class="newsletter-msg newsletter-msg-muted" data-i18n-dynamic hidden><span id="nl-pending-text"></span></p>
       <p id="nl-error" role="alert" class="newsletter-msg" data-i18n-dynamic hidden><span aria-hidden="true">!</span><span id="nl-error-text"></span></p>
@@ -785,6 +786,8 @@
 
       <p class="oc-error" id="oc-error" role="alert" hidden><span aria-hidden="true">!</span><span id="oc-error-text"></span></p>
 
+      <div class="oc-captcha captcha-box" id="oc-captcha" data-captcha-action="open_call" hidden></div>
+
       <div class="oc-submit-row">
         <button type="submit" class="btn btn-outline oc-submit"><span class="oc-spinner" aria-hidden="true"></span><span class="oc-submit-label">Submit application</span><span class="oc-submit-sending">Sending…</span></button>
         <p class="oc-note">Applications are free to submit.</p>
@@ -879,6 +882,7 @@
   </button>
 </div>
 <script src="js/newsletter-config.js"></script>
+<script src="js/captcha.js"></script>
 <script src="js/hero-gallery.js"></script>
 <script src="js/open-call-i18n.js"></script>
 <script src="js/main.js"></script>

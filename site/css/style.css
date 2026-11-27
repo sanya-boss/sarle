@@ -815,6 +815,9 @@ img { max-width: none; }
 .newsletter-consent p { margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--muted); }
 .newsletter-consent label { cursor: pointer; }
 .newsletter-privacy { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
+/* captcha (js/captcha.js): appears under the form once a valid email is typed */
+.captcha-box { margin-top: 18px; min-height: 65px; }
+.captcha-box[hidden] { display: none; }
 .newsletter-hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
 
 @media (max-width: 759px) {
